@@ -1,0 +1,539 @@
+/* ===================================
+   The Echo Box - Main Stylesheet
+   Author: Your Name
+   Last Updated: January 2026
+   =================================== */
+
+/* ===== CSS Variables (会被主题文件覆盖) ===== */
+:root {
+    /* Default theme (Echo Box) */
+    --color-background: #0a0a0a;
+    --color-primary: #D4AF37;
+    --color-text-light: #e0e0e0;
+    --color-text-dark: #1a1a1a;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Inter', sans-serif;
+    --background-image: url('assets/echobox_bg.jpg');
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 3rem;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+/* ===== Global Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-background);
+    background-image: var(--background-image);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Main Container ===== */
+.container {
+    max-width: 800px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-md);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Header ===== */
+header {
+    margin-bottom: var(--spacing-lg);
+}
+
+header h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--color-primary);
+    letter-spacing: 3px;
+    margin-bottom: var(--spacing-xs);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+    animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% {
+        text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+    }
+    50% {
+        text-shadow: 0 2px 20px rgba(212, 175, 55, 0.6);
+    }
+}
+
+.subtitle {
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    opacity: 0.8;
+    font-style: italic;
+}
+
+/* ===== Input Section ===== */
+#input-section {
+    margin-top: var(--spacing-lg);
+}
+
+#legacy-text {
+    width: 100%;
+    height: 200px;
+    background-color: rgba(26, 26, 26, 0.8);
+    border: 1px solid #333;
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: var(--spacing-sm);
+    resize: vertical;
+    border-radius: 8px;
+    transition: all var(--transition-normal);
+}
+
+#legacy-text:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    background-color: rgba(26, 26, 26, 0.95);
+}
+
+#legacy-text::placeholder {
+    color: #999;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+.privacy-note {
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: var(--spacing-xs);
+    font-style: italic;
+}
+
+/* ===== Buttons ===== */
+#imprint-button {
+    background: linear-gradient(135deg, var(--color-primary), #c5a028);
+    color: var(--color-text-dark);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    letter-spacing: 2px;
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+#imprint-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+#imprint-button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+#imprint-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+#imprint-button:active {
+    transform: translateY(0);
+}
+
+.secondary-button {
+    background: none;
+    border: 1px solid #555;
+    color: #999;
+    padding: 0.8rem 1.5rem;
+    margin-top: var(--spacing-sm);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    transition: all var(--transition-normal);
+    border-radius: 8px;
+}
+
+.secondary-button:hover {
+    color: var(--color-text-light);
+    border-color: var(--color-text-light);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ===== Result Section ===== */
+#result-section {
+    margin-top: var(--spacing-lg);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#result-section h2 {
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+}
+
+#certificate-canvas {
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    transition: transform var(--transition-normal);
+}
+
+#certificate-canvas:hover {
+    transform: scale(1.02);
+}
+
+/* ===== Payment Section ===== */
+.payment-section {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: rgba(17, 17, 17, 0.8);
+    border: 1px solid #222;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.value-prop {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-light);
+    line-height: 1.8;
+}
+
+.payment-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.payment-button:hover::after {
+    width: 400px;
+    height: 400px;
+}
+
+.payment-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(40, 167, 69, 0.6);
+}
+
+.trust-signals {
+    margin-top: var(--spacing-md);
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+.trust-signals p {
+    margin: var(--spacing-xs) 0;
+}
+
+/* ===== Loading Overlay ===== */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(10px);
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--color-primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-sm);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#loading-text {
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+    font-style: italic;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ===== Visible Footer ===== */
+.visible-footer {
+    text-align: center;
+    padding: var(--spacing-md) 0;
+    margin-top: var(--spacing-lg);
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.visible-footer nav {
+    margin-bottom: var(--spacing-sm);
+}
+
+.visible-footer a {
+    color: #999;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    margin: 0 0.5rem;
+}
+
+.visible-footer a:hover {
+    color: var(--color-primary);
+}
+
+.copyright {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* ===== SEO Footer (Hidden) ===== */
+.seo-footer {
+    /* Method 1: Complete hiding (may trigger Google penalties if overused) */
+    /* display: none; */
+    
+    /* Method 2: Off-screen positioning (safer for SEO) */
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.seo-footer h2,
+.seo-footer h3,
+.seo-footer h4 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    margin: 1.5rem 0 1rem;
+}
+
+.seo-footer p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+.seo-footer article {
+    margin-bottom: 2rem;
+}
+
+.seo-keywords {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* ===== Utility Classes ===== */
+.hidden {
+    display: none !important;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    body {
+        padding: var(--spacing-sm);
+    }
+    
+    .container {
+        padding: 1.5rem;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    #legacy-text {
+        height: 150px;
+        font-size: 0.9rem;
+    }
+    
+    #imprint-button {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+    }
+    
+    .payment-button {
+        font-size: 1.1rem;
+        padding: 0.8rem 1.5rem;
+    }
+    
+    #result-section h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    #legacy-text {
+        height: 120px;
+    }
+    
+    .payment-button,
+    .secondary-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .visible-footer,
+    #loading-overlay,
+    .payment-section {
+        display: none;
+    }
+}
+
+/* ===== Accessibility ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+a:focus,
+button:focus,
+textarea:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ===== High Contrast Mode Support ===== */
+@media (prefers-contrast: high) {
+    .container {
+        border: 2px solid var(--color-primary);
+    }
+}
+
+/* ===== Dark Mode Override (if needed) ===== */
+@media (prefers-color-scheme: light) {
+    /* Optional: Add light mode overrides if user system preference is light */
+    /* Currently design is dark-first */
+}
