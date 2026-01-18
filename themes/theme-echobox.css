@@ -1,0 +1,10 @@
+/* themes/theme-echobox.css */
+:root {
+    --color-background: #0a0a0a;
+    --color-primary: #D4AF37;
+    --color-text-light: #e0e0e0;
+    --color-text-dark: #1a1a1a;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Inter', sans-serif;
+    --background-image: url('../assets/echobox_bg.jpg');
+}

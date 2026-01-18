@@ -1,0 +1,10 @@
+/* themes/theme-futurebloom.css */
+:root {
+    --color-background: #eef2f7;
+    --color-primary: #A7C7E7;
+    --color-text-light: #ffffff;
+    --color-text-dark: #334155;
+    --font-heading: 'Nunito', sans-serif; /* 更圆润友好的字体 */
+    --font-body: 'Inter', sans-serif;
+    --background-image: url('../assets/futurebloom_bg.jpg');
+}

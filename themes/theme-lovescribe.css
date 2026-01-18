@@ -1,0 +1,10 @@
+/* themes/theme-lovescribe.css */
+:root {
+    --color-background: #fdf6f4;
+    --color-primary: #D9A7A0;
+    --color-text-light: #ffffff;
+    --color-text-dark: #4a4a4a;
+    --font-heading: 'Playfair Display', serif; /* 更优雅的字体 */
+    --font-body: 'Inter', sans-serif;
+    --background-image: url('../assets/lovescribe_bg.jpg');
+}
