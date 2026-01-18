@@ -5,11 +5,9 @@
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
-
     
     // =======================================================
     // 1. 环境判官 (The Environment Judge)
-    // - 仅在此处修改了Gumroad链接
     // =======================================================
     const currentDomain = window.location.hostname;
     
@@ -20,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             subtitle: 'Leave an echo, not just a memory.',
             placeholder: 'In the silence between your victories, what is the one truth you fear might die with you?',
             buttonText: 'IMPRINT INTO ETERNITY',
-            gumroadLink: 'https://samzhu168.gumroad.com/l/fmrrxr', // ✅ The Echo Box 链接
+            gumroadLink: 'https://samzhu168.gumroad.com/l/fmrrxr',
             certificateTitle: 'CERTIFICATE OF LEGACY'
         },
         'lovescribe.net': {
@@ -29,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             subtitle: 'Seal your love for the future.',
             placeholder: 'If the world ended tomorrow, what is the one memory of us that you would want to save from the fire?',
             buttonText: 'SEAL OUR VOW',
-            gumroadLink: 'https://samzhu168.gumroad.com/l/sjuokv', // ✅ LoveScribe 链接
+            gumroadLink: 'https://samzhu168.gumroad.com/l/sjuokv',
             certificateTitle: 'CERTIFICATE OF ETERNAL LOVE'
         },
         'futurebloom.io': {
@@ -38,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             subtitle: 'A letter to your child\'s 18th birthday.',
             placeholder: 'When they are old enough to understand, what is the courage you want them to find in your words?',
             buttonText: 'SEND TO THE FUTURE',
-            gumroadLink: 'https://samzhu168.gumroad.com/l/htoqgu', // ✅ FutureBloom 链接
+            gumroadLink: 'https://samzhu168.gumroad.com/l/htoqgu',
             certificateTitle: 'LETTER TO THE FUTURE'
         },
         // 本地测试域名
@@ -130,12 +128,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let loadingMessageIndex = 0;
     let loadingInterval = null;
     
+    // 防止重复提交
+    let isGenerating = false;
+    
     imprintButton.addEventListener('click', () => {
+        if (isGenerating) {
+            return;
+        }
+        
         const text = legacyText.value;
         if (text.trim() === '') {
             alert('Your echo cannot be empty.');
             return;
         }
+        
+        isGenerating = true;
         
         // 开始加载动画
         showLoading(true);
@@ -149,6 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 滚动到结果区域
             resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            isGenerating = false;
         }, 3000);
     });
 
@@ -322,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const testWidth = metrics.width;
             
             if (testWidth > maxWidth && n > 0) {
-                context.fillText(line.trim(), x, y);
+                context.fillText(line, x, y);
                 line = words[n] + ' ';
                 y += lineHeight;
                 lineCount++;
@@ -335,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 line = testLine;
             }
         }
-        context.fillText(line.trim(), x, y);
+        context.fillText(line, x, y);
     }
     
     // =======================================================
@@ -359,25 +368,5 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('error', (event) => {
         console.error('Application error:', event.error);
         // 可选：发送错误到分析服务
-    });
-    
-    // 防止重复提交
-    let isGenerating = false;
-    const originalImprintHandler = imprintButton.onclick; // 保存原始的点击事件
-    
-    imprintButton.addEventListener('click', (e) => {
-        if (isGenerating) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
-        isGenerating = true;
-
-        // 这里需要调用您原来的核心逻辑，如果它被封装在其他地方
-        if(originalImprintHandler) originalImprintHandler();
-
-        setTimeout(() => {
-            isGenerating = false;
-        }, 3000);
     });
 });
