@@ -1,6 +1,6 @@
 // ===================================
 // The Echo Box - Complete JavaScript
-// Version: 4.0 FINAL - Smart Domain Detection
+// Version: 5.0 FINAL - Background Fix
 // Last Updated: January 2026
 // ===================================
 
@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 placeholder: 'If the world ended tomorrow, what is the one memory of us that you would want to save from the fire?',
                 buttonText: 'SEAL OUR VOW',
                 gumroadLink: 'https://samzhu168.gumroad.com/l/sjuokv',
-                certificateTitle: 'CERTIFICATE OF ETERNAL LOVE'
+                certificateTitle: 'CERTIFICATE OF ETERNAL LOVE',
+                backgroundImage: '/assets/lovescribe_bg.jpg' // ✅ 背景图路径
             };
         }
         
@@ -34,7 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 placeholder: 'When they are old enough to understand, what is the courage you want them to find in your words?',
                 buttonText: 'SEND TO THE FUTURE',
                 gumroadLink: 'https://samzhu168.gumroad.com/l/htoqgu',
-                certificateTitle: 'LETTER TO THE FUTURE'
+                certificateTitle: 'LETTER TO THE FUTURE',
+                backgroundImage: '/assets/futurebloom_bg.jpg' // ✅ 背景图路径
             };
         }
         
@@ -46,7 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
             placeholder: 'In the silence between your victories, what is the one truth you fear might die with you?',
             buttonText: 'IMPRINT INTO ETERNITY',
             gumroadLink: 'https://samzhu168.gumroad.com/l/fmrrxr',
-            certificateTitle: 'CERTIFICATE OF LEGACY'
+            certificateTitle: 'CERTIFICATE OF LEGACY',
+            backgroundImage: '/assets/echobox_bg.jpg' // ✅ 背景图路径
         };
     }
     
@@ -78,6 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const paymentButton = document.querySelector('.payment-button');
         if (paymentButton && theme.gumroadLink) {
             paymentButton.href = theme.gumroadLink;
+        }
+        
+        // ✅✅✅ 关键修复：直接在 JS 中设置背景图 ✅✅✅
+        if (theme.backgroundImage) {
+            document.body.style.backgroundImage = `url('${theme.backgroundImage}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundAttachment = 'fixed';
+            document.body.style.backgroundRepeat = 'no-repeat';
         }
     }
     
@@ -325,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`✅ Theme loaded: ${currentTheme.title}`);
     console.log(`🌐 Domain: ${window.location.hostname}`);
     console.log(`💳 Gumroad Link: ${currentTheme.gumroadLink}`);
+    console.log(`🖼️ Background Image: ${currentTheme.backgroundImage}`);
     
     window.addEventListener('error', (event) => {
         console.error('Application error:', event.error, event.message);
