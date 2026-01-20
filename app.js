@@ -1,6 +1,6 @@
 // ===================================
 // The Echo Box - Complete JavaScript
-// Version: 5.0 FINAL - Background Fix
+// Version: 6.0 - 星空背景升级版
 // Last Updated: January 2026
 // ===================================
 
@@ -22,7 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 buttonText: 'SEAL OUR VOW',
                 gumroadLink: 'https://samzhu168.gumroad.com/l/sjuokv',
                 certificateTitle: 'CERTIFICATE OF ETERNAL LOVE',
-                backgroundImage: '/assets/lovescribe_bg.jpg' // ✅ 背景图路径
+                // ✅ 爱心光晕背景（保持不变，效果好）
+                backgroundImage: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1920&h=1080&fit=crop&q=80'
             };
         }
         
@@ -36,7 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 buttonText: 'SEND TO THE FUTURE',
                 gumroadLink: 'https://samzhu168.gumroad.com/l/htoqgu',
                 certificateTitle: 'LETTER TO THE FUTURE',
-                backgroundImage: '/assets/futurebloom_bg.jpg' // ✅ 背景图路径
+                // ✅ 海滩日出背景（保持不变，视觉最佳）
+                backgroundImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&h=1080&fit=crop&q=80'
             };
         }
         
@@ -49,7 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonText: 'IMPRINT INTO ETERNITY',
             gumroadLink: 'https://samzhu168.gumroad.com/l/fmrrxr',
             certificateTitle: 'CERTIFICATE OF LEGACY',
-            backgroundImage: '/assets/echobox_bg.jpg' // ✅ 背景图路径
+            // ✅✅✅ 升级：星空背景（神秘 + 永恒 + 高端）
+            backgroundImage: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=1920&h=1080&fit=crop&q=80'
         };
     }
     
@@ -83,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             paymentButton.href = theme.gumroadLink;
         }
         
-        // ✅✅✅ 关键修复：直接在 JS 中设置背景图 ✅✅✅
+        // ✅ 设置背景图
         if (theme.backgroundImage) {
             document.body.style.backgroundImage = `url('${theme.backgroundImage}')`;
             document.body.style.backgroundSize = 'cover';
