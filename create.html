@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Echo - The Echo Box</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" id="theme-stylesheet" href="themes/theme-echobox.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="back-button" onclick="window.location.href='index.html'">
+                ← Back to Scenes
+            </div>
+            <h1 id="page-title">The Echo Box</h1>
+            <p class="subtitle" id="page-subtitle">Leave an echo, not just a memory.</p>
+        </header>
+
+        <main id="main-content">
+            <!-- 步骤1: 输入内容 -->
+            <div id="input-section">
+                <!-- 快速模板选择器 -->
+                <div class="template-selector">
+                    <p class="template-label">✨ Not sure what to write? Try these prompts:</p>
+                    <div class="template-buttons">
+                        <button class="template-btn" data-template="advice">
+                            💡 Life Advice
+                        </button>
+                        <button class="template-btn" data-template="memory">
+                            📖 Favorite Memory
+                        </button>
+                        <button class="template-btn" data-template="wish">
+                            🌟 Final Wish
+                        </button>
+                    </div>
+                </div>
+
+                <textarea 
+                    id="legacy-text" 
+                    placeholder="In the silence between your victories, what is the one truth you fear might die with you?" 
+                    maxlength="500"
+                    aria-label="Legacy message input"
+                ></textarea>
+                
+                <div class="char-counter">
+                    <span id="char-count">0</span>/500 characters
+                </div>
+
+                <button id="imprint-button">IMPRINT INTO ETERNITY</button>
+                <p class="privacy-note">🔒 Your message is processed locally. We never see or store your content.</p>
+            </div>
+
+            <!-- 步骤2: 预览 + 支付 -->
+            <div id="result-section" class="hidden">
+                <h2>✨ Your Echo is Cast</h2>
+                
+                <!-- 证书预览 -->
+                <div class="certificate-preview">
+                    <canvas id="certificate-canvas" width="3000" height="2000" aria-label="Certificate preview"></canvas>
+                </div>
+
+                <!-- 支付选项 -->
+                <div class="payment-section">
+                    <div class="payment-options">
+                        <!-- 免费预览 -->
+                        <div class="option-card free-option">
+                            <h3>🎁 Preview Version</h3>
+                            <p class="price">FREE</p>
+                            <ul class="features">
+                                <li>✅ See your message come to life</li>
+                                <li>⚠️ Large watermark overlay</li>
+                                <li>❌ Low resolution (1200x630)</li>
+                                <li>❌ Not suitable for printing</li>
+                            </ul>
+                            <button id="download-watermarked-button" class="secondary-button">
+                                Download Preview (Free)
+                            </button>
+                        </div>
+
+                        <!-- 付费完整版 -->
+                        <div class="option-card premium-option">
+                            <div class="badge">🔥 97% Choose This</div>
+                            <h3>💎 Premium Certificate</h3>
+                            <p class="price">$19.99 <span class="price-note">one-time</span></p>
+                            <ul class="features">
+                                <li>✅ <strong>No watermark</strong></li>
+                                <li>✅ Museum-quality (3000x2000px)</li>
+                                <li>✅ Print-ready PDF included</li>
+                                <li>✅ Lifetime ownership</li>
+                                <li>✅ Commercial printing guide</li>
+                            </ul>
+                            <a href="#" class="payment-button" id="payment-link" target="_blank" rel="noopener">
+                                🔒 GET FULL VERSION - $19.99
+                            </a>
+                            <p class="trust-note">
+                                💳 Secure checkout via Gumroad • Instant delivery • Money-back guarantee
+                            </p>
+                            <div class="value-comparison">
+                                <p class="comparison-text">
+                                    <strong>Worth more than:</strong><br>
+                                    3 Starbucks lattes, 1 movie ticket, or 30 days of a streaming service you'll cancel anyway.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- License Key 验证区 -->
+                    <div id="license-section" class="license-section">
+                        <div class="divider">
+                            <span>Already purchased?</span>
+                        </div>
+                        <p class="license-instruction">
+                            📧 Check your email for the license key, then enter it below:
+                        </p>
+                        <div class="license-input-group">
+                            <input 
+                                type="text" 
+                                id="license-key-input" 
+                                placeholder="ECHO-XXXXXX-XXXX"
+                                maxlength="25"
+                                autocomplete="off"
+                                spellcheck="false"
+                            >
+                            <button id="verify-license-button" class="verify-button">
+                                UNLOCK
+                            </button>
+                        </div>
+                        <p class="license-help">
+                            💡 Can't find your key? Check spam folder or 
+                            <a href="mailto:support@the-echobox.com">contact support</a>
+                        </p>
+                    </div>
+
+                    <!-- 解锁成功区 -->
+                    <div id="unlock-section" class="unlock-section hidden">
+                        <div class="success-banner">
+                            <h3>🎉 License Verified!</h3>
+                            <p>Your premium certificate is ready. Download it below:</p>
+                        </div>
+                        <button id="download-full-button" class="download-premium-button">
+                            ⬇️ DOWNLOAD FULL VERSION
+                        </button>
+                        <div class="printing-guide">
+                            <h4>📄 Recommended for Printing:</h4>
+                            <ul>
+                                <li><strong>Paper:</strong> 250gsm linen or textured cardstock</li>
+                                <li><strong>Size:</strong> 11x17 inches (Tabloid)</li>
+                                <li><strong>Where:</strong> FedEx Office, Staples, or local print shop</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Imprinting into the digital ether...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="visible-footer">
+        <nav aria-label="Legal information">
+            <a href="privacy.html">Privacy</a> | 
+            <a href="terms.html">Terms</a> | 
+            <a href="mailto:support@the-echobox.com">Support</a>
+        </nav>
+        <p class="copyright">© 2026 The Echo Box. All rights reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

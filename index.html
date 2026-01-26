@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Echo Box - Who Is Your Echo For?</title>
+    
+    <meta name="description" content="Leave a message that outlasts you. For your children, your partner, or the world.">
+    <meta property="og:title" content="The Echo Box - Digital Legacy Service">
+    <meta property="og:description" content="If you didn't wake up tomorrow, what's the ONE thing they MUST hear from you?">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 星空背景动画 */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent);
+            background-size: 200% 200%;
+            animation: stars 60s linear infinite;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        @keyframes stars {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            background: linear-gradient(135deg, #D4AF37, #FFD700, #D4AF37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: 3px;
+        }
+
+        .hero-question {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: #ccc;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+
+        .hero-cta {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: #999;
+            margin-top: 1.5rem;
+        }
+
+        /* 场景卡片网格 */
+        .scene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .scene-card {
+            position: relative;
+            background: rgba(17, 17, 17, 0.8);
+            border: 2px solid #333;
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .scene-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(212, 175, 55, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .scene-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .scene-card:hover::before {
+            opacity: 1;
+        }
+
+        .scene-card.future:hover {
+            border-color: #A7C7E7;
+            box-shadow: 0 20px 60px rgba(167, 199, 231, 0.3);
+        }
+
+        .scene-card.love:hover {
+            border-color: #D9A7A0;
+            box-shadow: 0 20px 60px rgba(217, 167, 160, 0.3);
+        }
+
+        .scene-card.legacy:hover {
+            border-color: #D4AF37;
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+
+        .scene-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .scene-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #D4AF37;
+            margin-bottom: 1rem;
+        }
+
+        .scene-card.future .scene-title {
+            color: #A7C7E7;
+        }
+
+        .scene-card.love .scene-title {
+            color: #D9A7A0;
+        }
+
+        .scene-description {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .scene-example {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #D4AF37;
+            padding: 1rem;
+            border-radius: 8px;
+            font-style: italic;
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .scene-card.future .scene-example {
+            border-left-color: #A7C7E7;
+        }
+
+        .scene-card.love .scene-example {
+            border-left-color: #D9A7A0;
+        }
+
+        .scene-cta {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #000;
+            font-weight: 700;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scene-card.future .scene-cta {
+            background: linear-gradient(135deg, #A7C7E7, #6FB1FC);
+        }
+
+        .scene-card.love .scene-cta {
+            background: linear-gradient(135deg, #D9A7A0, #FFB6C1);
+        }
+
+        .scene-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 统计数字 */
+        .stats {
+            text-align: center;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .stats-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #D4AF37;
+            font-family: 'Cinzel', serif;
+        }
+
+        .stats-text {
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .scene-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            header {
+                margin-bottom: 2rem;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>The Echo Box</h1>
+            <p class="hero-question">
+                If you didn't wake up tomorrow,<br>
+                what's the ONE thing they MUST hear from you?
+            </p>
+            <p class="hero-cta">Choose who your echo is for:</p>
+        </header>
+
+        <div class="scene-grid">
+            <!-- 场景1: 给孩子 -->
+            <div class="scene-card future" data-scene="futurebloom">
+                <span class="scene-icon">👶</span>
+                <h2 class="scene-title">For My Children</h2>
+                <p class="scene-description">
+                    A letter to your child's 18th birthday. The wisdom, love, 
+                    and courage you want them to carry forever.
+                </p>
+                <div class="scene-example">
+                    "When you read this, I hope you know: you were never a burden. 
+                    You were the reason I woke up smiling."
+                </div>
+                <button class="scene-cta">Create Future Message</button>
+            </div>
+
+            <!-- 场景2: 给爱人 -->
+            <div class="scene-card love" data-scene="lovescribe">
+                <span class="scene-icon">💕</span>
+                <h2 class="scene-title">For My Partner</h2>
+                <p class="scene-description">
+                    Seal your love for eternity. The vow you'd make if today 
+                    was your last day together.
+                </p>
+                <div class="scene-example">
+                    "If the world ended tomorrow, I'd want you to know: 
+                    loving you was the one thing I got completely right."
+                </div>
+                <button class="scene-cta">Seal Our Love</button>
+            </div>
+
+            <!-- 场景3: 给世界 -->
+            <div class="scene-card legacy" data-scene="echobox">
+                <span class="scene-icon">🌟</span>
+                <h2 class="scene-title">For The World</h2>
+                <p class="scene-description">
+                    Your life's final wisdom. The truth you fear might die with you. 
+                    Your legacy in one eternal message.
+                </p>
+                <div class="scene-example">
+                    "In the silence between your victories, remember: 
+                    the people you loved mattered more than the battles you won."
+                </div>
+                <button class="scene-cta">Imprint Legacy</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stats-number" id="echo-count">1,847</div>
+            <p class="stats-text">echoes already sealed across 47 countries</p>
+        </div>
+    </div>
+
+    <script>
+        // 场景选择逻辑
+        document.querySelectorAll('.scene-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const scene = card.dataset.scene;
+                // 保存选择到 localStorage
+                localStorage.setItem('selectedScene', scene);
+                // 跳转到创建页面
+                window.location.href = 'create.html';
+            });
+        });
+
+        // 动态数字（可选）
+        function animateCount() {
+            const counter = document.getElementById('echo-count');
+            const target = 1847;
+            let current = 1700;
+            const increment = Math.ceil((target - current) / 50);
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                counter.textContent = current.toLocaleString();
+            }, 30);
+        }
+
+        animateCount();
+    </script>
+</body>
+</html>
