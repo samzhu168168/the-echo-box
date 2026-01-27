@@ -3,88 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Echo Box | Create Your Legacy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Create Your Echo | The Echo Box</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="back-button" onclick="window.location.href='index.html'">← Change Scene</div>
+            <div class="back-button" onclick="window.location.href='index.html'">← Change Style</div>
             <h1 id="page-title">THE ECHO BOX</h1>
-            <p class="subtitle" id="page-subtitle">Sealing your truth for eternity.</p>
         </header>
 
         <main id="main-content">
-            <!-- 输入区 -->
             <div id="input-section">
                 <div class="template-selector">
-                    <p class="template-label">✨ Start with a prompt:</p>
-                    <div class="template-buttons">
-                        <button class="template-btn" data-template="advice">💡 Life Advice</button>
-                        <button class="template-btn" data-template="memory">📖 Favorite Memory</button>
-                        <button class="template-btn" data-template="wish">🌟 Final Wish</button>
-                    </div>
+                    <button class="template-btn" data-template="advice">💡 Life Advice</button>
+                    <button class="template-btn" data-template="memory">📖 Favorite Memory</button>
+                    <button class="template-btn" data-template="wish">🌟 Final Wish</button>
                 </div>
-
-                <textarea id="legacy-text" maxlength="500"></textarea>
+                <textarea id="legacy-text" maxlength="500" placeholder="Type your message..."></textarea>
                 <div class="char-counter"><span id="char-count">0</span>/500</div>
-
                 <button id="imprint-button">IMPRINT INTO ETERNITY</button>
-                <p class="privacy-note">🔒 Local processing. Your privacy is absolute.</p>
             </div>
 
-            <!-- 结果区 -->
             <div id="result-section" class="hidden">
                 <canvas id="certificate-canvas" width="3000" height="2000"></canvas>
-
+                
                 <div class="payment-options">
                     <div class="option-card">
                         <h3>🎁 Preview</h3>
-                        <p class="price">FREE</p>
-                        <ul class="features"><li>✅ Low Resolution</li><li>⚠️ Watermarked</li></ul>
                         <button id="download-watermarked-button" class="secondary-button">Download Sample</button>
                     </div>
-
                     <div class="option-card premium-option">
                         <div class="badge">🔥 97% CHOOSE THIS</div>
                         <h3>💎 Premium</h3>
-                        <p class="price">$19.99 <span class="price-note">one-time</span></p>
-                        <ul class="features">
-                            <li>✅ <strong>No Watermark</strong></li>
-                            <li>✅ 3000px High-Res</li>
-                            <li>✅ Museum-Quality Mockup</li>
-                            <li>✅ Commercial Print License</li>
-                        </ul>
+                        <p class="price">$19.99</p>
                         <a href="#" id="payment-link" class="payment-button" target="_blank">🔒 UNLOCK PREMIUM</a>
-                        <p class="trust-note">Worth more than 3 Starbucks lattes.</p>
+                        <p style="font-size:0.8rem; color:#666; margin-top:10px;">Worth more than 3 Starbucks lattes.</p>
                     </div>
                 </div>
 
                 <div id="license-section" class="license-section">
-                    <div class="divider"><span>ALREADY PURCHASED?</span></div>
-                    <div class="license-input-group">
-                        <input type="text" id="license-key-input" placeholder="PASTE LICENSE KEY HERE">
-                        <button id="verify-license-button" class="verify-button">UNLOCK</button>
-                    </div>
+                    <input type="text" id="license-key-input" placeholder="PASTE LICENSE KEY HERE">
+                    <button id="verify-license-button" class="verify-button">UNLOCK</button>
                 </div>
 
                 <div id="unlock-section" class="unlock-section hidden">
-                    <h3 style="color:#28a745; margin-bottom:1rem;">🎉 LEGACY SEALED!</h3>
-                    <button id="download-full-button" class="download-premium-button">⬇️ DOWNLOAD 4K VERSION</button>
-                    <div style="text-align:left; margin-top:2rem; font-size:0.9rem; color:#888;">
-                        <p><strong>🖨️ Pro Printing Tip:</strong> Use 250gsm Textured Linen Paper for a museum look. Size: 11x17 or A3.</p>
-                    </div>
+                    <button id="download-full-button" class="download-premium-button">⬇️ DOWNLOAD 4K CERTIFICATE</button>
                 </div>
             </div>
         </main>
     </div>
-
-    <div id="loading-overlay" class="hidden">
-        <div class="spinner"></div>
-        <p>Sealing your soul in the vault...</p>
-    </div>
-
+    <div id="loading-overlay" class="hidden"><p>Sealing your soul...</p></div>
     <script src="app.js"></script>
 </body>
 </html>

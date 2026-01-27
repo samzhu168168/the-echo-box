@@ -1,6 +1,6 @@
 // ===================================
-// The Echo Box - Ultimate Master Version
-// Version: 9.0 (2026 Profit Edition)
+// The Echo Box - Final 2026 Edition
+// 核心逻辑：全自动场景切换 + 3000px HD 渲染
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,34 +10,31 @@ document.addEventListener('DOMContentLoaded', () => {
             cssClass: 'theme-futurebloom',
             title: 'FutureBloom',
             subtitle: "A letter to your child's 18th birthday.",
-            placeholder: "If you couldn't be there, what courage would you leave them?",
             gumroadLink: 'https://samzhu168.gumroad.com/l/lwjqot',
             certificateTitle: 'LETTER TO THE FUTURE',
-            templateImage: 'assets/bg-cyber.jpg.png',
+            templateImage: 'assets/bg-cyber.png',
             fontColor: '#00FFFF',
-            templates: { advice: "To my child: When the world feels loud...", memory: "My favorite memory of us today is...", wish: "My deepest wish for you is..." }
+            templates: { advice: "To my child: Always remember...", memory: "My favorite memory is...", wish: "My wish for you..." }
         },
         lovescribe: {
             cssClass: 'theme-lovescribe',
             title: 'LoveScribe',
             subtitle: "Seal your love for the future.",
-            placeholder: "What's the one memory of us you'd save from the fire?",
             gumroadLink: 'https://samzhu168.gumroad.com/l/sapjbm',
             certificateTitle: 'ETERNAL VOWS',
-            templateImage: 'assets/bg-vintage.jpg.png',
+            templateImage: 'assets/bg-vintage.png',
             fontColor: '#2B1B17',
-            templates: { advice: "My love: If tomorrow never comes...", memory: "The moment I knew I loved you...", wish: "I promise you..." }
+            templates: { advice: "My love: If tomorrow never comes...", memory: "The moment I knew...", wish: "I promise you..." }
         },
         echobox: {
             cssClass: 'theme-echobox',
             title: 'The Echo Box',
             subtitle: "Leave an echo, not just a memory.",
-            placeholder: "What truth do you fear might die with you?",
             gumroadLink: 'https://samzhu168.gumroad.com/l/ntcaif',
             certificateTitle: 'CERTIFICATE OF LEGACY',
-            templateImage: 'assets/bg-gold.jpg.png', // 建议替换为带 Mockup 的图
+            templateImage: 'assets/bg-gold.png',
             fontColor: '#D4AF37',
-            templates: { advice: "My final piece of wisdom is...", memory: "The truth I've learned that changed everything is...", wish: "Before I am gone, the world must know..." }
+            templates: { advice: "My final wisdom is...", memory: "The truth I've learned...", wish: "Before I am gone..." }
         }
     };
 
@@ -46,46 +43,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.className = theme.cssClass;
 
     // UI 初始化
-    document.getElementById('page-title').innerText = theme.title;
-    document.getElementById('page-subtitle').innerText = theme.subtitle;
+    if(document.getElementById('page-title')) document.getElementById('page-title').innerText = theme.title;
     const legacyText = document.getElementById('legacy-text');
-    legacyText.placeholder = theme.placeholder;
-    document.getElementById('payment-link').href = theme.gumroadLink;
+    if(document.getElementById('payment-link')) document.getElementById('payment-link').href = theme.gumroadLink;
 
+    // 字符计数
     const charCountEl = document.getElementById('char-count');
-    legacyText.addEventListener('input', () => {
-        charCountEl.textContent = legacyText.value.length;
-    });
-
-    const canvas = document.getElementById('certificate-canvas');
-    const ctx = canvas.getContext('2d');
+    if(legacyText) {
+        legacyText.addEventListener('input', () => charCountEl.textContent = legacyText.value.length);
+        legacyText.placeholder = theme.placeholder || "Enter your eternal message here...";
+    }
 
     // 模板点击
     document.querySelectorAll('.template-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             legacyText.value = theme.templates[btn.dataset.template];
             charCountEl.textContent = legacyText.value.length;
-            legacyText.focus();
         });
     });
 
-    // 生成逻辑
-    document.getElementById('imprint-button').addEventListener('click', async () => {
-        const text = legacyText.value.trim();
-        if (!text) return alert("Please write your message first.");
-        
-        document.getElementById('loading-overlay').classList.remove('hidden');
-        try {
-            await drawCertificate(text, true); 
-            document.getElementById('input-section').classList.add('hidden');
-            document.getElementById('result-section').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        } catch (err) {
-            alert("Error: Background failed to load. Check assets.");
-        } finally {
+    const canvas = document.getElementById('certificate-canvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+
+    // 生成预览
+    const imprintBtn = document.getElementById('imprint-button');
+    if(imprintBtn) {
+        imprintBtn.addEventListener('click', async () => {
+            if(!legacyText.value.trim()) return alert("Write something first.");
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            try {
+                await drawCertificate(legacyText.value, true);
+                document.getElementById('input-section').classList.add('hidden');
+                document.getElementById('result-section').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            } catch (e) { alert("Asset loading failed. Check image paths."); }
             document.getElementById('loading-overlay').classList.add('hidden');
-        }
-    });
+        });
+    }
 
     async function drawCertificate(text, isPreview) {
         return new Promise((resolve, reject) => {
@@ -100,10 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.font = 'bold 110px Cinzel, serif';
                 ctx.fillText(theme.certificateTitle, 1500, 480);
 
-                // 文字颜色适配
                 ctx.fillStyle = (selectedSceneId === 'lovescribe') ? '#2B1B17' : '#ffffff';
-                ctx.font = '65px Inter, sans-serif';
-                wrapText(ctx, text, 1500, 850, 2100, 100); // 调大了垂直间距增加呼吸感
+                ctx.font = '60px Inter, sans-serif';
+                wrapText(ctx, text, 1500, 850, 2200, 95);
 
                 const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
                 ctx.fillStyle = theme.fontColor;
@@ -142,34 +135,33 @@ document.addEventListener('DOMContentLoaded', () => {
         context.fillText(line.trim(), x, y);
     }
 
-    // 验证逻辑 (撒花特效)
-    document.getElementById('verify-license-button').addEventListener('click', async () => {
-        const key = document.getElementById('license-key-input').value.trim();
-        if (key.length < 8) return alert("Invalid Key.");
+    // 下载逻辑
+    if(document.getElementById('download-watermarked-button')) {
+        document.getElementById('download-watermarked-button').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'Sample.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
 
-        document.getElementById('verify-license-button').innerText = "VERIFYING...";
-        setTimeout(async () => {
-            await drawCertificate(legacyText.value, false);
-            document.getElementById('license-section').classList.add('hidden');
-            document.getElementById('unlock-section').classList.remove('hidden');
-            
-            // 简单特效提示
-            const chime = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
-            chime.play().catch(() => {}); // 播放成功钟声
-        }, 1500);
-    });
+    if(document.getElementById('verify-license-button')) {
+        document.getElementById('verify-license-button').addEventListener('click', async () => {
+            if(document.getElementById('license-key-input').value.length > 5) {
+                await drawCertificate(legacyText.value, false);
+                document.getElementById('license-section').classList.add('hidden');
+                document.getElementById('unlock-section').classList.remove('hidden');
+                alert("SUCCESS! UNLOCKED.");
+            } else { alert("Invalid Key."); }
+        });
+    }
 
-    document.getElementById('download-watermarked-button').addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.download = 'Preview.png';
-        link.href = canvas.toDataURL();
-        link.click();
-    });
-
-    document.getElementById('download-full-button').addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.download = 'Premium_Legacy_Certificate.png';
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
-    });
+    if(document.getElementById('download-full-button')) {
+        document.getElementById('download-full-button').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'Eternal_Echo_Full.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+        });
+    }
 });
