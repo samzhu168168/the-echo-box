@@ -1,16 +1,15 @@
 // ===================================
 // The Echo Box - 核心逻辑
-// Version: 11.0 (最强大脑优化版)
+// Version: 12.0 (最终修正版 - 修复优惠码与多商品问题)
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 💡 最强大脑优化策略：
-    // 1. 链接末尾添加 '/vip' 可自动应用 Gumroad 优惠码
-    // 2. 请务必在 Gumroad 后台创建优惠码 "vip" (设置减免 $10)
-    // 3. 这样用户在支付时会看到 $19.99 被划掉，变成 $9.99 -> 转化率暴增！
+    // 💡 修正配置：
+    // 1. 优惠码已修正为您的真实码: LPD62M1
+    // 2. 链接末尾添加参数 ?wanted=true 确保直接进入单品购买页，防止购物车串号
     
-    const DISCOUNT_CODE = 'vip'; // 你的优惠码
+    const DISCOUNT_CODE = 'LPD62M1'; // 您的真实优惠码 (截图确认)
 
     // 1. 场景配置
     const SCENES = {
@@ -18,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'FutureBloom',
             subtitle: "A letter to your child's 18th birthday.",
             placeholder: "If you couldn't be there, what courage would you leave them?",
-            // 原始链接: .../lwjqot -> 优化后: .../lwjqot/vip
-            gumroadLink: `https://samzhu168.gumroad.com/l/lwjqot/${DISCOUNT_CODE}`,
+            // 链接逻辑: 产品链接 / 优惠码 ? 参数
+            gumroadLink: `https://samzhu168.gumroad.com/l/lwjqot/${DISCOUNT_CODE}?wanted=true`,
             certificateTitle: 'LETTER TO THE FUTURE',
             templateImage: 'assets/bg-cyber.png',
             fontColor: '#00FFFF',
@@ -34,8 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'LoveScribe',
             subtitle: "Seal your love for the future.",
             placeholder: "What's the one memory of us you'd save from the fire?",
-            // 原始链接: .../sapjbm -> 优化后: .../sapjbm/vip
-            gumroadLink: `https://samzhu168.gumroad.com/l/sapjbm/${DISCOUNT_CODE}`,
+            gumroadLink: `https://samzhu168.gumroad.com/l/sapjbm/${DISCOUNT_CODE}?wanted=true`,
             certificateTitle: 'ETERNAL VOWS',
             templateImage: 'assets/bg-vintage.png',
             fontColor: '#2B1B17',
@@ -50,9 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'The Echo Box',
             subtitle: "Leave an echo, not just a memory.",
             placeholder: "What truth do you fear might die with you?",
-            // 修复了 typo: ntcaif -> ntcai
-            // 优化后: .../ntcai/vip
-            gumroadLink: `https://samzhu168.gumroad.com/l/ntcai/${DISCOUNT_CODE}`,
+            // 您确认是 ntcaif，虽然看起来像typo，但我们严格遵照您的输入
+            gumroadLink: `https://samzhu168.gumroad.com/l/ntcaif/${DISCOUNT_CODE}?wanted=true`,
             certificateTitle: 'CERTIFICATE OF LEGACY',
             templateImage: 'assets/bg-gold.png',
             fontColor: '#D4AF37',
@@ -69,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedSceneId = localStorage.getItem('selectedScene') || 'echobox';
     const theme = SCENES[selectedSceneId];
     
-    // 容错处理：如果 localStorage 存了旧的无效场景名，重置为默认
+    // 容错处理
     if (!theme) {
         localStorage.setItem('selectedScene', 'echobox');
         window.location.reload();
