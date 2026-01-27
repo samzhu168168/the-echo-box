@@ -1,17 +1,25 @@
 // ===================================
 // The Echo Box - 核心逻辑
-// Version: 10.0 (优化版)
+// Version: 11.0 (最强大脑优化版)
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. 场景配置 (确保路径指向 .png 文件)
+    // 💡 最强大脑优化策略：
+    // 1. 链接末尾添加 '/vip' 可自动应用 Gumroad 优惠码
+    // 2. 请务必在 Gumroad 后台创建优惠码 "vip" (设置减免 $10)
+    // 3. 这样用户在支付时会看到 $19.99 被划掉，变成 $9.99 -> 转化率暴增！
+    
+    const DISCOUNT_CODE = 'vip'; // 你的优惠码
+
+    // 1. 场景配置
     const SCENES = {
         futurebloom: {
             title: 'FutureBloom',
             subtitle: "A letter to your child's 18th birthday.",
             placeholder: "If you couldn't be there, what courage would you leave them?",
-            gumroadLink: 'https://samzhu168.gumroad.com/l/lwjqot',
+            // 原始链接: .../lwjqot -> 优化后: .../lwjqot/vip
+            gumroadLink: `https://samzhu168.gumroad.com/l/lwjqot/${DISCOUNT_CODE}`,
             certificateTitle: 'LETTER TO THE FUTURE',
             templateImage: 'assets/bg-cyber.png',
             fontColor: '#00FFFF',
@@ -26,7 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'LoveScribe',
             subtitle: "Seal your love for the future.",
             placeholder: "What's the one memory of us you'd save from the fire?",
-            gumroadLink: 'https://samzhu168.gumroad.com/l/sapjbm',
+            // 原始链接: .../sapjbm -> 优化后: .../sapjbm/vip
+            gumroadLink: `https://samzhu168.gumroad.com/l/sapjbm/${DISCOUNT_CODE}`,
             certificateTitle: 'ETERNAL VOWS',
             templateImage: 'assets/bg-vintage.png',
             fontColor: '#2B1B17',
@@ -41,7 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'The Echo Box',
             subtitle: "Leave an echo, not just a memory.",
             placeholder: "What truth do you fear might die with you?",
-            gumroadLink: 'https://samzhu168.gumroad.com/l/ntcai',
+            // 修复了 typo: ntcaif -> ntcai
+            // 优化后: .../ntcai/vip
+            gumroadLink: `https://samzhu168.gumroad.com/l/ntcai/${DISCOUNT_CODE}`,
             certificateTitle: 'CERTIFICATE OF LEGACY',
             templateImage: 'assets/bg-gold.png',
             fontColor: '#D4AF37',
@@ -57,6 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. 初始化场景
     const selectedSceneId = localStorage.getItem('selectedScene') || 'echobox';
     const theme = SCENES[selectedSceneId];
+    
+    // 容错处理：如果 localStorage 存了旧的无效场景名，重置为默认
+    if (!theme) {
+        localStorage.setItem('selectedScene', 'echobox');
+        window.location.reload();
+        return;
+    }
+
     document.body.className = 'theme-' + selectedSceneId;
 
     // 3. UI 注入
