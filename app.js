@@ -1,146 +1,262 @@
+// ===================================
+// The Echo Box - 核心逻辑
+// Version: 10.0 (优化版)
+// ===================================
+
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. 核心场景配置 (路径已更新为 .png 适配你的 GitHub)
+    // 1. 场景配置 (确保路径指向 .png 文件)
     const SCENES = {
         futurebloom: {
             title: 'FutureBloom',
             subtitle: "A letter to your child's 18th birthday.",
+            placeholder: "If you couldn't be there, what courage would you leave them?",
             gumroadLink: 'https://samzhu168.gumroad.com/l/lwjqot',
             certificateTitle: 'LETTER TO THE FUTURE',
-            templateImage: 'assets/bg-cyber.png', 
+            templateImage: 'assets/bg-cyber.png',
             fontColor: '#00FFFF',
-            templates: { advice: "To my child: Always remember...", memory: "My favorite memory is...", wish: "My deepest wish..." }
+            textColor: '#ffffff',
+            templates: { 
+                advice: "To my child: When the world feels loud, remember that your voice matters. Never let anyone dim your light. You are capable of more than you know.", 
+                memory: "My favorite memory of us today is watching you laugh without worry. That pure joy is what I want you to carry forever.", 
+                wish: "My deepest wish for you is to live fearlessly. Take risks, make mistakes, and always choose love over fear." 
+            }
         },
         lovescribe: {
             title: 'LoveScribe',
             subtitle: "Seal your love for the future.",
+            placeholder: "What's the one memory of us you'd save from the fire?",
             gumroadLink: 'https://samzhu168.gumroad.com/l/sapjbm',
             certificateTitle: 'ETERNAL VOWS',
             templateImage: 'assets/bg-vintage.png',
             fontColor: '#2B1B17',
-            templates: { advice: "My love: If tomorrow never comes...", memory: "The moment I knew...", wish: "I promise you..." }
+            textColor: '#2B1B17',
+            templates: { 
+                advice: "My love: If tomorrow never comes, know that every moment with you was a gift. You made my life complete.", 
+                memory: "The moment I knew I loved you was when I realized I'd rather argue with you than laugh with anyone else.", 
+                wish: "I promise you: I will love you in every lifetime, in every universe, until the stars burn out." 
+            }
         },
         echobox: {
             title: 'The Echo Box',
             subtitle: "Leave an echo, not just a memory.",
-            gumroadLink: 'https://samzhu168.gumroad.com/l/ntcaif',
+            placeholder: "What truth do you fear might die with you?",
+            gumroadLink: 'https://samzhu168.gumroad.com/l/ntcai',
             certificateTitle: 'CERTIFICATE OF LEGACY',
             templateImage: 'assets/bg-gold.png',
             fontColor: '#D4AF37',
-            templates: { advice: "My final wisdom is...", memory: "The truth I've learned...", wish: "Before I am gone..." }
+            textColor: '#ffffff',
+            templates: { 
+                advice: "My final piece of wisdom is this: Success is not measured by what you gain, but by what you give.", 
+                memory: "The truth I've learned that changed everything is that time doesn't heal wounds—love does.", 
+                wish: "Before I am gone, the world must know that every person you meet is fighting a battle you know nothing about. Be kind." 
+            }
         }
     };
 
+    // 2. 初始化场景
     const selectedSceneId = localStorage.getItem('selectedScene') || 'echobox';
     const theme = SCENES[selectedSceneId];
     document.body.className = 'theme-' + selectedSceneId;
 
-    // UI 注入
+    // 3. UI 注入
     const pageTitle = document.getElementById('page-title');
-    if(pageTitle) pageTitle.innerText = theme.title;
+    if (pageTitle) pageTitle.innerText = theme.title;
+    
+    const pageSubtitle = document.getElementById('page-subtitle');
+    if (pageSubtitle) pageSubtitle.innerText = theme.subtitle;
+    
     const legacyText = document.getElementById('legacy-text');
+    if (legacyText) {
+        legacyText.placeholder = theme.placeholder;
+    }
+    
     const paymentLink = document.getElementById('payment-link');
-    if(paymentLink) paymentLink.href = theme.gumroadLink;
+    if (paymentLink) paymentLink.href = theme.gumroadLink;
 
+    // 4. 字符计数
     const charCountEl = document.getElementById('char-count');
-    if(legacyText) {
-        legacyText.addEventListener('input', () => charCountEl.textContent = legacyText.value.length);
+    if (legacyText && charCountEl) {
+        legacyText.addEventListener('input', () => {
+            charCountEl.textContent = legacyText.value.length;
+        });
     }
 
+    // 5. 模板按钮
     document.querySelectorAll('.template-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            legacyText.value = theme.templates[btn.dataset.template];
-            charCountEl.textContent = legacyText.value.length;
+            if (legacyText) {
+                legacyText.value = theme.templates[btn.dataset.template];
+                charCountEl.textContent = legacyText.value.length;
+                legacyText.focus();
+            }
         });
     });
 
+    // 6. Canvas 初始化
     const canvas = document.getElementById('certificate-canvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
 
-    // 生成预览
+    // 7. 生成预览按钮
     const imprintBtn = document.getElementById('imprint-button');
-    if(imprintBtn) {
+    if (imprintBtn) {
         imprintBtn.addEventListener('click', async () => {
-            if(!legacyText.value.trim()) return alert("Write something first.");
+            const text = legacyText.value.trim();
+            if (!text) {
+                alert("Please write something first.");
+                return;
+            }
+            
             document.getElementById('loading-overlay').classList.remove('hidden');
+            
             try {
-                await drawCertificate(legacyText.value, true);
+                await drawCertificate(text, true); // true = 带水印预览
                 document.getElementById('input-section').classList.add('hidden');
                 document.getElementById('result-section').classList.remove('hidden');
-                window.scrollTo(0,0);
-            } catch(e) { 
-                alert("Error loading background. Make sure assets/ images are correct."); 
-                console.error(e);
+                window.scrollTo(0, 0);
+            } catch (err) {
+                alert("Error loading background image. Please check your assets/ folder.");
+                console.error(err);
+            } finally {
+                document.getElementById('loading-overlay').classList.add('hidden');
             }
-            document.getElementById('loading-overlay').classList.add('hidden');
         });
     }
 
+    // 8. 绘制证书函数
     async function drawCertificate(text, isPreview) {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.crossOrigin = "anonymous";
+            
             img.onload = () => {
-                ctx.clearRect(0,0,3000,2000);
+                // 清空画布
+                ctx.clearRect(0, 0, 3000, 2000);
+                
+                // 绘制背景
                 ctx.drawImage(img, 0, 0, 3000, 2000);
                 
+                // 绘制标题
                 ctx.textAlign = 'center';
                 ctx.fillStyle = theme.fontColor;
-                ctx.font = 'bold 110px serif';
+                ctx.font = 'bold 110px Cinzel, serif';
                 ctx.fillText(theme.certificateTitle, 1500, 480);
                 
-                ctx.fillStyle = (selectedSceneId === 'lovescribe') ? '#2B1B17' : '#ffffff';
-                ctx.font = '65px sans-serif';
-                wrapText(ctx, text, 1500, 850, 2200, 100);
+                // 绘制正文
+                ctx.fillStyle = theme.textColor;
+                ctx.font = '65px Inter, sans-serif';
+                wrapText(ctx, text, 1500, 850, 2100, 100);
 
-                const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                ctx.fillStyle = theme.fontColor; ctx.font = '40px sans-serif';
+                // 绘制日期
+                const date = new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                ctx.fillStyle = theme.fontColor;
+                ctx.font = '40px Inter, sans-serif';
                 ctx.fillText(`Sealed on ${date}`, 1500, 1720);
 
+                // 如果是预览，添加水印
                 if (isPreview) {
-                    ctx.save(); ctx.globalAlpha = 0.2; ctx.fillStyle = '#FF0000'; ctx.font = 'bold 300px sans-serif';
-                    ctx.translate(1500, 1000); ctx.rotate(-Math.PI / 6); ctx.fillText('SAMPLE', 0, 0); ctx.restore();
+                    ctx.save();
+                    ctx.globalAlpha = 0.2;
+                    ctx.fillStyle = '#ff0000';
+                    ctx.font = 'bold 300px sans-serif';
+                    ctx.translate(1500, 1000);
+                    ctx.rotate(-Math.PI / 6);
+                    ctx.fillText('SAMPLE', 0, 0);
+                    ctx.restore();
                 }
+                
                 resolve();
             };
+            
             img.onerror = reject;
             img.src = theme.templateImage;
         });
     }
 
+    // 9. 文字换行函数
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
         const isChinese = /[\u4e00-\u9fa5]/.test(text);
         const words = isChinese ? text.split('') : text.split(' ');
         let line = '';
+        
         for (let n = 0; n < words.length; n++) {
             let testLine = line + words[n] + (isChinese ? '' : ' ');
             if (context.measureText(testLine).width > maxWidth && n > 0) {
                 context.fillText(line.trim(), x, y);
                 line = words[n] + (isChinese ? '' : ' ');
                 y += lineHeight;
-            } else { line = testLine; }
+            } else {
+                line = testLine;
+            }
         }
         context.fillText(line.trim(), x, y);
     }
 
-    // 验证与下载
+    // 10. License 验证按钮
     const verifyBtn = document.getElementById('verify-license-button');
-    if(verifyBtn) {
+    if (verifyBtn) {
         verifyBtn.addEventListener('click', async () => {
-            if(document.getElementById('license-key-input').value.length > 5) {
-                await drawCertificate(legacyText.value, false);
-                document.getElementById('license-section').classList.add('hidden');
-                document.getElementById('unlock-section').classList.remove('hidden');
-                alert("✨ SUCCESS! UNLOCKED ✨");
-            } else { alert("Invalid Key."); }
+            const key = document.getElementById('license-key-input').value.trim();
+            
+            if (key.length < 8) {
+                alert("Invalid Key. Please check your email.");
+                return;
+            }
+
+            verifyBtn.innerText = "VERIFYING...";
+            verifyBtn.disabled = true;
+
+            // 模拟验证延迟
+            setTimeout(async () => {
+                try {
+                    await drawCertificate(legacyText.value, false); // false = 无水印
+                    document.getElementById('license-section').classList.add('hidden');
+                    document.getElementById('unlock-section').classList.remove('hidden');
+                    
+                    // 播放成功音效（可选）
+                    try {
+                        const chime = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
+                        chime.play();
+                    } catch (e) {
+                        console.log('Audio playback failed:', e);
+                    }
+                    
+                    alert("✨ SUCCESS! UNLOCKED ✨");
+                } catch (err) {
+                    alert("Error generating certificate. Please try again.");
+                    console.error(err);
+                } finally {
+                    verifyBtn.innerText = "UNLOCK";
+                    verifyBtn.disabled = false;
+                }
+            }, 1500);
         });
     }
 
-    document.getElementById('download-watermarked-button').addEventListener('click', () => {
-        const link = document.createElement('a'); link.download = 'Preview.png'; link.href = canvas.toDataURL(); link.click();
-    });
+    // 11. 下载带水印预览
+    const downloadWatermarkedBtn = document.getElementById('download-watermarked-button');
+    if (downloadWatermarkedBtn) {
+        downloadWatermarkedBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const link = document.createElement('a');
+            link.download = 'Preview_Sample.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
 
-    document.getElementById('download-full-button').addEventListener('click', () => {
-        const link = document.createElement('a'); link.download = 'Eternal_Echo.png'; link.href = canvas.toDataURL('image/png', 1.0); link.click();
-    });
+    // 12. 下载完整版（无水印）
+    const downloadFullBtn = document.getElementById('download-full-button');
+    if (downloadFullBtn) {
+        downloadFullBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'Legacy_Certificate_Full.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+        });
+    }
 });

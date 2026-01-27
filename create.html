@@ -3,67 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Your Echo | The Echo Box</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Create Your Legacy - The Echo Box</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    
+    <!-- 限时优惠横幅 -->
+    <div class="price-banner">
+        🔥 <strong>LAUNCH SPECIAL:</strong> $9.99 (50% OFF) • Limited to First 100 Buyers
+    </div>
+
     <div class="container">
+        
+        <!-- 头部导航 -->
         <header>
-            <div class="back-button" onclick="window.location.href='index.html'" style="cursor:pointer; color:#888; margin-bottom: 20px;">← Change Style</div>
-            <h1 id="page-title" style="font-family: 'Cinzel', serif; color:#D4AF37;">THE ECHO BOX</h1>
+            <div class="back-button" onclick="window.location.href='index.html'">
+                ← Back to Scenes
+            </div>
+            <h1 id="page-title" class="page-title">The Echo Box</h1>
+            <p id="page-subtitle" class="page-subtitle">Leave an echo, not just a memory.</p>
         </header>
 
         <main id="main-content">
-            <!-- 输入区 -->
-            <div id="input-section" style="background: #111; padding: 2rem; border-radius: 20px;">
-                <div class="template-selector" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="template-btn" data-template="advice" style="padding: 8px 15px; border-radius: 20px; border: 1px solid #444; background: #222; color:#fff; cursor:pointer;">💡 Life Advice</button>
-                    <button class="template-btn" data-template="memory" style="padding: 8px 15px; border-radius: 20px; border: 1px solid #444; background: #222; color:#fff; cursor:pointer;">📖 Favorite Memory</button>
-                    <button class="template-btn" data-template="wish" style="padding: 8px 15px; border-radius: 20px; border: 1px solid #444; background: #222; color:#fff; cursor:pointer;">🌟 Final Wish</button>
-                </div>
-                <textarea id="legacy-text" maxlength="500" placeholder="Type your eternal message here..." style="width:100%; height:200px; background:#000; color:#fff; border:1px solid #333; padding:15px; font-size:1.1rem; border-radius:12px;"></textarea>
-                <div class="char-counter" style="text-align:right; color:#555; margin: 10px 0;"><span id="char-count">0</span>/500</div>
-                <button id="imprint-button" style="width:100%; background:#D4AF37; border:none; padding:1.2rem; border-radius:12px; font-weight:800; font-size:1.2rem; cursor:pointer;">IMPRINT INTO ETERNITY</button>
-            </div>
-
-            <!-- 结果区 -->
-            <div id="result-section" class="hidden">
-                <canvas id="certificate-canvas" width="3000" height="2000" style="width:100%; height:auto; border-radius:12px; box-shadow: 0 20px 50px #000;"></canvas>
+            
+            <!-- ========== 步骤1: 输入内容 ========== -->
+            <div id="input-section">
                 
-                <div class="payment-options" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:30px;">
-                    <div class="option-card" style="background:#111; padding:2rem; border-radius:16px; border:1px solid #222;">
-                        <h3 style="color:#888;">🎁 Preview</h3>
-                        <p style="font-size:1.5rem; margin:15px 0;">FREE</p>
-                        <button id="download-watermarked-button" style="width:100%; background:#222; color:#888; border:1px solid #444; padding:0.8rem; border-radius:8px; cursor:pointer;">Download Sample</button>
+                <!-- 进度指示器 -->
+                <div class="progress-bar">
+                    <div class="progress-step active">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Write</span>
                     </div>
-                    <div class="option-card premium-option" style="background:linear-gradient(180deg, rgba(212,175,55,0.1), #111); padding:2rem; border-radius:16px; border:1px solid #D4AF37; position:relative;">
-                        <div style="position:absolute; top:-12px; right:20px; background:#ff4757; color:#fff; padding:2px 10px; border-radius:20px; font-size:0.7rem; font-weight:bold;">🔥 97% CHOOSE THIS</div>
-                        <h3 style="color:#D4AF37;">💎 Premium</h3>
-                        <p style="font-size:2rem; margin:15px 0;">$19.99</p>
-                        <a href="#" id="payment-link" class="payment-button" target="_blank" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:1rem; border-radius:8px; font-weight:bold; text-align:center;">🔒 UNLOCK HD VERSION</a>
-                        <p style="font-size:0.8rem; color:#666; margin-top:15px; font-style:italic;">Worth more than 3 Starbucks lattes.</p>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Preview</span>
                     </div>
-                </div>
-
-                <div id="license-section" style="margin-top:40px; border-top:1px solid #222; padding-top:20px;">
-                    <p style="color:#888; font-size:0.9rem; margin-bottom:15px;">PASTE LICENSE KEY TO UNLOCK:</p>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="license-key-input" placeholder="ECHO-XXXX-XXXX" style="flex:1; background:#000; border:1px solid #333; color:#D4AF37; padding:10px; border-radius:8px; font-family:monospace;">
-                        <button id="verify-license-button" style="background:#D4AF37; border:none; padding:0 20px; border-radius:8px; font-weight:bold; cursor:pointer;">VERIFY</button>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Get Forever</span>
                     </div>
                 </div>
 
-                <div id="unlock-section" class="hidden" style="margin-top:30px; background:rgba(40,167,69,0.1); border:2px solid #28a745; padding:2rem; border-radius:16px;">
-                    <button id="download-full-button" style="width:100%; background:#28a745; color:#fff; border:none; padding:1.2rem; border-radius:12px; font-weight:bold; font-size:1.2rem; cursor:pointer;">⬇️ DOWNLOAD 4K CERTIFICATE</button>
-                    <p style="margin-top:15px; font-size:0.9rem; color:#888;">🖨️ <strong>Printing Tip:</strong> Use 250gsm linen paper for a museum look.</p>
+                <!-- 快速模板 -->
+                <div class="template-selector">
+                    <p class="template-label">✨ Not sure what to write? Try these prompts:</p>
+                    <div class="template-buttons">
+                        <button class="template-btn" data-template="advice">
+                            💡 Life Advice
+                        </button>
+                        <button class="template-btn" data-template="memory">
+                            📖 Favorite Memory
+                        </button>
+                        <button class="template-btn" data-template="wish">
+                            🌟 Final Wish
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 文本输入 -->
+                <textarea 
+                    id="legacy-text" 
+                    placeholder="Start writing your message here..." 
+                    maxlength="500"
+                    aria-label="Legacy message input"
+                ></textarea>
+                
+                <div class="input-footer">
+                    <div class="char-counter">
+                        <span id="char-count">0</span>/500 characters
+                    </div>
+                    <div class="save-reminder">
+                        💾 Your message stays private until you pay
+                    </div>
+                </div>
+
+                <!-- 生成按钮 -->
+                <button id="imprint-button" class="primary-cta">
+                    <span class="button-text">GENERATE PREVIEW</span>
+                    <span class="button-subtext">Free • Takes 3 seconds</span>
+                </button>
+                
+                <p class="privacy-note">
+                    🔒 Your message is processed locally. We never see or store your content.
+                </p>
+
+                <!-- 实时活动 -->
+                <div class="live-activity">
+                    <div class="activity-dot"></div>
+                    <span id="live-text">Sarah from Texas just created an echo</span>
                 </div>
             </div>
+
+            <!-- ========== 步骤2: 预览 + 支付 ========== -->
+            <div id="result-section" class="hidden">
+                
+                <div class="success-message">
+                    <h2>✨ Your Echo is Ready</h2>
+                    <p>This is what your message will look like forever.</p>
+                </div>
+
+                <!-- 证书预览 -->
+                <div class="certificate-preview">
+                    <canvas id="certificate-canvas" width="3000" height="2000"></canvas>
+                    <div class="preview-overlay">
+                        <div class="preview-badge">PREVIEW ONLY</div>
+                    </div>
+                </div>
+
+                <!-- 支付选项 -->
+                <div class="payment-section">
+                    
+                    <!-- 主推选项: Premium -->
+                    <div class="premium-offer">
+                        <div class="offer-badge">🔥 LAUNCH SPECIAL</div>
+                        <h3>Remove Watermark & Download Forever</h3>
+                        
+                        <div class="price-display">
+                            <span class="old-price">$19.99</span>
+                            <span class="new-price">$9.99</span>
+                            <span class="save-badge">SAVE 50%</span>
+                        </div>
+
+                        <ul class="features-list">
+                            <li>✅ <strong>No watermark</strong> - crystal clear</li>
+                            <li>✅ <strong>3000x2000px</strong> - museum quality</li>
+                            <li>✅ <strong>Print-ready PDF</strong> included</li>
+                            <li>✅ <strong>Lifetime ownership</strong> - download anytime</li>
+                            <li>✅ <strong>30-day guarantee</strong> - risk-free</li>
+                        </ul>
+
+                        <a href="#" class="payment-button" id="payment-link" target="_blank">
+                            🔒 GET FULL VERSION - $9.99
+                        </a>
+
+                        <div class="payment-trust">
+                            <span>💳 Secure checkout</span>
+                            <span>•</span>
+                            <span>⚡ Instant delivery</span>
+                            <span>•</span>
+                            <span>💯 30-day refund</span>
+                        </div>
+
+                        <!-- 紧迫感倒计时 -->
+                        <div class="urgency-timer">
+                            ⚠️ Launch price expires in <span id="timer">23:47:12</span>
+                        </div>
+                    </div>
+
+                    <!-- 免费选项 (次要位置) -->
+                    <div class="free-option-small">
+                        <p>Or download <a href="#" id="download-watermarked-button">watermarked preview</a> (free)</p>
+                    </div>
+
+                    <!-- License验证区 -->
+                    <div id="license-section" class="license-section">
+                        <div class="divider">
+                            <span>Already purchased?</span>
+                        </div>
+                        <p class="license-instruction">
+                            📧 Check your email for the license key:
+                        </p>
+                        <div class="license-input-group">
+                            <input 
+                                type="text" 
+                                id="license-key-input" 
+                                placeholder="ECHO-XXXXXX-XXXX"
+                                maxlength="25"
+                            >
+                            <button id="verify-license-button" class="verify-button">
+                                UNLOCK
+                            </button>
+                        </div>
+                        <p class="license-help">
+                            💡 Can't find it? Check spam or 
+                            <a href="mailto:support@the-echobox.com">contact support</a>
+                        </p>
+                    </div>
+
+                    <!-- 解锁成功 -->
+                    <div id="unlock-section" class="unlock-section hidden">
+                        <div class="success-banner">
+                            <h3>🎉 License Verified!</h3>
+                            <p>Your premium certificate is ready to download:</p>
+                        </div>
+                        <button id="download-full-button" class="download-premium-button">
+                            ⬇️ DOWNLOAD FULL VERSION (3000x2000px)
+                        </button>
+                        <div class="printing-guide">
+                            <h4>🖨️ How to Print:</h4>
+                            <ul>
+                                <li><strong>Paper:</strong> 250gsm cardstock or linen</li>
+                                <li><strong>Size:</strong> 11x17 inches (Tabloid)</li>
+                                <li><strong>Where:</strong> FedEx Office, Staples, local print shop</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </main>
     </div>
-    <div id="loading-overlay" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:9999;">
-        <p style="font-size:1.5rem; font-family:'Cinzel';">Sealing your words...</p>
+
+    <!-- Loading 遮罩 -->
+    <div id="loading-overlay" class="hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Creating your eternal echo...</p>
     </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <nav class="footer-nav">
+            <a href="privacy.html">Privacy</a>
+            <span>•</span>
+            <a href="terms.html">Terms</a>
+            <span>•</span>
+            <a href="mailto:support@the-echobox.com">Support</a>
+        </nav>
+        <p class="footer-copyright">© 2026 The Echo Box</p>
+    </footer>
+
+    <!-- 核心脚本 -->
     <script src="app.js"></script>
+    
+    <!-- 页面级脚本 -->
+    <script>
+        // 倒计时逻辑
+        function startCountdown() {
+            const timerEl = document.getElementById('timer');
+            if (!timerEl) return;
+
+            let endTime = localStorage.getItem('countdownEnd');
+            if (!endTime) {
+                endTime = Date.now() + (24 * 60 * 60 * 1000);
+                localStorage.setItem('countdownEnd', endTime);
+            }
+
+            function updateTimer() {
+                const now = Date.now();
+                const diff = endTime - now;
+
+                if (diff <= 0) {
+                    timerEl.textContent = '00:00:00';
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                timerEl.textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        // 实时活动模拟
+        function simulateLiveActivity() {
+            const activities = [
+                "Sarah from Texas just created an echo",
+                "Michael from California sealed a love letter",
+                "Emily from New York wrote to her children",
+                "David from Florida saved his legacy",
+                "Jennifer from Ohio created her echo"
+            ];
+
+            const liveTextEl = document.getElementById('live-text');
+            if (!liveTextEl) return;
+
+            setInterval(() => {
+                const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+                liveTextEl.textContent = randomActivity;
+            }, 8000);
+        }
+
+        // 页面加载时执行
+        if (document.getElementById('result-section') && 
+            !document.getElementById('result-section').classList.contains('hidden')) {
+            startCountdown();
+        }
+        
+        simulateLiveActivity();
+    </script>
+
 </body>
 </html>
