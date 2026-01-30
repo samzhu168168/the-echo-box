@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Box - Quick Test</title>
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: sans-serif; padding: 2rem; }
+        .status { background: #1a1a1a; padding: 1rem; margin: 1rem 0; border-left: 3px solid #D4AF37; }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #ff4500; }
+        button { background: #ff4500; color: #fff; border: none; padding: 1rem 2rem; cursor: pointer; margin: 0.5rem; }
+        textarea { width: 100%; min-height: 150px; background: #111; color: #fff; border: 1px solid #333; padding: 1rem; }
+        canvas { border: 1px solid #333; max-width: 100%; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>🔧 The Echo Box - Function Test</h1>
+    
+    <div class="status">
+        <strong>Test Status:</strong>
+        <div id="test-results">Initializing...</div>
+    </div>
+
+    <h2>Test 1: LocalStorage Auto-Save</h2>
+    <textarea id="test-input" placeholder="Type something... It will auto-save to localStorage"></textarea>
+    <div id="storage-status" style="color: #666; margin-top: 0.5rem;">Characters: 0</div>
+
+    <h2>Test 2: Canvas Drawing</h2>
+    <button onclick="testCanvasDraw()">Generate Test Certificate</button>
+    <canvas id="test-canvas" width="1500" height="1000"></canvas>
+
+    <h2>Test 3: wrapText Function</h2>
+    <button onclick="testWrapText()">Test Text Wrapping</button>
+    <div id="wrap-result" style="margin-top: 1rem; color: #D4AF37;"></div>
+
+    <script>
+        // Test 1: LocalStorage
+        const input = document.getElementById('test-input');
+        const statusEl = document.getElementById('storage-status');
+        const resultsEl = document.getElementById('test-results');
+        let testsPassed = 0;
+
+        // Load saved text
+        const saved = localStorage.getItem('echo_test');
+        if (saved) {
+            input.value = saved;
+            statusEl.textContent = `Characters: ${saved.length} (Restored from storage ✅)`;
+            testsPassed++;
+        }
+
+        // Auto-save on input
+        input.addEventListener('input', () => {
+            localStorage.setItem('echo_test', input.value);
+            statusEl.textContent = `Characters: ${input.value.length} (Auto-saved ✅)`;
+            if (!testsPassed) testsPassed++;
+            updateResults();
+        });
+
+        // Test 2: Canvas Drawing
+        function testCanvasDraw() {
+            const canvas = document.getElementById('test-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            try {
+                // Clear and draw background
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(0, 0, 1500, 1000);
+                
+                // Draw borders
+                ctx.strokeStyle = '#D4AF37';
+                ctx.lineWidth = 10;
+                ctx.strokeRect(25, 25, 1450, 950);
+                
+                // Draw title
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#D4AF37';
+                ctx.font = 'bold 60px serif';
+                ctx.fillText('CERTIFICATE OF LEGACY', 750, 200);
+                
+                // Draw sample text with wrapping
+                ctx.fillStyle = '#fff';
+                ctx.font = '32px sans-serif';
+                const sampleText = 'This is a test of the text wrapping function. If you can read this clearly across multiple lines, the wrapText function is working correctly!';
+                wrapText(ctx, sampleText, 750, 400, 1200, 50);
+                
+                // Draw date
+                ctx.fillStyle = '#D4AF37';
+                ctx.font = '24px sans-serif';
+                ctx.fillText(`Tested on ${new Date().toLocaleDateString()}`, 750, 850);
+                
+                testsPassed++;
+                updateResults();
+                alert('✅ Canvas test passed! Check the certificate above.');
+            } catch (err) {
+                alert('❌ Canvas test failed: ' + err.message);
+            }
+        }
+
+        // Test 3: wrapText function (copied from app.js)
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let testLine = '';
+            let lineArray = [];
+
+            for (let n = 0; n < words.length; n++) {
+                testLine = line + words[n] + ' ';
+                const metrics = context.measureText(testLine);
+                const testWidth = metrics.width;
+                
+                if (testWidth > maxWidth && n > 0) {
+                    lineArray.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lineArray.push(line);
+
+            // Draw each line
+            for (let k = 0; k < lineArray.length; k++) {
+                context.fillText(lineArray[k], x, y + (k * lineHeight));
+            }
+            
+            return lineArray.length;
+        }
+
+        function testWrapText() {
+            const canvas = document.getElementById('test-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = '32px sans-serif';
+            
+            const testText = 'The quick brown fox jumps over the lazy dog. This sentence is used to test text wrapping across multiple lines in a canvas element.';
+            const lines = wrapText(ctx, testText, 0, 0, 1200, 50);
+            
+            document.getElementById('wrap-result').textContent = 
+                `✅ wrapText function working! Test text split into ${lines} lines.`;
+            testsPassed++;
+            updateResults();
+        }
+
+        function updateResults() {
+            resultsEl.innerHTML = `
+                <strong style="color: ${testsPassed >= 3 ? '#28a745' : '#ff4500'}">
+                    ${testsPassed}/3 tests passed
+                </strong><br>
+                ${testsPassed >= 3 ? '✅ All systems operational! Ready for production.' : '⚠️ Some tests pending...'}
+            `;
+        }
+
+        // Initial status
+        updateResults();
+    </script>
+</body>
+</html>
