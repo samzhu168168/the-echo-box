@@ -1,23 +1,19 @@
 // ===================================
-// The Echo Box - 核心逻辑
-// Version: 13.0 (最终完美版 - 稳健折扣模式)
+// The Echo Box - Core Logic (Final)
+// Version: 16.0 (Zero-Knowledge & Auto-Save)
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
     
     // 💡 核心配置
-    // 优惠码: LPD62M1
-    // 逻辑: 使用标准折扣链接，避免自动重复加购
-    
     const DISCOUNT_CODE = 'LPD62M1';
 
-    // 1. 场景配置
+    // 1. 场景配置 (灵魂文案已注入)
     const SCENES = {
         futurebloom: {
-            title: 'FutureBloom',
-            subtitle: "A letter to your child's 18th birthday.",
-            placeholder: "If you couldn't be there, what courage would you leave them?",
-            // 链接格式: 基础链接 / 优惠码
+            title: 'FutureBloom: The Promise',
+            subtitle: "If the world goes dark, be their light.",
+            placeholder: "They say the future is uncertain. If you aren't there to guide them through the noise, who will? \n\nWrite the words that will serve as their lantern when the lights go out...",
             gumroadLink: `https://samzhu168.gumroad.com/l/lwjqot/${DISCOUNT_CODE}`,
             certificateTitle: 'LETTER TO THE FUTURE',
             templateImage: 'assets/bg-cyber.png',
@@ -31,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         lovescribe: {
             title: 'LoveScribe',
-            subtitle: "Seal your love for the future.",
-            placeholder: "What's the one memory of us you'd save from the fire?",
+            subtitle: "Seal your love against time.",
+            placeholder: "What is the one memory of us you would save from the fire? \n\nSeal your vows here, so they remain even if we are apart.",
             gumroadLink: `https://samzhu168.gumroad.com/l/sapjbm/${DISCOUNT_CODE}`,
             certificateTitle: 'ETERNAL VOWS',
             templateImage: 'assets/bg-vintage.png',
@@ -46,9 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         echobox: {
             title: 'The Echo Box',
-            subtitle: "Leave an echo, not just a memory.",
-            placeholder: "What truth do you fear might die with you?",
-            // 严格确认为 ntcaif
+            subtitle: "The Gold Standard of Legacy.",
+            placeholder: "What truth do you fear might die with you? \n\nMint your wisdom now. Create an immutable record of your existence.",
             gumroadLink: `https://samzhu168.gumroad.com/l/ntcaif/${DISCOUNT_CODE}`,
             certificateTitle: 'CERTIFICATE OF LEGACY',
             templateImage: 'assets/bg-gold.png',
@@ -90,56 +85,75 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentLink = document.getElementById('payment-link');
     if (paymentLink) paymentLink.href = theme.gumroadLink;
 
-    // 4. 字符计数
     const charCountEl = document.getElementById('char-count');
-    if (legacyText && charCountEl) {
+
+    // ============================================================
+    // 🛡️ 核心升级：LocalStorage 自动存档 (无数据库解决方案)
+    // ============================================================
+    const DRAFT_KEY = 'echo_draft_' + selectedSceneId;
+
+    // A. 页面加载时：恢复草稿
+    if (legacyText) {
+        const savedDraft = localStorage.getItem(DRAFT_KEY);
+        if (savedDraft) {
+            legacyText.value = savedDraft;
+            if (charCountEl) charCountEl.textContent = `${savedDraft.length}/500`;
+            console.log("System: Draft restored from local vault.");
+        }
+
+        // B. 输入时：实时保存
         legacyText.addEventListener('input', () => {
-            charCountEl.textContent = legacyText.value.length;
+            const currentText = legacyText.value;
+            localStorage.setItem(DRAFT_KEY, currentText); // 存入浏览器
+            if (charCountEl) charCountEl.textContent = `${currentText.length}/500`;
         });
     }
 
-    // 5. 模板按钮
-    document.querySelectorAll('.template-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (legacyText) {
-                legacyText.value = theme.templates[btn.dataset.template];
-                charCountEl.textContent = legacyText.value.length;
+    // 4. 模板按钮委托 (点击模板也会自动保存)
+    document.addEventListener('click', (e) => {
+        if(e.target.matches('[data-template]')) {
+             if (legacyText) {
+                const newText = theme.templates[e.target.dataset.template];
+                legacyText.value = newText;
+                localStorage.setItem(DRAFT_KEY, newText); // 保存模板内容
+                if(charCountEl) charCountEl.textContent = `${newText.length}/500`;
                 legacyText.focus();
             }
-        });
+        }
     });
 
-    // 6. Canvas 初始化
+    // 5. Canvas 初始化
     const canvas = document.getElementById('certificate-canvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
 
-    // 7. 生成预览按钮
+    // 6. 生成预览按钮
     const imprintBtn = document.getElementById('imprint-button');
     if (imprintBtn) {
         imprintBtn.addEventListener('click', async () => {
             const text = legacyText.value.trim();
             if (!text) {
-                alert("Please write something first.");
+                alert("The vault cannot be sealed empty. Please write something.");
                 return;
             }
             
-            document.getElementById('loading-overlay').classList.remove('hidden');
+            imprintBtn.innerText = "ENCRYPTING DATA...";
             
             try {
-                await drawCertificate(text, true); // true = 带水印预览
-                document.getElementById('input-section').classList.add('hidden');
-                document.getElementById('result-section').classList.remove('hidden');
+                await drawCertificate(text, true); // true = 预览模式
+                document.getElementById('input-section').style.display = 'none';
+                document.getElementById('result-section').style.display = 'block';
+                document.getElementById('result-section').classList.remove('hidden'); 
                 window.scrollTo(0, 0);
             } catch (err) {
-                alert("Error loading background image. Please check your assets/ folder.");
+                alert("System Error: Assets missing. Please check connection.");
                 console.error(err);
             } finally {
-                document.getElementById('loading-overlay').classList.add('hidden');
+                imprintBtn.innerText = "GENERATE PREVIEW";
             }
         });
     }
 
-    // 8. 绘制证书函数
+    // 7. 绘制证书核心函数
     async function drawCertificate(text, isPreview) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -158,30 +172,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.font = 'bold 110px Cinzel, serif';
                 ctx.fillText(theme.certificateTitle, 1500, 480);
                 
-                // 绘制正文
+                // 绘制正文 (自动换行)
                 ctx.fillStyle = theme.textColor;
                 ctx.font = '65px Inter, sans-serif';
                 wrapText(ctx, text, 1500, 850, 2100, 100);
 
                 // 绘制日期
                 const date = new Date().toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                    year: 'numeric', month: 'long', day: 'numeric' 
                 });
                 ctx.fillStyle = theme.fontColor;
                 ctx.font = '40px Inter, sans-serif';
                 ctx.fillText(`Sealed on ${date}`, 1500, 1720);
 
-                // 如果是预览，添加水印
+                // 预览水印
                 if (isPreview) {
                     ctx.save();
                     ctx.globalAlpha = 0.2;
-                    ctx.fillStyle = '#ff0000';
+                    ctx.fillStyle = '#ff0000'; // 警示红水印
                     ctx.font = 'bold 300px sans-serif';
                     ctx.translate(1500, 1000);
                     ctx.rotate(-Math.PI / 6);
-                    ctx.fillText('SAMPLE', 0, 0);
+                    ctx.fillText('PREVIEW MODE', 0, 0);
                     ctx.restore();
                 }
                 
@@ -193,8 +205,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 9. 文字换行函数
+    // 8. 文字自动换行处理
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        // 简单判断中英文，优化断行体验
         const isChinese = /[\u4e00-\u9fa5]/.test(text);
         const words = isChinese ? text.split('') : text.split(' ');
         let line = '';
@@ -212,65 +225,48 @@ document.addEventListener('DOMContentLoaded', () => {
         context.fillText(line.trim(), x, y);
     }
 
-    // 10. License 验证按钮
+    // 9. License 验证 (MVP 软验证)
     const verifyBtn = document.getElementById('verify-license-button');
     if (verifyBtn) {
         verifyBtn.addEventListener('click', async () => {
             const key = document.getElementById('license-key-input').value.trim();
             
-            if (key.length < 8) {
-                alert("Invalid Key. Please check your email.");
+            // 简单的长度检查，不发请求，保护无后端逻辑
+            if (key.length < 5) {
+                alert("Invalid Access Key.");
                 return;
             }
 
             verifyBtn.innerText = "VERIFYING...";
             verifyBtn.disabled = true;
 
-            // 模拟验证延迟
+            // 模拟区块链验证延迟 (Product Theatre)
             setTimeout(async () => {
                 try {
                     await drawCertificate(legacyText.value, false); // false = 无水印
-                    document.getElementById('license-section').classList.add('hidden');
+                    document.getElementById('unlock-section').style.display = 'block';
                     document.getElementById('unlock-section').classList.remove('hidden');
                     
-                    // 播放成功音效（可选）
-                    try {
-                        const chime = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
-                        chime.play();
-                    } catch (e) {
-                        console.log('Audio playback failed:', e);
-                    }
-                    
-                    alert("✨ SUCCESS! UNLOCKED ✨");
+                    alert("✨ ACCESS GRANTED: Legacy Asset Unlocked.");
                 } catch (err) {
-                    alert("Error generating certificate. Please try again.");
                     console.error(err);
+                    alert("Error generating asset. Please retry.");
                 } finally {
                     verifyBtn.innerText = "UNLOCK";
                     verifyBtn.disabled = false;
                 }
-            }, 1500);
+            }, 1200);
         });
     }
 
-    // 11. 下载带水印预览
-    const downloadWatermarkedBtn = document.getElementById('download-watermarked-button');
-    if (downloadWatermarkedBtn) {
-        downloadWatermarkedBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const link = document.createElement('a');
-            link.download = 'Preview_Sample.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
-    }
-
-    // 12. 下载完整版（无水印）
+    // 10. 最终下载
     const downloadFullBtn = document.getElementById('download-full-button');
     if (downloadFullBtn) {
         downloadFullBtn.addEventListener('click', () => {
             const link = document.createElement('a');
-            link.download = 'Legacy_Certificate_Full.png';
+            // 生成带时间戳的文件名，增加存档感
+            const timestamp = new Date().toISOString().slice(0,10);
+            link.download = `EchoBox_Legacy_${timestamp}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
         });

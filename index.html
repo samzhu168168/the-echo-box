@@ -3,261 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Echo Box - Seal Your Legacy Forever</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>The Echo Box - Secure Your Legacy</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-echobox">
     
-    <!-- 限时优惠横幅 -->
     <div class="price-banner">
-        🔥 <strong>LAUNCH SPECIAL:</strong> $9.99 (50% OFF) • Limited to First 100 Buyers
+        ⚠️ <strong>PROTOCOL 2026 ACTIVE:</strong> Secure your emotional assets before the network fragments.
     </div>
 
     <div class="container">
         
-        <!-- 头部 -->
+        <!-- 头部：直击灵魂 -->
         <header class="hero-header">
-            <h1 class="hero-title">The Echo Box</h1>
-            <p class="hero-subtitle">Leave an echo, not just a memory.</p>
+            <span class="hero-warning">THE TIME CAPSULE CHALLENGE</span>
+            <h1 class="hero-title">
+                IF THE INTERNET GOES DARK TOMORROW,<br>
+                <span class="text-highlight">WHAT WILL THEY REMEMBER?</span>
+            </h1>
             <p class="hero-description">
-                Your words, immortalized in museum-quality certificates.<br>
-                Because some messages deserve to outlive us.
+                Don't let your voice be the one thing they lose.<br>
+                Mint your emotional legacy into an immutable Digital Vault.
             </p>
+
+            <!-- 动态人气计数器 -->
+            <div class="social-proof">
+                <div id="legacy-counter" class="counter-box">1,247</div>
+                <span class="proof-label">LEGACIES MINTED GLOBALLY</span>
+            </div>
         </header>
 
-        <!-- 社会证明 -->
-        <div class="social-proof">
-            <div class="proof-item">
-                <span class="proof-number">1,247</span>
-                <span class="proof-label">Legacies Created</span>
-            </div>
-            <div class="proof-divider"></div>
-            <div class="proof-item">
-                <span class="proof-number">4.9★</span>
-                <span class="proof-label">Average Rating</span>
-            </div>
-            <div class="proof-divider"></div>
-            <div class="proof-item">
-                <span class="proof-number">🔥 Hot</span>
-                <span class="proof-label">Top Product</span>
-            </div>
-        </div>
-
-        <!-- 场景选择 -->
+        <!-- 核心单品：The Echo Box -->
         <section class="scenes-section">
-            <h2 class="section-title">Choose Your Scene</h2>
-            <p class="section-subtitle">Each scene has its own style and purpose</p>
-            
-            <div class="scene-cards">
-                
-                <!-- FutureBloom -->
-                <div class="scene-card" data-scene="futurebloom">
-                    <div class="card-badge">For Parents</div>
-                    <div class="card-image-wrapper">
-                        <img src="assets/bg-cyber.png" alt="FutureBloom" class="card-image">
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">FutureBloom</h3>
-                        <p class="card-description">A letter to your child's 18th birthday.</p>
-                        <ul class="card-features">
-                            <li>✨ Cyberpunk style</li>
-                            <li>💙 Cool cyan tones</li>
-                            <li>🎓 Coming-of-age theme</li>
-                        </ul>
-                        <button class="card-button" onclick="selectScene('futurebloom')">
-                            SELECT THIS SCENE →
-                        </button>
-                    </div>
+            <div class="scene-card featured-card">
+                <div class="card-badge">🏆 GOLD STANDARD</div>
+                <div class="card-image-wrapper">
+                    <!-- 务必替换这里的图片 -->
+                    <img src="assets/bg-gold.png" alt="The Echo Box" class="card-image">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">The Echo Box: Gold Edition</h3>
+                    <p class="card-description">
+                        For those who need to leave a mark that lasts. 
+                        <strong>Museum-grade encryption standard.</strong>
+                    </p>
+                    
+                    <ul class="trust-list">
+                        <li>🔒 <strong>Zero-Knowledge Encryption:</strong> We never see your data.</li>
+                        <li>🔑 <strong>Self-Custody Key:</strong> Only you hold the treasure.</li>
+                        <li>📜 <strong>Archival Grade:</strong> Designed to last 100+ years.</li>
+                    </ul>
+
+                    <button class="card-button" onclick="selectScene('echobox')">
+                        MINT YOUR LEGACY ($9.99) →
+                    </button>
+                </div>
+            </div>
+
+            <!-- 次要场景 (不干扰主决策) -->
+            <div class="secondary-scenes">
+                <!-- FutureBloom (Updated Copy) -->
+                <div class="secondary-card" onclick="selectScene('futurebloom')">
+                    <h4 style="color: #00FFFF; margin-bottom: 0.5rem;">FutureBloom</h4>
+                    <p style="font-size: 0.85rem; color: #888; margin-bottom: 1rem;">The 18-Year Promise for Parents</p>
+                    <button class="card-button secondary-btn">SECURE FOR CHILD</button>
                 </div>
 
                 <!-- LoveScribe -->
-                <div class="scene-card" data-scene="lovescribe">
-                    <div class="card-badge">For Lovers</div>
-                    <div class="card-image-wrapper">
-                        <img src="assets/bg-vintage.png" alt="LoveScribe" class="card-image">
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">LoveScribe</h3>
-                        <p class="card-description">Seal your love for the future.</p>
-                        <ul class="card-features">
-                            <li>💌 Vintage romance</li>
-                            <li>🤎 Warm sepia tones</li>
-                            <li>💍 Eternal vows theme</li>
-                        </ul>
-                        <button class="card-button" onclick="selectScene('lovescribe')">
-                            SELECT THIS SCENE →
-                        </button>
-                    </div>
-                </div>
-
-                <!-- The Echo Box (Recommended) -->
-                <div class="scene-card featured-card" data-scene="echobox">
-                    <div class="card-badge popular-badge">🔥 MOST POPULAR</div>
-                    <div class="card-image-wrapper">
-                        <img src="assets/bg-gold.png" alt="The Echo Box" class="card-image">
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">The Echo Box</h3>
-                        <p class="card-description">Leave an echo, not just a memory.</p>
-                        <ul class="card-features">
-                            <li>👑 Luxury gold style</li>
-                            <li>💛 Regal gold tones</li>
-                            <li>📜 Legacy certificate theme</li>
-                        </ul>
-                        <button class="card-button" onclick="selectScene('echobox')">
-                            SELECT THIS SCENE →
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- 成品展示区 -->
-        <section class="showcase-section">
-            <h2 class="section-title">What You'll Get</h2>
-            <p class="section-subtitle">Museum-quality certificates, ready to frame</p>
-            
-            <div class="showcase-grid">
-                <div class="showcase-item">
-                    <img src="assets/framed-sample.png" alt="Framed Certificate" class="showcase-image">
-                    <div class="showcase-caption">
-                        <h4>Frame-Ready Design</h4>
-                        <p>Perfect for 11x17" or A3 frames</p>
-                    </div>
-                </div>
-                
-                <div class="showcase-comparison">
-                    <div class="comparison-side">
-                        <div class="comparison-label bad">❌ Other Products</div>
-                        <ul class="comparison-list">
-                            <li>Generic templates</li>
-                            <li>Low resolution (72dpi)</li>
-                            <li>Basic fonts</li>
-                            <li>No customization</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-divider"></div>
-                    <div class="comparison-side">
-                        <div class="comparison-label good">✅ The Echo Box</div>
-                        <ul class="comparison-list">
-                            <li>Hand-crafted designs</li>
-                            <li>Print quality (300dpi)</li>
-                            <li>Premium typography</li>
-                            <li>Fully personalized</li>
-                        </ul>
-                    </div>
+                <div class="secondary-card" onclick="selectScene('lovescribe')">
+                    <h4 style="color: #A0522D; margin-bottom: 0.5rem;">LoveScribe</h4>
+                    <p style="font-size: 0.85rem; color: #888; margin-bottom: 1rem;">Seal your vows forever</p>
+                    <button class="card-button secondary-btn">SECURE FOR PARTNER</button>
                 </div>
             </div>
         </section>
 
-        <!-- 用户评价 -->
-        <section class="testimonials-section">
-            <h2 class="section-title">What People Are Saying</h2>
-            
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "I wrote a letter to my daughter for her 18th birthday. This is the most meaningful gift I've ever given. Worth every penny."
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>Sarah M.</strong> • Texas
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "My wife cried when she saw the LoveScribe certificate. It's now framed in our living room. Quality is insane."
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>Michael T.</strong> • California
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "I sealed my legacy for my grandchildren. The gold certificate looks stunning. This is art, not just a document."
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>David L.</strong> • Florida
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ -->
-        <section class="faq-section">
-            <h2 class="section-title">Common Questions</h2>
-            
-            <div class="faq-list">
-                <details class="faq-item">
-                    <summary class="faq-question">What exactly do I get?</summary>
-                    <div class="faq-answer">
-                        <p>You get a 3000x2000px high-resolution PNG certificate with your custom message beautifully designed. Perfect for printing at 11x17" or A3 size.</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">Can I print this myself?</summary>
-                    <div class="faq-answer">
-                        <p>Yes! Take the file to any print shop (FedEx Office, Staples, local printers). We recommend 250gsm cardstock or linen paper for best results.</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">Is my message stored anywhere?</summary>
-                    <div class="faq-answer">
-                        <p>No. Everything is processed in your browser. We never see or store your content. Your privacy is absolute.</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">What if I'm not satisfied?</summary>
-                    <div class="faq-answer">
-                        <p>30-day money-back guarantee, no questions asked. Email support@the-echobox.com for instant refund.</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">Can I create multiple certificates?</summary>
-                    <div class="faq-answer">
-                        <p>Each purchase is for one certificate. But you can buy as many as you want (same price).</p>
-                    </div>
-                </details>
-            </div>
-        </section>
-
-        <!-- 最终CTA -->
-        <section class="final-cta">
-            <h2 class="cta-title">Ready to Create Your Legacy?</h2>
-            <p class="cta-subtitle">Join 1,247 people who've already sealed their echo</p>
-            <button class="cta-button" onclick="scrollToScenes()">
-                CHOOSE YOUR SCENE & START →
-            </button>
-            <p class="cta-note">💳 Secure checkout • ⚡ Instant delivery • 💯 30-day guarantee</p>
+        <!-- 信任背书 -->
+        <section style="text-align: center; margin-top: 4rem; border-top: 1px solid #222; padding-top: 2rem;">
+            <p style="color: #666; font-size: 0.9rem;">
+                🛡️ <strong>Swiss Digital Vault Standard:</strong> Local encryption ensures your memories remain private, always.
+            </p>
         </section>
 
     </div>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-        <nav class="footer-nav">
-            <a href="privacy.html">Privacy Policy</a>
-            <span>•</span>
-            <a href="terms.html">Terms of Service</a>
-            <span>•</span>
-            <a href="mailto:support@the-echobox.com">Support</a>
-        </nav>
-        <p class="footer-copyright">© 2026 The Echo Box. All rights reserved.</p>
-    </footer>
 
     <script>
         function selectScene(sceneId) {
@@ -265,27 +94,26 @@
             window.location.href = 'create.html';
         }
 
-        function scrollToScenes() {
-            document.querySelector('.scenes-section').scrollIntoView({ 
-                behavior: 'smooth' 
-            });
+        // 滚动计数器逻辑
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
         }
-
-        // 实时活动模拟
-        const activities = [
-            "Sarah from Texas just created a FutureBloom certificate",
-            "Michael from California sealed a LoveScribe letter",
-            "Emily from New York wrote her legacy",
-            "David from Florida created his Echo Box"
-        ];
-
-        function updateActivity() {
-            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
-            console.log(randomActivity); // 可以显示在页面上
-        }
-
-        setInterval(updateActivity, 8000);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const counter = document.getElementById('legacy-counter');
+            if(counter) {
+                animateValue(counter, 1142, 1247, 2500); // 每次刷新都跑一次数字
+            }
+        });
     </script>
-
 </body>
 </html>
