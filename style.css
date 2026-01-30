@@ -1,0 +1,242 @@
+/* ===================================
+   The Echo Box - 2026 Fire Edition
+   Version: 15.0 (High Conversion)
+   =================================== */
+
+/* ===== 全局变量 ===== */
+:root {
+    --color-primary: #D4AF37;       /* 经典金 */
+    --color-fire: #FF4500;          /* 离火红 (核心转化色) */
+    --color-fire-glow: rgba(255, 69, 0, 0.6);
+    --color-background: #050505;    /* 更深邃的黑 */
+    --color-surface: #141414;
+    --color-text-light: #f0f0f0;
+    --color-text-dark: #888;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Inter', sans-serif;
+    --transition: all 0.3s ease;
+}
+
+/* ===== 基础重置 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: var(--font-body);
+    background: var(--color-background);
+    color: var(--color-text-light);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ===== 焦虑横幅 ===== */
+.price-banner {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background: #000;
+    border-bottom: 2px solid var(--color-fire);
+    color: #fff;
+    padding: 0.8rem;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 20px rgba(255, 69, 0, 0.2);
+}
+
+/* ===== 攻击性 CTA 按钮 (核心修改) ===== */
+.primary-cta, .card-button, .payment-button {
+    background: var(--color-fire) !important;
+    color: #fff !important;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 0 15px var(--color-fire-glow);
+    animation: heartbeat 2s infinite; /* 心跳动画 */
+    letter-spacing: 2px;
+    width: 100%;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.primary-cta:hover, .card-button:hover, .payment-button:hover {
+    background: #ff2a00 !important;
+    transform: scale(1.02);
+    box-shadow: 0 0 30px var(--color-fire-glow);
+}
+
+@keyframes heartbeat {
+    0% { box-shadow: 0 0 0 0 var(--color-fire-glow); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 69, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 69, 0, 0); }
+}
+
+/* ===== 头部样式 ===== */
+.hero-header { text-align: center; padding: 4rem 0 2rem; }
+
+.hero-warning {
+    display: block;
+    color: var(--color-fire);
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.text-highlight { color: var(--color-primary); }
+
+.hero-description {
+    font-size: 1.2rem;
+    color: var(--color-text-dark);
+    max-width: 700px;
+    margin: 0 auto 2rem;
+}
+
+/* ===== 动态计数器 ===== */
+.social-proof {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #333;
+    padding: 1.5rem 3rem;
+    background: #000;
+    margin-bottom: 3rem;
+}
+
+.counter-box {
+    font-family: 'Courier New', monospace;
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.proof-label {
+    font-size: 0.8rem;
+    color: #666;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+}
+
+/* ===== 场景卡片 ===== */
+.scenes-section { margin: 2rem 0; }
+.scene-cards { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+
+.scene-card {
+    background: var(--color-surface);
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.featured-card {
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+}
+
+.card-badge {
+    position: absolute;
+    top: 15px; left: 15px;
+    background: var(--color-fire);
+    color: #fff;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 10;
+}
+
+.card-image-wrapper { height: 250px; overflow: hidden; }
+.card-image { width: 100%; height: 100%; object-fit: cover; }
+.card-content { padding: 2rem; text-align: center; }
+
+.card-title {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.card-description { color: #ccc; margin-bottom: 1.5rem; }
+
+/* ===== 次要场景 (折叠感) ===== */
+.secondary-scenes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+    opacity: 0.9;
+}
+
+.secondary-card {
+    background: #111;
+    border: 1px solid #222;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.secondary-card:hover { border-color: #444; transform: translateY(-5px); }
+.secondary-btn {
+    background: transparent !important;
+    border: 1px solid #444 !important;
+    color: #888 !important;
+    animation: none !important;
+    padding: 0.8rem !important;
+    font-size: 0.8rem;
+}
+.secondary-btn:hover { border-color: #fff !important; color: #fff !important; }
+
+/* ===== 信任背书列表 ===== */
+.trust-list {
+    list-style: none;
+    margin: 2rem 0;
+    text-align: left;
+    display: inline-block;
+}
+.trust-list li { margin-bottom: 0.8rem; color: #ccc; }
+.trust-list strong { color: var(--color-primary); }
+
+/* ===== 输入页样式 ===== */
+.progress-bar { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; color: #666; }
+.active-step { color: var(--color-primary); font-weight: 700; }
+
+textarea {
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    min-height: 200px;
+    font-family: var(--font-body);
+}
+
+textarea:focus { outline: none; border-color: var(--color-primary); }
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+    .hero-title { font-size: 2rem; }
+    .counter-box { font-size: 2rem; }
+}
