@@ -1,6 +1,6 @@
 // ===================================
-// The Echo Box - Core Logic (Final)
-// Version: 16.0 (Zero-Knowledge & Auto-Save)
+// The Echo Box - Core Logic (Final Stable)
+// Version: 17.0 (Local Fix + Auto-Save + Fallback Mode)
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 💡 核心配置
     const DISCOUNT_CODE = 'LPD62M1';
 
-    // 1. 场景配置 (灵魂文案已注入)
+    // 1. 场景配置 (保留v16.0 灵魂文案)
     const SCENES = {
         futurebloom: {
             title: 'FutureBloom: The Promise',
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const charCountEl = document.getElementById('char-count');
 
     // ============================================================
-    // 🛡️ 核心升级：LocalStorage 自动存档 (无数据库解决方案)
+    // 🛡️ 核心功能：LocalStorage 自动存档 (无数据库解决方案)
     // ============================================================
     const DRAFT_KEY = 'echo_draft_' + selectedSceneId;
 
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. 模板按钮委托 (点击模板也会自动保存)
+    // 4. 模板按钮委托
     document.addEventListener('click', (e) => {
         if(e.target.matches('[data-template]')) {
              if (legacyText) {
@@ -145,130 +145,92 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('result-section').classList.remove('hidden'); 
                 window.scrollTo(0, 0);
             } catch (err) {
-                alert("System Error: Assets missing. Please check connection.");
                 console.error(err);
+                // 即使报错也不要阻断流程，drawCertificate 内部已经做了兜底
             } finally {
                 imprintBtn.innerText = "GENERATE PREVIEW";
             }
         });
     }
 
-    // 7. 绘制证书核心函数
+    // ============================================================
+    // 🛠️ 绘制核心 (修复了本地报错 & 增加了无图兜底)
+    // ============================================================
     async function drawCertificate(text, isPreview) {
         return new Promise((resolve, reject) => {
             const img = new Image();
-            img.crossOrigin = "anonymous";
+            
+            // ❌ 移除了 crossOrigin，解决 file:// 协议下的报错问题
+            // img.crossOrigin = "anonymous"; 
             
             img.onload = () => {
-                // 清空画布
+                // 1. 清空画布
                 ctx.clearRect(0, 0, 3000, 2000);
-                
-                // 绘制背景
+                // 2. 绘制背景
                 ctx.drawImage(img, 0, 0, 3000, 2000);
-                
-                // 绘制标题
-                ctx.textAlign = 'center';
-                ctx.fillStyle = theme.fontColor;
-                ctx.font = 'bold 110px Cinzel, serif';
-                ctx.fillText(theme.certificateTitle, 1500, 480);
-                
-                // 绘制正文 (自动换行)
-                ctx.fillStyle = theme.textColor;
-                ctx.font = '65px Inter, sans-serif';
-                wrapText(ctx, text, 1500, 850, 2100, 100);
-
-                // 绘制日期
-                const date = new Date().toLocaleDateString('en-US', { 
-                    year: 'numeric', month: 'long', day: 'numeric' 
-                });
-                ctx.fillStyle = theme.fontColor;
-                ctx.font = '40px Inter, sans-serif';
-                ctx.fillText(`Sealed on ${date}`, 1500, 1720);
-
-                // 预览水印
-                if (isPreview) {
-                    ctx.save();
-                    ctx.globalAlpha = 0.2;
-                    ctx.fillStyle = '#ff0000'; // 警示红水印
-                    ctx.font = 'bold 300px sans-serif';
-                    ctx.translate(1500, 1000);
-                    ctx.rotate(-Math.PI / 6);
-                    ctx.fillText('PREVIEW MODE', 0, 0);
-                    ctx.restore();
-                }
-                
+                // 3. 绘制文字内容
+                drawTextContent(text, isPreview);
                 resolve();
             };
             
-            img.onerror = reject;
+            img.onerror = () => {
+                console.warn("System Warning: Background assets missing. Using fallback secure vault style.");
+                
+                // ⚠️ 兜底方案：如果没有图片，绘制纯黑金风格背景
+                ctx.fillStyle = '#0a0a0a'; // 深黑背景
+                ctx.fillRect(0, 0, 3000, 2000);
+                
+                // 绘制边框
+                ctx.strokeStyle = theme.fontColor;
+                ctx.lineWidth = 20;
+                ctx.strokeRect(50, 50, 2900, 1900);
+                ctx.lineWidth = 5;
+                ctx.strokeRect(80, 80, 2840, 1840);
+
+                // 绘制文字内容
+                drawTextContent(text, isPreview);
+                resolve(); // 强制标记为成功，不弹错误窗
+            };
+            
+            // 尝试加载图片
             img.src = theme.templateImage;
         });
     }
 
+    // 辅助函数：统一绘制文字
+    function drawTextContent(text, isPreview) {
+        // 绘制标题
+        ctx.textAlign = 'center';
+        ctx.fillStyle = theme.fontColor;
+        ctx.font = 'bold 110px Cinzel, serif';
+        ctx.fillText(theme.certificateTitle, 1500, 480);
+        
+        // 绘制正文 (自动换行)
+        ctx.fillStyle = theme.textColor;
+        ctx.font = '65px Inter, sans-serif';
+        wrapText(ctx, text, 1500, 850, 2100, 100);
+
+        // 绘制日期
+        const date = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'long', day: 'numeric' 
+        });
+        ctx.fillStyle = theme.fontColor;
+        ctx.font = '40px Inter, sans-serif';
+        ctx.fillText(`Sealed on ${date}`, 1500, 1720);
+
+        // 预览水印
+        if (isPreview) {
+            ctx.save();
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = '#ff0000'; // 警示红水印
+            ctx.font = 'bold 300px sans-serif';
+            ctx.translate(1500, 1000);
+            ctx.rotate(-Math.PI / 6);
+            ctx.fillText('PREVIEW MODE', 0, 0);
+            ctx.restore();
+        }
+    }
+
     // 8. 文字自动换行处理
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
-        // 简单判断中英文，优化断行体验
-        const isChinese = /[\u4e00-\u9fa5]/.test(text);
-        const words = isChinese ? text.split('') : text.split(' ');
-        let line = '';
-        
-        for (let n = 0; n < words.length; n++) {
-            let testLine = line + words[n] + (isChinese ? '' : ' ');
-            if (context.measureText(testLine).width > maxWidth && n > 0) {
-                context.fillText(line.trim(), x, y);
-                line = words[n] + (isChinese ? '' : ' ');
-                y += lineHeight;
-            } else {
-                line = testLine;
-            }
-        }
-        context.fillText(line.trim(), x, y);
-    }
-
-    // 9. License 验证 (MVP 软验证)
-    const verifyBtn = document.getElementById('verify-license-button');
-    if (verifyBtn) {
-        verifyBtn.addEventListener('click', async () => {
-            const key = document.getElementById('license-key-input').value.trim();
-            
-            // 简单的长度检查，不发请求，保护无后端逻辑
-            if (key.length < 5) {
-                alert("Invalid Access Key.");
-                return;
-            }
-
-            verifyBtn.innerText = "VERIFYING...";
-            verifyBtn.disabled = true;
-
-            // 模拟区块链验证延迟 (Product Theatre)
-            setTimeout(async () => {
-                try {
-                    await drawCertificate(legacyText.value, false); // false = 无水印
-                    document.getElementById('unlock-section').style.display = 'block';
-                    document.getElementById('unlock-section').classList.remove('hidden');
-                    
-                    alert("✨ ACCESS GRANTED: Legacy Asset Unlocked.");
-                } catch (err) {
-                    console.error(err);
-                    alert("Error generating asset. Please retry.");
-                } finally {
-                    verifyBtn.innerText = "UNLOCK";
-                    verifyBtn.disabled = false;
-                }
-            }, 1200);
-        });
-    }
-
-    // 10. 最终下载
-    const downloadFullBtn = document.getElementById('download-full-button');
-    if (downloadFullBtn) {
-        downloadFullBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            // 生成带时间戳的文件名，增加存档感
-            const timestamp = new Date().toISOString().slice(0,10);
-            link.download = `EchoBox_Legacy_${timestamp}.png`;
-            link.href = canvas.toDataURL('image/png', 1.0);
-            link.click();
-        });
-    }
-});
+        c
