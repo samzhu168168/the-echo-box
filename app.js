@@ -1,6 +1,6 @@
 // ===================================
-// The Echo Box - Core Logic (Final Stable)
-// Version: 17.1 (FIXED - Complete Edition)
+// The Echo Box - Core Logic (Simplified Fix)
+// Version: 17.5 (3 Separate Products - Clean Cart)
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 💡 核心配置
     const DISCOUNT_CODE = 'LPD62M1';
 
-    // 1. 场景配置 (保留v16.0 灵魂文案)
+    // 1. 场景配置 - 每个场景对应一个独立的 Gumroad 产品
     const SCENES = {
         futurebloom: {
             title: 'FutureBloom: The Promise',
@@ -82,13 +82,18 @@ document.addEventListener('DOMContentLoaded', () => {
         legacyText.placeholder = theme.placeholder;
     }
     
+    // ⚡ 关键优化：使用当前场景的链接
     const paymentLink = document.getElementById('payment-link');
-    if (paymentLink) paymentLink.href = theme.gumroadLink;
+    if (paymentLink) {
+        paymentLink.href = theme.gumroadLink;
+        paymentLink.target = '_blank';
+        paymentLink.rel = 'noopener noreferrer';
+    }
 
     const charCountEl = document.getElementById('char-count');
 
     // ============================================================
-    // 🛡️ 核心功能：LocalStorage 自动存档 (无数据库解决方案)
+    // 🛡️ 核心功能：LocalStorage 自动存档
     // ============================================================
     const DRAFT_KEY = 'echo_draft_' + selectedSceneId;
 
@@ -98,13 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedDraft) {
             legacyText.value = savedDraft;
             if (charCountEl) charCountEl.textContent = `${savedDraft.length}/500`;
-            console.log("System: Draft restored from local vault.");
+            console.log("✅ System: Draft restored from local vault.");
         }
 
         // B. 输入时：实时保存
         legacyText.addEventListener('input', () => {
             const currentText = legacyText.value;
-            localStorage.setItem(DRAFT_KEY, currentText); // 存入浏览器
+            localStorage.setItem(DRAFT_KEY, currentText);
             if (charCountEl) charCountEl.textContent = `${currentText.length}/500`;
         });
     }
@@ -115,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
              if (legacyText) {
                 const newText = theme.templates[e.target.dataset.template];
                 legacyText.value = newText;
-                localStorage.setItem(DRAFT_KEY, newText); // 保存模板内容
+                localStorage.setItem(DRAFT_KEY, newText);
                 if(charCountEl) charCountEl.textContent = `${newText.length}/500`;
                 legacyText.focus();
             }
@@ -132,21 +137,22 @@ document.addEventListener('DOMContentLoaded', () => {
         imprintBtn.addEventListener('click', async () => {
             const text = legacyText.value.trim();
             if (!text) {
-                alert("The vault cannot be sealed empty. Please write something.");
+                alert("⚠️ The vault cannot be sealed empty. Please write something.");
                 return;
             }
             
-            imprintBtn.innerText = "ENCRYPTING DATA...";
+            imprintBtn.innerText = "⚙️ ENCRYPTING DATA...";
             imprintBtn.disabled = true;
             
             try {
-                await drawCertificate(text, true); // true = 预览模式
+                await drawCertificate(text, true);
                 document.getElementById('input-section').style.display = 'none';
                 document.getElementById('result-section').style.display = 'block';
                 document.getElementById('result-section').classList.remove('hidden'); 
                 window.scrollTo(0, 0);
+                console.log("✅ Certificate preview generated successfully");
             } catch (err) {
-                console.error("Certificate generation error:", err);
+                console.error("❌ Certificate generation error:", err);
                 alert("System warning: Certificate preview generated with fallback styling.");
             } finally {
                 imprintBtn.innerText = "GENERATE PREVIEW";
@@ -156,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // 🛠️ 绘制核心 (修复了本地报错 & 增加了无图兜底)
+    // 🛠️ 绘制核心函数
     // ============================================================
     async function drawCertificate(text, isPreview) {
         if (!canvas || !ctx) {
@@ -166,16 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Promise((resolve, reject) => {
             const img = new Image();
             
-            // ❌ 移除了 crossOrigin，解决 file:// 协议下的报错问题
-            // img.crossOrigin = "anonymous"; 
-            
             img.onload = () => {
                 try {
-                    // 1. 清空画布
                     ctx.clearRect(0, 0, 3000, 2000);
-                    // 2. 绘制背景
                     ctx.drawImage(img, 0, 0, 3000, 2000);
-                    // 3. 绘制文字内容
                     drawTextContent(text, isPreview);
                     resolve();
                 } catch (err) {
@@ -185,48 +185,40 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             img.onerror = () => {
-                console.warn("System Warning: Background assets missing. Using fallback secure vault style.");
+                console.warn("⚠️ Background image missing. Using fallback style.");
                 
                 try {
-                    // ⚠️ 兜底方案：如果没有图片，绘制纯黑金风格背景
-                    ctx.fillStyle = '#0a0a0a'; // 深黑背景
+                    ctx.fillStyle = '#0a0a0a';
                     ctx.fillRect(0, 0, 3000, 2000);
                     
-                    // 绘制边框
                     ctx.strokeStyle = theme.fontColor;
                     ctx.lineWidth = 20;
                     ctx.strokeRect(50, 50, 2900, 1900);
                     ctx.lineWidth = 5;
                     ctx.strokeRect(80, 80, 2840, 1840);
 
-                    // 绘制文字内容
                     drawTextContent(text, isPreview);
-                    resolve(); // 强制标记为成功，不弹错误窗
+                    resolve();
                 } catch (err) {
                     console.error("Fallback drawing error:", err);
                     reject(err);
                 }
             };
             
-            // 尝试加载图片
             img.src = theme.templateImage;
         });
     }
 
-    // 辅助函数：统一绘制文字
     function drawTextContent(text, isPreview) {
-        // 绘制标题
         ctx.textAlign = 'center';
         ctx.fillStyle = theme.fontColor;
         ctx.font = 'bold 110px Cinzel, serif';
         ctx.fillText(theme.certificateTitle, 1500, 480);
         
-        // 绘制正文 (自动换行)
         ctx.fillStyle = theme.textColor;
         ctx.font = '65px Inter, sans-serif';
         wrapText(ctx, text, 1500, 850, 2100, 100);
 
-        // 绘制日期
         const date = new Date().toLocaleDateString('en-US', { 
             year: 'numeric', month: 'long', day: 'numeric' 
         });
@@ -234,11 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = '40px Inter, sans-serif';
         ctx.fillText(`Sealed on ${date}`, 1500, 1720);
 
-        // 预览水印
         if (isPreview) {
             ctx.save();
             ctx.globalAlpha = 0.2;
-            ctx.fillStyle = '#ff0000'; // 警示红水印
+            ctx.fillStyle = '#ff0000';
             ctx.font = 'bold 300px sans-serif';
             ctx.translate(1500, 1000);
             ctx.rotate(-Math.PI / 6);
@@ -247,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 8. 文字自动换行处理
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
         const words = text.split(' ');
         let line = '';
@@ -268,13 +258,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         lineArray.push(line);
 
-        // 绘制每一行
         for (let k = 0; k < lineArray.length; k++) {
             context.fillText(lineArray[k], x, y + (k * lineHeight));
         }
     }
 
-    // 9. License Key 验证逻辑
+    // ============================================================
+    // 🔑 License Key 验证
+    // ============================================================
     const verifyBtn = document.getElementById('verify-license-button');
     const licenseInput = document.getElementById('license-key-input');
     const unlockSection = document.getElementById('unlock-section');
@@ -283,9 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         verifyBtn.addEventListener('click', () => {
             const key = licenseInput.value.trim().toUpperCase();
             
-            // 简单验证逻辑（实际应该对接后端）
             if (key.startsWith('ECHO-') && key.length >= 10) {
-                // 解锁成功
                 if (unlockSection) {
                     unlockSection.style.display = 'block';
                     unlockSection.classList.remove('hidden');
@@ -293,19 +282,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 licenseInput.disabled = true;
                 verifyBtn.disabled = true;
                 verifyBtn.innerText = '✅ VERIFIED';
+                console.log("✅ License key verified");
             } else {
                 alert('⚠️ INVALID KEY: Please check your license code.');
             }
         });
     }
 
-    // 10. 下载最终版本按钮
+    // ============================================================
+    // ⬇️ 下载功能
+    // ============================================================
     const downloadBtn = document.getElementById('download-full-button');
     if (downloadBtn) {
         downloadBtn.addEventListener('click', async () => {
             const text = legacyText.value.trim();
             if (!text) {
-                alert("Cannot download empty certificate.");
+                alert("⚠️ Cannot download empty certificate.");
                 return;
             }
 
@@ -313,21 +305,20 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadBtn.disabled = true;
 
             try {
-                // 绘制无水印版本
                 await drawCertificate(text, false);
                 
-                // 转换为下载链接
                 canvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `EchoBox-Legacy-${Date.now()}.png`;
+                    a.download = `EchoBox-${selectedSceneId}-${Date.now()}.png`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                     
                     downloadBtn.innerText = "✅ DOWNLOAD COMPLETE";
+                    console.log("✅ Certificate downloaded successfully");
                     
                     setTimeout(() => {
                         downloadBtn.innerText = "⬇️ DOWNLOAD MASTER FILE";
@@ -336,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 'image/png');
 
             } catch (err) {
-                console.error("Download error:", err);
+                console.error("❌ Download error:", err);
                 alert("Download failed. Please try again.");
                 downloadBtn.innerText = "⬇️ DOWNLOAD MASTER FILE";
                 downloadBtn.disabled = false;
