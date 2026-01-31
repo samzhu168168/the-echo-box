@@ -1,5 +1,6 @@
 /**
- * ECHO BOX ENGINE - FINAL LINK FIX
+ * ECHO BOX ENGINE - FINAL OPTIMIZED VERSION
+ * 修复内容：链接跳转异常、场景绑定、按钮点击事件
  */
 
 // --- 1. 配置中心 ---
@@ -22,6 +23,17 @@ let currentTargetUrl = "https://samzhu168.gumroad.com/l/sapjbm";
 document.addEventListener('DOMContentLoaded', () => {
     animateCounter();
     restoreData();
+
+    // 【重要修复】绑定按钮点击事件
+    // HTML 中没有 onclick，必须在这里绑定，否则按钮无效
+    const btns = document.querySelectorAll('.t-btn');
+    btns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 获取按钮上的 data-type (crypto, bank, love)
+            const type = this.getAttribute('data-type');
+            applyTemplate(type);
+        });
+    });
 });
 
 
@@ -34,12 +46,13 @@ function applyTemplate(type) {
     if (contentBox) contentBox.value = TEMPLATES[type] || "";
     
     // B. **关键修复：根据类型，直接死锁目标 URL**
+    // 确保 Crypto 和 Bank 都指向 sapjbm，Love 指向 lwjqot
     if (type === 'love') {
         // 情侣 -> LoveScribe
         currentTargetUrl = "https://samzhu168.gumroad.com/l/lwjqot";
     } 
     else if (type === 'family') {
-        // 家庭 -> FutureBloom (如果HTML有这按钮的话)
+        // 家庭 -> FutureBloom (预留)
         currentTargetUrl = "https://samzhu168.gumroad.com/l/ntcaif";
     } 
     else {
@@ -47,27 +60,22 @@ function applyTemplate(type) {
         currentTargetUrl = "https://samzhu168.gumroad.com/l/sapjbm";
     }
     
-    console.log("✅ Target URL updated to:", currentTargetUrl); // 调试
+    console.log("✅ Target URL updated to:", currentTargetUrl); 
     
     // C. 更新 UI
     syncPreview();
     
-    // D. 按钮高亮 - 移除了会崩溃的 event.target，改用 try-catch 兜底
-    try {
-        const btns = document.querySelectorAll('.t-btn');
-        btns.forEach(btn => {
+    // D. 按钮高亮 (优化版：通过 data-type 精确匹配，更稳定)
+    const btns = document.querySelectorAll('.t-btn');
+    btns.forEach(btn => {
+        if (btn.getAttribute('data-type') === type) {
+            btn.style.borderColor = '#D4AF37';
+            btn.style.color = '#D4AF37';
+        } else {
             btn.style.borderColor = '#333';
             btn.style.color = '#ccc';
-        });
-        // 如果 onclick 方式调用，event 可能存在
-        if (typeof event !== 'undefined' && event && event.target) {
-            event.target.style.borderColor = '#D4AF37';
-            event.target.style.color = '#D4AF37';
         }
-    } catch (e) {
-        // 静默失败，不影响核心功能
-        console.log("Button highlight failed (non-critical):", e);
-    }
+    });
 }
 
 
@@ -90,7 +98,6 @@ function handlePaymentClick() {
     }
 
     console.log("🚀 Opening:", finalUrl);
-    console.log("   (Should be ONE of: sapjbm/lwjqot/ntcaif + /launch)");
 
     // 保存并跳转
     localStorage.setItem('echo_to', document.getElementById('input-to').value);
@@ -105,7 +112,7 @@ function handlePaymentClick() {
 }
 
 
-// --- 6. 其他辅助功能 (保持不变) ---
+// --- 6. 其他辅助功能 ---
 function syncPreview() {
     const to = document.getElementById('input-to').value;
     const content = document.getElementById('input-content').value;
