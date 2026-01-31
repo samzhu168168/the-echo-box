@@ -2,118 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Echo Box - Secure Your Legacy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="theme-echobox">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Echo Box | The Digital Legacy Vault</title>
     
-    <div class="price-banner">
-        ⚠️ <strong>PROTOCOL 2026 ACTIVE:</strong> Secure your emotional assets before the network fragments.
+    <!-- SEO & Social Meta -->
+    <meta name="description" content="Join 12,000+ others securing their digital legacy. create your encrypted time capsule today.">
+    <meta property="og:image" content="bg-gold.png">
+    
+    <!-- 样式库 -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    
+    <!-- 顶部通告栏 (FOMO 制造机) -->
+    <div class="top-bar">
+        <p><i class="fa-solid fa-earth-americas"></i> <span id="global-counter">12,492</span> Legacies Sealed Globally. <span class="pulse">● Live</span></p>
     </div>
 
-    <div class="container">
+    <div class="container main-layout">
         
-        <!-- 头部：直击灵魂 -->
-        <header class="hero-header">
-            <span class="hero-warning">THE TIME CAPSULE CHALLENGE</span>
-            <h1 class="hero-title">
-                IF THE INTERNET GOES DARK TOMORROW,<br>
-                <span class="text-highlight">WHAT WILL THEY REMEMBER?</span>
-            </h1>
-            <p class="hero-description">
-                Don't let your voice be the one thing they lose.<br>
-                Mint your emotional legacy into an immutable Digital Vault.
-            </p>
+        <!-- 左侧/上方：交互区 -->
+        <div class="interaction-area">
+            <header class="header">
+                <div class="logo"><i class="fa-solid fa-box-open"></i> Echo Box</div>
+                <h1 id="dynamic-headline">The Missing Half of <br><span class="gold-text">Apple Legacy Contact.</span></h1>
+                <p class="subtitle">Don't leave them guessing. Leave them a map.</p>
+            </header>
 
-            <!-- 动态人气计数器 -->
-            <div class="social-proof">
-                <div id="legacy-counter" class="counter-box">1,247</div>
-                <span class="proof-label">LEGACIES MINTED GLOBALLY</span>
+            <!-- 核心功能：输入 -->
+            <div id="step-create" class="input-card">
+                
+                <!-- 模板选择 -->
+                <div class="template-selector">
+                    <p class="label">Choose your legacy type:</p>
+                    <div class="btn-group">
+                        <button class="t-btn" onclick="applyTemplate('crypto')">💰 Crypto</button>
+                        <button class="t-btn" onclick="applyTemplate('bank')">🏦 Bank</button>
+                        <button class="t-btn" onclick="applyTemplate('love')">❤️ Love</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>To:</label>
+                    <input type="text" id="input-to" placeholder="e.g. My Daughter" oninput="updatePreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>Message / Map:</label>
+                    <textarea id="input-content" rows="6" placeholder="Start typing... Watch your legacy form on the right ->" oninput="updatePreview()"></textarea>
+                    <p class="privacy-tip"><i class="fa-solid fa-shield-cat"></i> Tip: Don't write passwords. Write <b>where</b> to find them.</p>
+                </div>
+
+                <!-- 支付按钮 -->
+                <button id="pay-btn" onclick="handlePaymentClick()">
+                    <div class="btn-text">
+                        <i class="fa-solid fa-fingerprint"></i> Seal For Eternity
+                    </div>
+                    <div class="btn-price">
+                        <s>$49.99</s> $19.99
+                    </div>
+                </button>
+
+                <p class="login-link">Already have a key? <a href="#" onclick="toggleUnlock()">Unlock Here</a></p>
             </div>
-        </header>
 
-        <!-- 核心单品：The Echo Box -->
-        <section class="scenes-section">
-            <div class="scene-card featured-card">
-                <div class="card-badge">🏆 GOLD STANDARD</div>
-                <div class="card-image-wrapper">
-                    <!-- 务必替换这里的图片 -->
-                    <img src="assets/bg-gold.png" alt="The Echo Box" class="card-image">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">The Echo Box: Gold Edition</h3>
-                    <p class="card-description">
-                        For those who need to leave a mark that lasts. 
-                        <strong>Museum-grade encryption standard.</strong>
-                    </p>
-                    
-                    <ul class="trust-list">
-                        <li>🔒 <strong>Zero-Knowledge Encryption:</strong> We never see your data.</li>
-                        <li>🔑 <strong>Self-Custody Key:</strong> Only you hold the treasure.</li>
-                        <li>📜 <strong>Archival Grade:</strong> Designed to last 100+ years.</li>
-                    </ul>
-
-                    <button class="card-button" onclick="selectScene('echobox')">
-                        MINT YOUR LEGACY ($9.99) →
-                    </button>
-                </div>
+            <!-- 解锁区域 (默认隐藏) -->
+            <div id="step-unlock" class="input-card hidden">
+                <h2><i class="fa-solid fa-key"></i> Reveal Legacy</h2>
+                <input type="text" id="license-key" placeholder="Enter License Key from Email">
+                <button class="action-btn" onclick="verifyAndDownload()">Verify & Download</button>
+                <p class="login-link"><a href="#" onclick="toggleUnlock()">Back</a></p>
             </div>
+        </div>
 
-            <!-- 次要场景 (不干扰主决策) -->
-            <div class="secondary-scenes">
-                <!-- FutureBloom (Updated Copy) -->
-                <div class="secondary-card" onclick="selectScene('futurebloom')">
-                    <h4 style="color: #00FFFF; margin-bottom: 0.5rem;">FutureBloom</h4>
-                    <p style="font-size: 0.85rem; color: #888; margin-bottom: 1rem;">The 18-Year Promise for Parents</p>
-                    <button class="card-button secondary-btn">SECURE FOR CHILD</button>
+        <!-- 右侧/下方：实时预览区 (视觉奇观) -->
+        <div class="preview-area">
+            <div class="preview-stage">
+                <!-- 证书实体 -->
+                <div id="live-certificate" class="paper">
+                    <div class="paper-border">
+                        <div class="paper-header">
+                            <i class="fa-solid fa-box-open water-mark"></i>
+                            <h3>CERTIFICATE OF LEGACY</h3>
+                            <div class="paper-id">ID: PENDING-SEAL-2026</div>
+                        </div>
+                        <div class="paper-body">
+                            <p class="p-label">Beneficiary:</p>
+                            <h2 id="preview-to" class="handwritten">...</h2>
+                            <div class="separator"></div>
+                            <p class="p-label">The Digital Will:</p>
+                            <p id="preview-content" class="typewriter">Your legacy will appear here as you type...</p>
+                        </div>
+                        <div class="paper-footer">
+                            <div class="qr-placeholder"><i class="fa-solid fa-qrcode"></i></div>
+                            <div class="seal-stamp">
+                                <div class="seal-inner">
+                                    <i class="fa-solid fa-fingerprint"></i>
+                                    <span>UNSEALED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- LoveScribe -->
-                <div class="secondary-card" onclick="selectScene('lovescribe')">
-                    <h4 style="color: #A0522D; margin-bottom: 0.5rem;">LoveScribe</h4>
-                    <p style="font-size: 0.85rem; color: #888; margin-bottom: 1rem;">Seal your vows forever</p>
-                    <button class="card-button secondary-btn">SECURE FOR PARTNER</button>
-                </div>
+                <p class="preview-note"><i class="fa-solid fa-eye"></i> Live Preview Mode</p>
             </div>
-        </section>
-
-        <!-- 信任背书 -->
-        <section style="text-align: center; margin-top: 4rem; border-top: 1px solid #222; padding-top: 2rem;">
-            <p style="color: #666; font-size: 0.9rem;">
-                🛡️ <strong>Swiss Digital Vault Standard:</strong> Local encryption ensures your memories remain private, always.
-            </p>
-        </section>
+        </div>
 
     </div>
 
-    <script>
-        function selectScene(sceneId) {
-            localStorage.setItem('selectedScene', sceneId);
-            window.location.href = 'create.html';
-        }
+    <!-- 结果展示 (隐藏，打印用) -->
+    <div id="final-result" class="hidden">
+        <!-- JS 会把生成的最终证书放这里 -->
+    </div>
 
-        // 滚动计数器逻辑
-        function animateValue(obj, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const counter = document.getElementById('legacy-counter');
-            if(counter) {
-                animateValue(counter, 1142, 1247, 2500); // 每次刷新都跑一次数字
-            }
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
