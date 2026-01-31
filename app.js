@@ -10,11 +10,9 @@
  *        修复：移除对 event 的依赖，改用 addEventListener + data 属性。
  *
  * [Bug2] Gumroad 的购物车 cookie 绑定在 *.gumroad.com 域级别，
- *        跨窗口共享。之前访问过哪个产品页面，Gumroad 就会把它记在 cookie 里，
- *        下次打开任何 gumroad.com 页面都会自动加回购物车。
- *        window.open 新窗口无法绕过这个机制。
- *        修复：跳转前用一个 confirm 弹窗提醒用户手动清理购物车。
- *        这是在不能修改 Gumroad 后台的前提下，最可靠的前端解决方案。
+ *        跨窗口共享。这是 Gumroad 平台固有机制。
+ *        正常用户首次访问不会遇到。测试期间反复打开不同产品页会累积污染。
+ *        如果遇到购物车里多产品的情况，清空浏览器对 gumroad.com 的 cookie 即可。
  */
 
 // ============================================================
@@ -118,16 +116,7 @@ function buildFinalUrl() {
 }
 
 // ============================================================
-// 8. 支付跳转（修复 Bug2）
-//
-// Gumroad cookie 污染无法通过前端完全清除。
-// 但我们可以做到：
-//   1. 跳转前弹窗，明确告诉用户"只付一个产品"。
-//   2. 跳转链接直接带 /launch 折扣码，让用户落到正确产品页。
-//   3. 用户到达 Gumroad 后，如果看到多个产品，自己 Remove 掉多余的。
-//
-// 这是 Gumroad 平台的固有限制，无法从第三方前端侧根本性解决。
-// 长期修复方案：合并为一个 Gumroad 产品（见 README）。
+// 8. 支付跳转
 // ============================================================
 function handlePaymentClick() {
     var content = document.getElementById('input-content').value;
@@ -140,22 +129,10 @@ function handlePaymentClick() {
     localStorage.setItem('echo_to', document.getElementById('input-to').value);
     localStorage.setItem('echo_content', content);
 
-    // 构建 URL
+    // 构建目标 URL 并直接跳转
     var finalUrl = buildFinalUrl();
     console.log("[EchoBox] Opening →", finalUrl);
 
-    // 弹窗提醒（解决 Gumroad 购物车污染的用户侧方案）
-    var msg =
-        "💳 You will now be directed to Gumroad.\n\n" +
-        "⚠️ IMPORTANT: You should see exactly ONE product " +
-        "priced at $19.99 after discount.\n\n" +
-        "If you see other products in the cart, " +
-        "please click 'Remove' on them before paying.\n\n" +
-        "Continue to payment?";
-
-    if (!confirm(msg)) return;
-
-    // 打开新窗口跳转
     window.open(finalUrl, '_blank');
 
     // 切换到 License Key 输入页
