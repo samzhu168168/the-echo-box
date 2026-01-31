@@ -1,4 +1,4 @@
-/* --- 变量与重置 --- */
+/* --- 1. 基础变量与重置 --- */
 :root {
     --bg-dark: #050505;
     --card-bg: #111;
@@ -17,7 +17,7 @@ body {
     overflow-x: hidden;
 }
 
-/* --- 顶部通告栏 --- */
+/* --- 2. 顶部通告栏 --- */
 .top-bar {
     background: #1a1a1a;
     color: #888;
@@ -33,7 +33,7 @@ body {
 .pulse { color: #0f0; animation: flash 2s infinite; }
 @keyframes flash { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-/* --- 主布局 (PC左右，手机上下) --- */
+/* --- 3. 主布局 (左右分栏) --- */
 .main-layout {
     display: flex;
     flex-wrap: wrap;
@@ -47,7 +47,7 @@ body {
 .interaction-area { flex: 1; min-width: 350px; max-width: 500px; }
 .preview-area { flex: 1; min-width: 350px; max-width: 600px; position: relative; }
 
-/* --- 左侧交互样式 --- */
+/* --- 4. 左侧交互区样式 --- */
 .header { margin-bottom: 30px; text-align: left; }
 .logo { color: #666; font-weight: 600; letter-spacing: 2px; margin-bottom: 10px; font-size: 0.9rem;}
 h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; line-height: 1.1; margin-bottom: 10px; }
@@ -60,6 +60,7 @@ h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; line-height: 1.1
     border-radius: 16px;
     border: 1px solid #222;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
 }
 
 .label { font-size: 0.8rem; color: #666; margin-bottom: 8px; display: block; }
@@ -96,7 +97,7 @@ input:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 15px rg
 .login-link { text-align: center; margin-top: 15px; font-size: 0.85rem; color: #666; }
 .login-link a { color: var(--gold); text-decoration: none; }
 
-/* --- 右侧实时预览 (拟物化) --- */
+/* --- 5. 右侧实时预览 (拟物化) --- */
 .preview-stage {
     perspective: 1000px;
     position: sticky;
@@ -144,11 +145,33 @@ input:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 15px rg
 }
 .seal-stamp span { font-weight: 900; font-size: 0.6rem; letter-spacing: 1px; }
 
+/* 隐藏类 */
 .hidden { display: none !important; }
 
-/* 移动端适配 */
+/* 打印按钮样式 */
+.action-btn {
+    width: 100%; padding: 15px; background: #333; border: 1px solid #444;
+    color: #fff; border-radius: 8px; cursor: pointer; margin-top: 10px;
+}
+.action-btn:hover { background: #444; }
+
+/* --- 6. 移动端适配 --- */
 @media (max-width: 768px) {
-    .main-layout { flex-direction: column; }
-    .preview-stage { display: none; } /* 手机端输入时隐藏预览，专注输入，或者放在最下方 */
-    /* 如果想让手机端也看得到预览，可以把上面 display:none 去掉，把 transform 3d 去掉 */
+    .main-layout { flex-direction: column; padding: 10px; margin-top: 50px;}
+    .preview-stage { 
+        display: block; 
+        transform: none; /* 手机端取消3D旋转 */
+        margin-top: 30px;
+    } 
+    .paper { min-height: 400px; }
+}
+
+/* --- 7. 打印样式 (只打证书) --- */
+@media print {
+    body * { visibility: hidden; }
+    #live-certificate, #live-certificate * { visibility: visible; }
+    #live-certificate {
+        position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+        transform: none; box-shadow: none; border: none; margin: 0; padding: 0;
+    }
 }
