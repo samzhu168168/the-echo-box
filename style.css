@@ -22,7 +22,7 @@ body {
     display: flex;
     max-width: 1200px;
     margin: 0 auto;
-    padding-top: 60px; /* 留出顶部栏空间 */
+    padding-top: 60px;
     min-height: 100vh;
 }
 
@@ -42,7 +42,6 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    /* 格子背景纹理 */
     background-image: radial-gradient(#222 1px, transparent 1px);
     background-size: 20px 20px;
 }
@@ -56,13 +55,12 @@ body {
     z-index: 100;
 }
 
-/* --- 4. 左侧内容样式 --- */
+/* --- 4. 组件样式 --- */
 .logo { color: #666; font-weight: 600; letter-spacing: 2px; margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; }
 h1 { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1.1; margin-bottom: 15px; }
 .gold-text { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .subtitle { color: var(--text-gray); font-size: 1rem; line-height: 1.5; margin-bottom: 40px; }
 
-/* 模板按钮 */
 .template-section { margin-bottom: 20px; }
 .section-label { font-size: 0.75rem; color: #555; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
 .btn-group { display: flex; gap: 10px; }
@@ -72,7 +70,6 @@ h1 { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1.1; 
 }
 .t-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,175,55,0.05); }
 
-/* 表单 */
 .form-group { margin-bottom: 20px; }
 label { display: block; color: var(--gold); font-size: 0.85rem; margin-bottom: 8px; font-weight: 600; }
 input, textarea {
@@ -83,7 +80,6 @@ input, textarea {
 input:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.1); }
 textarea { resize: none; }
 
-/* 支付按钮 */
 #pay-btn {
     width: 100%; padding: 20px; margin-top: 10px;
     background: var(--gold-gradient);
@@ -102,23 +98,19 @@ textarea { resize: none; }
 .unlock-box { padding: 20px; background: #1a1a1a; border-radius: 10px; border: 1px solid #333; }
 .action-btn { width: 100%; padding: 15px; background: #333; border: 1px solid #555; color: #fff; margin-top: 10px; cursor: pointer; border-radius: 8px; }
 
-/* --- 5. 右侧纸张样式 (拟物化) --- */
-.preview-stage {
-    perspective: 1500px; /* 3D透视 */
-}
+/* --- 5. 右侧纸张 --- */
+.preview-stage { perspective: 1500px; }
 
 .paper {
     width: 400px; height: 560px;
     background: #fdfbf7; color: #111;
     padding: 25px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    transform: rotateY(-10deg) rotateX(5deg); /* 微微倾斜，高级感 */
+    transform: rotateY(-10deg) rotateX(5deg);
     transition: transform 0.5s;
     position: relative;
     border-radius: 2px;
 }
-
-/* 纸张悬停摆正，方便阅读 */
 .right-panel:hover .paper { transform: rotateY(0) rotateX(0) scale(1.02); }
 
 .paper-border { border: 3px double var(--gold); height: 100%; padding: 20px; display: flex; flex-direction: column; }
@@ -135,47 +127,55 @@ textarea { resize: none; }
 .paper-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
 .stamp-box { width: 70px; height: 70px; border: 3px solid #aa2222; border-radius: 50%; color: #aa2222; display: flex; justify-content: center; align-items: center; transform: rotate(-15deg); opacity: 0.8; }
 .stamp-inner span { font-weight: 900; font-size: 0.6rem; }
-
 .preview-hint { text-align: center; margin-top: 20px; color: #555; font-size: 0.8rem; }
 
-/* --- 6. 移动端适配 --- */
-@media (max-width: 900px) {
+/* --- 6. 移动端适配 (注意：不要误伤 Print) --- */
+@media screen and (max-width: 900px) {
     .main-container { flex-direction: column; }
     .left-panel { min-width: 100%; border-right: none; padding: 20px; }
-    /* 这里的 right-panel: display:none 是导致打印空白的元凶，我们在 print 样式中修复它 */
-    .right-panel { display: none; }
+    .right-panel { display: none; } /* 仅在屏幕上隐藏 */
 }
 
-/* --- 7. 打印样式 (修复空白问题) --- */
+/* --- 7. 打印专用样式 (修复空白) --- */
 @media print {
-    /* [修复1] 强制显示右侧面板 (覆盖掉上面的 mobile 样式) */
-    .right-panel { display: block !important; }
+    /* 隐藏所有界面元素 */
+    body > * { display: none !important; }
+    
+    /* 恢复主容器显示，但隐藏其子元素 */
+    .main-container { 
+        display: block !important; 
+        margin: 0 !important; padding: 0 !important; width: 100% !important; 
+    }
+    .left-panel, .top-bar { display: none !important; }
 
-    /* [修复2] 隐藏所有不相关元素 */
-    body * { visibility: hidden; }
-
-    /* [修复3] 仅显示纸张区域，并强制为打印色 */
-    #paper-preview, #paper-preview * { 
-        visibility: visible; 
-        color: #000 !important; /* 强制纯黑文字，防止淡色不清晰 */
+    /* 强制显示右侧面板，并重置背景 */
+    .right-panel { 
+        display: block !important; 
+        width: 100% !important; 
+        height: auto !important; 
+        background: white !important;
+        position: absolute; top: 0; left: 0;
     }
 
-    /* [修复4] 定位：将纸张固定在页面左上角 */
+    /* 纸张样式重置：去掉3D，变成白纸黑字 */
+    .preview-stage { transform: none !important; padding: 0 !important; }
     #paper-preview {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: auto;
-        margin: 0;
-        padding: 20px;
-        transform: none !important; /* 移除 3D 倾斜 */
+        display: block !important;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
         box-shadow: none !important;
-        background: white !important;
-        border: none !important;
+        transform: none !important;
+        border: 2px solid #000 !important;
+        background-color: white !important;
+        color: black !important;
     }
     
-    /* 优化边框颜色，使其可打印 */
-    .paper-border { border-color: #000 !important; }
-    .divider { background: #000 !important; }
+    /* 强制内部元素颜色为黑 */
+    #paper-preview *, .paper-header, .paper-body, .paper-footer {
+        color: black !important;
+        visibility: visible !important;
+    }
+    .preview-hint { display: none !important; }
 }
