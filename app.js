@@ -1,6 +1,6 @@
 /**
- * ECHO BOX ENGINE - STRICT SINGLE LINK VERSION
- * 修复：移除多余逻辑，强制 "One Scene, One Link"
+ * ECHO BOX ENGINE - 3 SCENES, 3 LINKS
+ * 策略：严格的一一对应 (Strict Mapping)
  */
 
 // --- 1. 配置中心 ---
@@ -13,8 +13,8 @@ const TEMPLATES = {
     love: `[MY VOW]\n\nTo my beloved,\n\nThis is proof that I loved you.\n\nOur Anniversary: \n\nMy promise to you forever: `
 };
 
-// 默认链接 (Crypto/Bank -> Legacy Vault)
-let currentTargetUrl = "https://samzhu168.gumroad.com/l/sapjbm";
+// 默认链接 (初始化)
+let currentTargetUrl = "https://samzhu168.gumroad.com/l/lwjqot";
 
 
 // --- 3. 初始化 ---
@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     animateCounter();
     restoreData();
 
-    // 绑定按钮点击事件 (确保只绑定一次)
+    // 绑定按钮点击事件
+    // 使用 onclick 覆盖模式，杜绝重复绑定
     const btns = document.querySelectorAll('.t-btn');
     btns.forEach(btn => {
-        // 移除旧的监听器 (虽然 JS 不支持直接移除匿名函数，但重新加载页面会重置)
-        btn.onclick = function() { // 使用 onclick 属性覆盖，防止多次绑定 addEventListener
+        btn.onclick = function() {
             const type = this.getAttribute('data-type');
             applyTemplate(type);
         };
@@ -34,32 +34,36 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// --- 4. 模板选择 (严格路由逻辑) ---
+// --- 4. 模板与链接路由 (核心：三路分流) ---
 function applyTemplate(type) {
     if(navigator.vibrate) navigator.vibrate(50);
     
-    // A. 填充文本内容
+    // A. 填充内容
     const contentBox = document.getElementById('input-content');
     if (contentBox) contentBox.value = TEMPLATES[type] || "";
     
-    // B. **链接路由 (Strict Routing)**
-    // 只有两种情况，绝无第三种可能，杜绝混淆
+    // B. **链接路由 (3 Links for 3 Scenes)**
+    // 严格区分，互不干扰
+    
     if (type === 'love') {
-        // 情况 1: Love -> LoveScribe
-        currentTargetUrl = "https://samzhu168.gumroad.com/l/lwjqot";
-        console.log("🔗 Mode: LOVE -> lwjqot");
-    } 
-    else {
-        // 情况 2: Crypto, Bank -> Legacy Vault (sapjbm)
-        // 任何其他情况都强制导向这里
+        // 1. Love -> LoveScribe
         currentTargetUrl = "https://samzhu168.gumroad.com/l/sapjbm";
-        console.log("🔗 Mode: ASSET/BANK -> sapjbm");
+        console.log("🔗 Route: Love -> sapjbm");
+    } 
+    else if (type === 'bank') {
+        // 2. Bank -> FutureBloom (家庭/保险)
+        currentTargetUrl = "https://samzhu168.gumroad.com/l/ntcaif";
+        console.log("🔗 Route: Bank -> ntcaif");
+    }
+    else {
+        // 3. Crypto -> Legacy Vault (加密资产)
+        // (type === 'crypto' 或其他默认情况)
+        currentTargetUrl = "https://samzhu168.gumroad.com/l/lwjqot";
+        console.log("🔗 Route: Crypto -> lwjqot");
     }
     
-    // C. 更新预览 UI
+    // C. 更新 UI
     syncPreview();
-    
-    // D. 按钮高亮状态管理
     updateButtonStyles(type);
 }
 
@@ -80,14 +84,15 @@ function updateButtonStyles(activeType) {
 }
 
 
-// --- 5. 支付跳转 (单链接执行) ---
+// --- 5. 支付跳转 (纯净版) ---
 function handlePaymentClick() {
     const content = document.getElementById('input-content').value;
     if(!content) { alert("Please write something first."); return; }
 
-    // URL 构建：Base + Discount
+    // URL 构建
     let finalUrl = currentTargetUrl;
     
+    // 只有当有折扣码时才拼接
     if (DISCOUNT_CODE && DISCOUNT_CODE !== "") {
         if (finalUrl.endsWith('/')) {
             finalUrl = finalUrl + DISCOUNT_CODE;
@@ -96,13 +101,12 @@ function handlePaymentClick() {
         }
     }
 
-    console.log("🚀 Opening Single Link:", finalUrl);
+    console.log("🚀 Launching:", finalUrl);
 
-    // 保存数据
+    // 保存并跳转
     localStorage.setItem('echo_to', document.getElementById('input-to').value);
     localStorage.setItem('echo_content', content);
     
-    // 打开窗口
     window.open(finalUrl, '_blank');
 
     // 切换界面
@@ -112,7 +116,7 @@ function handlePaymentClick() {
 }
 
 
-// --- 6. 辅助功能 (保持精简) ---
+// --- 6. 辅助功能 ---
 function syncPreview() {
     const to = document.getElementById('input-to').value;
     const content = document.getElementById('input-content').value;
