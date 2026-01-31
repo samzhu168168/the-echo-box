@@ -3,123 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echo Box | The Digital Legacy Vault</title>
-    <!-- SEO -->
-    <meta name="description" content="Secure your digital legacy. Store passwords, crypto keys, and final messages in an AES-256 encrypted vault.">
-    <!-- 样式与JS库 -->
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <title>Echo Box | Digital Legacy Vault</title>
+    
+    <!-- 引入字体：Inter (正文), Playfair (标题), Dancing Script (手写体) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <!-- 头部 -->
-        <header class="header">
-            <div class="logo"><i class="fa-solid fa-box-open"></i> Echo Box</div>
-            <h1 id="dynamic-headline">The Missing Half of <br><span class="gold-text">Apple Legacy Contact.</span></h1>
-            <p class="subtitle">Apple gives them access to your phone. <strong>We give them the passwords to open your apps.</strong></p>
-            <p class="subtitle-small" style="color: #666; font-size: 0.8rem; margin-top:8px;">
-                <i class="fa-brands fa-apple"></i> Works with iOS Legacy Contact & <i class="fa-brands fa-google"></i> Google Inactive Manager.
-            </p>
-        </header>
 
-        <!-- STEP 1: 输入 -->
-        <div id="step-create" class="card">
-            <div class="input-group">
-                <label for="to"><i class="fa-solid fa-user-shield"></i> Recipient</label>
-                <input type="text" id="to" placeholder="e.g. My Daughter, or email@address.com">
-            </div>
+    <!-- 顶部倒计时栏 -->
+    <div class="top-bar">
+        <p><i class="fa-solid fa-earth-americas"></i> Global Live Stats: <span id="global-counter">12,842</span> Legacies Sealed.</p>
+    </div>
 
-            <!-- 模板按钮：注意 onclick 事件 -->
-            <div class="input-group">
-                <label for="content"><i class="fa-solid fa-pen-nib"></i> Your Legacy Message</label>
-                <div class="template-buttons">
-                    <span class="template-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Templates:</span>
+    <div class="main-container">
+        
+        <!-- 左侧：操作区 (Input) -->
+        <div class="left-panel">
+            <header>
+                <div class="logo"><i class="fa-solid fa-box-open"></i> Echo Box</div>
+                <h1>Don't Let It <br><span class="gold-text">Die With You.</span></h1>
+                <p class="subtitle">Secure your passwords, crypto keys, and final words. Apple Legacy Contact unlocks the phone. <strong>We unlock the apps.</strong></p>
+            </header>
+
+            <!-- 状态 1: 输入 -->
+            <div id="step-create">
+                <!-- 模板选择器 -->
+                <div class="template-section">
+                    <p class="section-label">Choose Template:</p>
                     <div class="btn-group">
-                        <button type="button" class="template-btn" onclick="selectTemplate('crypto')"><i class="fa-brands fa-bitcoin"></i> Crypto</button>
-                        <button type="button" class="template-btn" onclick="selectTemplate('bank')"><i class="fa-solid fa-building-columns"></i> Bank</button>
-                        <button type="button" class="template-btn" onclick="selectTemplate('love')"><i class="fa-solid fa-heart"></i> Love</button>
-                        <button type="button" class="template-btn" onclick="selectTemplate('family')"><i class="fa-solid fa-child"></i> Family</button>
+                        <button class="t-btn" onclick="applyTemplate('crypto')"><i class="fa-brands fa-bitcoin"></i> Crypto</button>
+                        <button class="t-btn" onclick="applyTemplate('bank')"><i class="fa-solid fa-building-columns"></i> Bank</button>
+                        <button class="t-btn" onclick="applyTemplate('love')"><i class="fa-solid fa-heart"></i> Love</button>
                     </div>
                 </div>
-                <textarea id="content" rows="8" placeholder="Select a template above to start..."></textarea>
-            </div>
-            
-            <div class="input-group">
-                <label for="password"><i class="fa-solid fa-key"></i> Set Unlock Key (Optional)</label>
-                <input type="password" id="password" placeholder="Create a secure key for them">
+
+                <div class="form-group">
+                    <label>Recipient:</label>
+                    <input type="text" id="input-to" placeholder="e.g. My Daughter" oninput="syncPreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>Your Legacy Message:</label>
+                    <textarea id="input-content" rows="8" placeholder="Select a template above to start..." oninput="syncPreview()"></textarea>
+                </div>
+
+                <button id="pay-btn" onclick="handlePaymentClick()">
+                    <div class="btn-content">
+                        <span class="btn-title"><i class="fa-solid fa-fingerprint"></i> Seal For Eternity</span>
+                        <span class="btn-price"><s>$49.99</s> $19.99</span>
+                    </div>
+                </button>
+                
+                <p class="login-link">Already have a key? <a href="#" onclick="toggleUnlock()">Unlock Here</a></p>
             </div>
 
-            <button id="pay-btn" onclick="handlePaymentClick()">
-                <div class="btn-content">
-                    <i class="fa-solid fa-fingerprint"></i> Seal My Echo (<s>$49.99</s> $19.99)
+            <!-- 状态 2: 解锁 -->
+            <div id="step-unlock" class="hidden">
+                <div class="unlock-box">
+                    <h2><i class="fa-solid fa-key"></i> Verify License</h2>
+                    <p>Enter the key from your Gumroad email.</p>
+                    <input type="text" id="license-key" placeholder="Paste Key Here (e.g. EB-2026...)">
+                    <button class="action-btn" onclick="verifyAndDownload()">Verify & Download</button>
+                    <p class="login-link"><a href="#" onclick="toggleUnlock()">Back</a></p>
                 </div>
-                <div class="scarcity-bar">
-                    <span id="slots-left">Checking availability...</span>
-                </div>
-            </button>
-            
-            <div class="trust-badges">
-                <span><i class="fa-solid fa-shield-halved"></i> AES-256 Encryption</span>
-                <span><i class="fa-solid fa-infinity"></i> Lifetime Storage</span>
             </div>
-
-            <p class="already-paid">
-                Already have a License Key? <a href="#" onclick="showUnlockStep()">Unlock Certificate</a>
-            </p>
         </div>
 
-        <!-- STEP 2: 解锁 -->
-        <div id="step-unlock" class="card hidden">
-            <div class="header">
-                <h2><i class="fa-solid fa-unlock-keyhole"></i> Enter License Key</h2>
-                <p class="subtitle">Enter the key sent to your email by Gumroad.</p>
-            </div>
-            <div class="input-group">
-                <input type="text" id="license-key" placeholder="Paste your key here...">
-            </div>
-            <button id="unlock-btn" onclick="verifyAndDownload()">
-                <i class="fa-solid fa-check-circle"></i> Verify & Reveal
-            </button>
-            <p class="back-link"><a href="#" onclick="showCreateStep()">Back to Edit</a></p>
-        </div>
+        <!-- 右侧：实时预览区 (Visual) -->
+        <div class="right-panel">
+            <div class="preview-stage">
+                <!-- 拟物化纸张 -->
+                <div id="paper-preview" class="paper">
+                    <div class="paper-border">
+                        <div class="paper-header">
+                            <i class="fa-solid fa-box-open watermark"></i>
+                            <h3>CERTIFICATE OF LEGACY</h3>
+                            <p class="official-text">OFFICIAL DIGITAL DECREE</p>
+                        </div>
+                        
+                        <div class="paper-body">
+                            <p class="label-text">Beneficiary:</p>
+                            <h2 id="preview-to" class="handwritten-font">Recipient Name</h2>
+                            <div class="divider"></div>
+                            <p class="label-text">The Message:</p>
+                            <p id="preview-content" class="typewriter-font">Your legacy will appear here...</p>
+                        </div>
 
-        <!-- STEP 3: 证书 -->
-        <div id="step-result" class="card hidden result-wrapper">
-            <div class="certificate-paper" id="cert-container">
-                <div class="cert-border">
-                    <div class="cert-header">
-                        <i class="fa-solid fa-box-open" style="font-size:2rem; margin-bottom:10px;"></i>
-                        <h3>CERTIFICATE OF LEGACY</h3>
-                        <p class="cert-subtitle">OFFICIAL DIGITAL DECREE</p>
-                    </div>
-                    <div class="cert-body">
-                        <p class="cert-label">This confirms that a digital legacy has been sealed for:</p>
-                        <h2 id="display-to">Recipient Name</h2>
-                        <hr class="cert-line">
-                        <p class="cert-label">Legacy Message:</p>
-                        <p id="display-content" class="cert-message">...</p>
-                    </div>
-                    <div class="cert-footer">
-                        <div id="qrcode"></div>
-                        <div class="gold-seal">
-                            <i class="fa-solid fa-stamp"></i><br>SECURED
+                        <div class="paper-footer">
+                            <div class="qr-box" id="preview-qr">
+                                <i class="fa-solid fa-qrcode"></i>
+                            </div>
+                            <div class="stamp-box">
+                                <div class="stamp-inner">
+                                    <i class="fa-solid fa-fingerprint"></i>
+                                    <span>SECURED</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <p class="cert-id">ID: <span id="display-key"></span></p>
                 </div>
+                <p class="preview-hint"><i class="fa-solid fa-eye"></i> Live Preview</p>
             </div>
-            <button onclick="window.print()" style="margin-top:20px;">
-                <i class="fa-solid fa-print"></i> Print / Save as PDF
-            </button>
-             <p class="back-link"><a href="#" onclick="showCreateStep()">Create Another</a></p>
         </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2026 Echo Box Vault. All rights reserved.</p>
-        </footer>
     </div>
 
     <script src="app.js"></script>
