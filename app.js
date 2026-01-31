@@ -1,21 +1,19 @@
 /**
- * ECHO BOX ENGINE - FINAL OPTIMIZED VERSION
- * 修复内容：链接跳转异常、场景绑定、按钮点击事件
+ * ECHO BOX ENGINE - STRICT SINGLE LINK VERSION
+ * 修复：移除多余逻辑，强制 "One Scene, One Link"
  */
 
 // --- 1. 配置中心 ---
 const DISCOUNT_CODE = "launch"; 
 
 // --- 2. 核心数据 ---
-// 模板内容
 const TEMPLATES = {
     crypto: `[ASSET MAP]\n\nHardware Wallet Location: \n[e.g. In the fake book on the shelf]\n\nSeed Phrase: \n[e.g. Bank box #102]\n\nExchange: Binance\nLogin Email: \nPassword Hint: `,
     bank: `[FINANCIAL KEY]\n\nBank: Chase\nAccount: \n\nInsurance Policy Location: \n[e.g. Blue folder]\n\nLawyer Contact: `,
     love: `[MY VOW]\n\nTo my beloved,\n\nThis is proof that I loved you.\n\nOur Anniversary: \n\nMy promise to you forever: `
 };
 
-// 当前选中的链接 (默认为通用链接 sapjbm)
-// 我们直接存具体的 URL，而不是存类型，这样更直观，不容易错
+// 默认链接 (Crypto/Bank -> Legacy Vault)
 let currentTargetUrl = "https://samzhu168.gumroad.com/l/sapjbm";
 
 
@@ -24,72 +22,73 @@ document.addEventListener('DOMContentLoaded', () => {
     animateCounter();
     restoreData();
 
-    // 【重要修复】绑定按钮点击事件
-    // HTML 中没有 onclick，必须在这里绑定，否则按钮无效
+    // 绑定按钮点击事件 (确保只绑定一次)
     const btns = document.querySelectorAll('.t-btn');
     btns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // 获取按钮上的 data-type (crypto, bank, love)
+        // 移除旧的监听器 (虽然 JS 不支持直接移除匿名函数，但重新加载页面会重置)
+        btn.onclick = function() { // 使用 onclick 属性覆盖，防止多次绑定 addEventListener
             const type = this.getAttribute('data-type');
             applyTemplate(type);
-        });
+        };
     });
 });
 
 
-// --- 4. 模板选择 (核心修复：直接绑定 URL) ---
+// --- 4. 模板选择 (严格路由逻辑) ---
 function applyTemplate(type) {
     if(navigator.vibrate) navigator.vibrate(50);
     
-    // A. 填充内容
+    // A. 填充文本内容
     const contentBox = document.getElementById('input-content');
     if (contentBox) contentBox.value = TEMPLATES[type] || "";
     
-    // B. **关键修复：根据类型，直接死锁目标 URL**
-    // 确保 Crypto 和 Bank 都指向 sapjbm，Love 指向 lwjqot
+    // B. **链接路由 (Strict Routing)**
+    // 只有两种情况，绝无第三种可能，杜绝混淆
     if (type === 'love') {
-        // 情侣 -> LoveScribe
+        // 情况 1: Love -> LoveScribe
         currentTargetUrl = "https://samzhu168.gumroad.com/l/lwjqot";
-    } 
-    else if (type === 'family') {
-        // 家庭 -> FutureBloom (预留)
-        currentTargetUrl = "https://samzhu168.gumroad.com/l/ntcaif";
+        console.log("🔗 Mode: LOVE -> lwjqot");
     } 
     else {
-        // Crypto, Bank, Default -> Legacy Vault (sapjbm)
+        // 情况 2: Crypto, Bank -> Legacy Vault (sapjbm)
+        // 任何其他情况都强制导向这里
         currentTargetUrl = "https://samzhu168.gumroad.com/l/sapjbm";
+        console.log("🔗 Mode: ASSET/BANK -> sapjbm");
     }
     
-    console.log("✅ Target URL updated to:", currentTargetUrl); 
-    
-    // C. 更新 UI
+    // C. 更新预览 UI
     syncPreview();
     
-    // D. 按钮高亮 (优化版：通过 data-type 精确匹配，更稳定)
+    // D. 按钮高亮状态管理
+    updateButtonStyles(type);
+}
+
+function updateButtonStyles(activeType) {
     const btns = document.querySelectorAll('.t-btn');
     btns.forEach(btn => {
-        if (btn.getAttribute('data-type') === type) {
+        const btnType = btn.getAttribute('data-type');
+        if (btnType === activeType) {
             btn.style.borderColor = '#D4AF37';
             btn.style.color = '#D4AF37';
+            btn.style.backgroundColor = 'rgba(212, 175, 55, 0.05)';
         } else {
             btn.style.borderColor = '#333';
             btn.style.color = '#ccc';
+            btn.style.backgroundColor = '#1a1a1a';
         }
     });
 }
 
 
-// --- 5. 支付跳转 (核心修复：简单拼接) ---
+// --- 5. 支付跳转 (单链接执行) ---
 function handlePaymentClick() {
     const content = document.getElementById('input-content').value;
     if(!content) { alert("Please write something first."); return; }
 
-    // 拼接折扣码
+    // URL 构建：Base + Discount
     let finalUrl = currentTargetUrl;
     
-    // 只有当有折扣码时才拼接
     if (DISCOUNT_CODE && DISCOUNT_CODE !== "") {
-        // 确保不重复斜杠
         if (finalUrl.endsWith('/')) {
             finalUrl = finalUrl + DISCOUNT_CODE;
         } else {
@@ -97,12 +96,13 @@ function handlePaymentClick() {
         }
     }
 
-    console.log("🚀 Opening:", finalUrl);
+    console.log("🚀 Opening Single Link:", finalUrl);
 
-    // 保存并跳转
+    // 保存数据
     localStorage.setItem('echo_to', document.getElementById('input-to').value);
     localStorage.setItem('echo_content', content);
     
+    // 打开窗口
     window.open(finalUrl, '_blank');
 
     // 切换界面
@@ -112,7 +112,7 @@ function handlePaymentClick() {
 }
 
 
-// --- 6. 其他辅助功能 ---
+// --- 6. 辅助功能 (保持精简) ---
 function syncPreview() {
     const to = document.getElementById('input-to').value;
     const content = document.getElementById('input-content').value;
