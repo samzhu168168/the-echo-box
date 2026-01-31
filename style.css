@@ -142,15 +142,40 @@ textarea { resize: none; }
 @media (max-width: 900px) {
     .main-container { flex-direction: column; }
     .left-panel { min-width: 100%; border-right: none; padding: 20px; }
-    .right-panel { display: none; } /* 手机端隐藏预览，专注输入，或者改为放在底部 */
+    /* 这里的 right-panel: display:none 是导致打印空白的元凶，我们在 print 样式中修复它 */
+    .right-panel { display: none; }
 }
 
-/* --- 7. 打印样式 --- */
+/* --- 7. 打印样式 (修复空白问题) --- */
 @media print {
+    /* [修复1] 强制显示右侧面板 (覆盖掉上面的 mobile 样式) */
+    .right-panel { display: block !important; }
+
+    /* [修复2] 隐藏所有不相关元素 */
     body * { visibility: hidden; }
-    #paper-preview, #paper-preview * { visibility: visible; }
-    #paper-preview {
-        position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-        transform: none; box-shadow: none; margin: 0;
+
+    /* [修复3] 仅显示纸张区域，并强制为打印色 */
+    #paper-preview, #paper-preview * { 
+        visibility: visible; 
+        color: #000 !important; /* 强制纯黑文字，防止淡色不清晰 */
     }
+
+    /* [修复4] 定位：将纸张固定在页面左上角 */
+    #paper-preview {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 20px;
+        transform: none !important; /* 移除 3D 倾斜 */
+        box-shadow: none !important;
+        background: white !important;
+        border: none !important;
+    }
+    
+    /* 优化边框颜色，使其可打印 */
+    .paper-border { border-color: #000 !important; }
+    .divider { background: #000 !important; }
 }

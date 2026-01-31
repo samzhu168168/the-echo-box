@@ -1,6 +1,14 @@
 /**
- * ECHO BOX ENGINE - 3 SCENES, 3 LINKS
- * 策略：严格的一一对应 (Strict Mapping)
+ * ECHO BOX ENGINE - FINAL MAPPING & FIX
+ * 
+ * [ID 对照表 - 经截图验证]
+ * 1. Love (情侣)        -> sapjbm (LoveScribe)
+ * 2. Bank (家庭/未来)   -> ntcaif (FutureBloom)
+ * 3. Crypto (加密/遗产) -> lwjqot (Echo Box)
+ * 
+ * 注意：Gumroad 购物车有缓存。如果在同一浏览器多次测试，
+ * 商品会叠加显示 (1个 -> 2个 -> 3个)。
+ * 请务必使用【无痕模式】测试，以验证单链接逻辑。
  */
 
 // --- 1. 配置中心 ---
@@ -13,7 +21,7 @@ const TEMPLATES = {
     love: `[MY VOW]\n\nTo my beloved,\n\nThis is proof that I loved you.\n\nOur Anniversary: \n\nMy promise to you forever: `
 };
 
-// 默认链接 (初始化)
+// 默认链接 (初始化为 Echo Box)
 let currentTargetUrl = "https://samzhu168.gumroad.com/l/lwjqot";
 
 
@@ -23,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     restoreData();
 
     // 绑定按钮点击事件
-    // 使用 onclick 覆盖模式，杜绝重复绑定
+    // 使用 onclick 覆盖模式，防止重复绑定
     const btns = document.querySelectorAll('.t-btn');
     btns.forEach(btn => {
         btn.onclick = function() {
@@ -34,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// --- 4. 模板与链接路由 (核心：三路分流) ---
+// --- 4. 模板与链接路由 (核心：三路精准分流) ---
 function applyTemplate(type) {
     if(navigator.vibrate) navigator.vibrate(50);
     
@@ -42,24 +50,23 @@ function applyTemplate(type) {
     const contentBox = document.getElementById('input-content');
     if (contentBox) contentBox.value = TEMPLATES[type] || "";
     
-    // B. **链接路由 (3 Links for 3 Scenes)**
-    // 严格区分，互不干扰
+    // B. **链接路由 (Strict 3-Way Routing)**
+    // 只有这三种情况，绝无混淆
     
     if (type === 'love') {
-        // 1. Love -> LoveScribe
+        // [场景 1] Love -> LoveScribe (sapjbm)
         currentTargetUrl = "https://samzhu168.gumroad.com/l/sapjbm";
-        console.log("🔗 Route: Love -> sapjbm");
+        console.log("🔗 Route: Love -> sapjbm (LoveScribe)");
     } 
     else if (type === 'bank') {
-        // 2. Bank -> FutureBloom (家庭/保险)
+        // [场景 2] Bank -> FutureBloom (ntcaif)
         currentTargetUrl = "https://samzhu168.gumroad.com/l/ntcaif";
-        console.log("🔗 Route: Bank -> ntcaif");
+        console.log("🔗 Route: Bank -> ntcaif (FutureBloom)");
     }
     else {
-        // 3. Crypto -> Legacy Vault (加密资产)
-        // (type === 'crypto' 或其他默认情况)
+        // [场景 3] Crypto (或默认) -> Echo Box (lwjqot)
         currentTargetUrl = "https://samzhu168.gumroad.com/l/lwjqot";
-        console.log("🔗 Route: Crypto -> lwjqot");
+        console.log("🔗 Route: Crypto -> lwjqot (Echo Box)");
     }
     
     // C. 更新 UI
@@ -101,12 +108,13 @@ function handlePaymentClick() {
         }
     }
 
-    console.log("🚀 Launching:", finalUrl);
+    console.log("🚀 Launching Single Link:", finalUrl);
 
     // 保存并跳转
     localStorage.setItem('echo_to', document.getElementById('input-to').value);
     localStorage.setItem('echo_content', content);
     
+    // 强制新窗口打开
     window.open(finalUrl, '_blank');
 
     // 切换界面
