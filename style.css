@@ -1,3 +1,13 @@
+/* ============================================================
+   ECHO BOX - MINIMALIST CSS VERSION (Production Ready)
+   
+   核心理念：
+   1. 零外部图片依赖（速度快、成本低）
+   2. 纯 CSS 纸张纹理（专业、优雅）
+   3. 三种主题配色（Crypto/Bank/Love）
+   4. 完美适配打印（浅色背景、高对比度）
+   ============================================================ */
+
 /* --- 1. 核心变量 --- */
 :root {
     --bg-color: #080808;
@@ -6,6 +16,11 @@
     --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #F3E5AB 50%, #D4AF37 100%);
     --text-white: #f0f0f0;
     --text-gray: #888;
+    
+    /* 纸张颜色变量（三种主题） */
+    --paper-bg-vintage: linear-gradient(135deg, #fdfbf7 0%, #f5f1e8 100%);
+    --paper-bg-cyber: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+    --paper-bg-gold: linear-gradient(135deg, #1a1510 0%, #2d2416 100%);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
@@ -42,7 +57,6 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    /* 默认背景纹理 */
     background-image: radial-gradient(#222 1px, transparent 1px);
     background-size: 20px 20px;
 }
@@ -97,87 +111,279 @@ textarea { resize: none; }
 
 .hidden { display: none; }
 .unlock-box { padding: 20px; background: #1a1a1a; border-radius: 10px; border: 1px solid #333; }
-.action-btn { width: 100%; padding: 15px; background: #333; border: 1px solid #555; color: #fff; margin-top: 10px; cursor: pointer; border-radius: 8px; }
+.unlock-box h2 { margin-bottom: 15px; }
+.unlock-box p { margin-bottom: 15px; color: #999; }
+.action-btn { width: 100%; padding: 15px; background: #333; border: 1px solid #555; color: #fff; margin-top: 10px; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+.action-btn:hover { background: #444; border-color: var(--gold); }
 
-/* --- 5. 右侧纸张 (核心视觉区域) --- */
+/* --- 5. 核心：纸张样式（纯 CSS 纹理） --- */
 .preview-stage { perspective: 1500px; }
 
 .paper {
-    width: 400px; height: 560px;
-    /* 默认背景，会被 JS 覆盖为具体图片 */
-    background: #fdfbf7; 
-    background-size: cover;
-    background-position: center;
-    color: #111;
+    width: 400px; 
+    height: 560px;
     padding: 25px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    transform: rotateY(-10deg) rotateX(5deg);
-    transition: transform 0.5s, background-image 0.5s; /* 增加背景切换动画 */
     position: relative;
     border-radius: 4px;
+    background: var(--paper-bg-vintage);
+    color: #111;
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,0.6),
+        inset 0 0 0 1px rgba(255,255,255,0.1);
+    transform: rotateY(-10deg) rotateX(5deg);
+    transition: transform 0.5s, background 0.5s, color 0.5s, box-shadow 0.5s;
 }
-.right-panel:hover .paper { transform: rotateY(0) rotateX(0) scale(1.02); }
 
-/* 边框样式 */
+.right-panel:hover .paper { 
+    transform: rotateY(0) rotateX(0) scale(1.02); 
+}
+
+/* 主题：Crypto（赛博朋克） */
+.paper.theme-crypto {
+    background: var(--paper-bg-cyber);
+    color: #e0e0e0;
+    box-shadow: 
+        0 20px 60px rgba(0,240,255,0.3),
+        inset 0 0 0 1px rgba(0,240,255,0.2),
+        0 0 40px rgba(0,240,255,0.1);
+}
+
+/* 主题：Bank（黑金） */
+.paper.theme-bank {
+    background: var(--paper-bg-gold);
+    color: #e8e0d0;
+    box-shadow: 
+        0 20px 60px rgba(212,175,55,0.4),
+        inset 0 0 0 1px rgba(212,175,55,0.2),
+        0 0 40px rgba(212,175,55,0.1);
+}
+
+/* 主题：Love（复古） */
+.paper.theme-love {
+    background: var(--paper-bg-vintage);
+    color: #111;
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,0.6),
+        inset 0 0 0 1px rgba(212,175,55,0.1);
+}
+
+/* 边框容器 */
 .paper-border { 
     border: 3px double var(--gold); 
     height: 100%; 
     padding: 20px; 
-    display: flex; flex-direction: column; 
-    background: rgba(255,255,255,0.7); /* 半透明白底，为了让文字在复杂背景上也能看清 */
+    display: flex; 
+    flex-direction: column; 
+    background: rgba(255,255,255,0.85);
     backdrop-filter: blur(2px);
+    box-shadow: inset 0 0 20px rgba(212,175,55,0.1);
+    transition: background 0.5s, border-color 0.5s;
 }
 
-.paper-header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 20px; position: relative; }
-.watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; opacity: 0.03; pointer-events: none; }
-.paper-header h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 5px;}
-.official-text { font-size: 0.6rem; letter-spacing: 3px; color: var(--gold); font-weight: bold; }
+.paper.theme-crypto .paper-border {
+    background: rgba(10,14,26,0.9);
+    border-color: #00f0ff;
+    box-shadow: 
+        inset 0 0 20px rgba(0,240,255,0.1),
+        inset 0 0 60px rgba(0,240,255,0.05);
+}
 
-.label-text { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-.handwritten-font { font-family: 'Dancing Script', cursive; font-size: 2rem; color: #000; margin-bottom: 10px; }
-.typewriter-font { font-family: 'Courier New', monospace; font-size: 0.9rem; line-height: 1.5; color: #333; white-space: pre-wrap; height: 150px; overflow: hidden; }
-.divider { height: 1px; background: var(--gold); width: 50%; margin: 10px 0 20px 0; }
+.paper.theme-bank .paper-border {
+    background: rgba(26,21,16,0.9);
+    border-color: #D4AF37;
+    box-shadow: 
+        inset 0 0 20px rgba(212,175,55,0.1),
+        inset 0 0 60px rgba(212,175,55,0.05);
+}
 
-.paper-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
-.stamp-box { width: 70px; height: 70px; border: 3px solid #aa2222; border-radius: 50%; color: #aa2222; display: flex; justify-content: center; align-items: center; transform: rotate(-15deg); opacity: 0.8; }
-.stamp-inner span { font-weight: 900; font-size: 0.6rem; }
-.preview-hint { text-align: center; margin-top: 20px; color: #555; font-size: 0.8rem; }
+.paper.theme-love .paper-border {
+    background: rgba(255,255,255,0.9);
+    border-color: #D4AF37;
+}
+
+/* 纸张头部 */
+.paper-header { 
+    text-align: center; 
+    border-bottom: 2px solid currentColor; 
+    padding-bottom: 15px; 
+    margin-bottom: 20px; 
+    position: relative; 
+}
+
+.watermark { 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    font-size: 4rem; 
+    opacity: 0.03; 
+    pointer-events: none; 
+}
+
+.paper-header h3 { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 1.4rem; 
+    letter-spacing: 2px; 
+    margin-bottom: 5px;
+}
+
+.official-text { 
+    font-size: 0.6rem; 
+    letter-spacing: 3px; 
+    color: var(--gold); 
+    font-weight: bold; 
+}
+
+.paper.theme-crypto .official-text {
+    color: #00f0ff;
+}
+
+.paper.theme-bank .official-text {
+    color: #D4AF37;
+}
+
+/* 纸张主体 */
+.label-text { 
+    font-size: 0.7rem; 
+    color: #666; 
+    text-transform: uppercase; 
+    margin-bottom: 5px; 
+}
+
+.paper.theme-crypto .label-text,
+.paper.theme-bank .label-text {
+    color: #999;
+}
+
+.handwritten-font { 
+    font-family: 'Dancing Script', cursive; 
+    font-size: 2rem; 
+    margin-bottom: 10px; 
+}
+
+.typewriter-font { 
+    font-family: 'Courier New', monospace; 
+    font-size: 0.9rem; 
+    line-height: 1.5; 
+    white-space: pre-wrap; 
+    height: 150px; 
+    overflow: hidden; 
+}
+
+.divider { 
+    height: 1px; 
+    background: var(--gold); 
+    width: 50%; 
+    margin: 10px 0 20px 0; 
+}
+
+/* 纸张底部 */
+.paper-footer { 
+    margin-top: auto; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.qr-box {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.95);
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.qr-box canvas,
+.qr-box img {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+.stamp-box { 
+    width: 70px; 
+    height: 70px; 
+    border: 3px solid #aa2222; 
+    border-radius: 50%; 
+    color: #aa2222; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    transform: rotate(-15deg); 
+    opacity: 0.8; 
+    flex-direction: column;
+}
+
+.stamp-inner { 
+    text-align: center; 
+}
+
+.stamp-inner i {
+    font-size: 1.5rem;
+    margin-bottom: 2px;
+}
+
+.stamp-inner span { 
+    font-weight: 900; 
+    font-size: 0.6rem; 
+}
+
+.preview-hint { 
+    text-align: center; 
+    margin-top: 20px; 
+    color: #555; 
+    font-size: 0.8rem; 
+}
 
 /* --- 6. 移动端适配 --- */
 @media screen and (max-width: 900px) {
     .main-container { flex-direction: column; }
     .left-panel { min-width: 100%; border-right: none; padding: 20px; }
-    .right-panel { display: none; } 
+    .right-panel { display: none; }
 }
 
-/* --- 7. 打印专用样式 (所见即所得) --- */
+/* --- 7. 打印专用样式 --- */
 @media print {
-    /* 开启背景打印（关键！） */
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    * { 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+    }
 
     body > * { display: none !important; }
     
-    .main-container { display: block !important; margin: 0 !important; width: 100% !important; }
+    .main-container { 
+        display: block !important; 
+        margin: 0 !important; 
+        width: 100% !important; 
+    }
     
-    /* 强制显示右侧面板 */
     .right-panel { 
         display: block !important; 
         width: 100% !important; 
         height: 100vh !important;
-        position: absolute; top: 0; left: 0;
-        background: white !important; /* 打印时背景底色为白，省墨 */
+        position: absolute; 
+        top: 0; 
+        left: 0;
+        background: white !important;
     }
 
-    .preview-stage { transform: none !important; padding: 0 !important; margin: 0 auto; width: 100%; }
+    .preview-stage { 
+        transform: none !important; 
+        padding: 0 !important; 
+        margin: 0 auto; 
+        width: 100%; 
+    }
     
-    /* 核心：保留纸张样式，不要去掉背景图 */
     #paper-preview {
         display: block !important;
-        margin: 20px auto !important; /* 居中 */
+        margin: 20mm auto !important;
         box-shadow: none !important;
         transform: none !important;
-        border: none !important; /* 去掉外框，保留内部边框 */
-        /* 背景图会保留 */
+        page-break-inside: avoid;
     }
     
     .preview-hint { display: none !important; }
