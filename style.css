@@ -42,6 +42,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
+    /* 默认背景纹理 */
     background-image: radial-gradient(#222 1px, transparent 1px);
     background-size: 20px 20px;
 }
@@ -98,22 +99,35 @@ textarea { resize: none; }
 .unlock-box { padding: 20px; background: #1a1a1a; border-radius: 10px; border: 1px solid #333; }
 .action-btn { width: 100%; padding: 15px; background: #333; border: 1px solid #555; color: #fff; margin-top: 10px; cursor: pointer; border-radius: 8px; }
 
-/* --- 5. 右侧纸张 --- */
+/* --- 5. 右侧纸张 (核心视觉区域) --- */
 .preview-stage { perspective: 1500px; }
 
 .paper {
     width: 400px; height: 560px;
-    background: #fdfbf7; color: #111;
+    /* 默认背景，会被 JS 覆盖为具体图片 */
+    background: #fdfbf7; 
+    background-size: cover;
+    background-position: center;
+    color: #111;
     padding: 25px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
     transform: rotateY(-10deg) rotateX(5deg);
-    transition: transform 0.5s;
+    transition: transform 0.5s, background-image 0.5s; /* 增加背景切换动画 */
     position: relative;
-    border-radius: 2px;
+    border-radius: 4px;
 }
 .right-panel:hover .paper { transform: rotateY(0) rotateX(0) scale(1.02); }
 
-.paper-border { border: 3px double var(--gold); height: 100%; padding: 20px; display: flex; flex-direction: column; }
+/* 边框样式 */
+.paper-border { 
+    border: 3px double var(--gold); 
+    height: 100%; 
+    padding: 20px; 
+    display: flex; flex-direction: column; 
+    background: rgba(255,255,255,0.7); /* 半透明白底，为了让文字在复杂背景上也能看清 */
+    backdrop-filter: blur(2px);
+}
+
 .paper-header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 20px; position: relative; }
 .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; opacity: 0.03; pointer-events: none; }
 .paper-header h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 5px;}
@@ -129,53 +143,42 @@ textarea { resize: none; }
 .stamp-inner span { font-weight: 900; font-size: 0.6rem; }
 .preview-hint { text-align: center; margin-top: 20px; color: #555; font-size: 0.8rem; }
 
-/* --- 6. 移动端适配 (注意：不要误伤 Print) --- */
+/* --- 6. 移动端适配 --- */
 @media screen and (max-width: 900px) {
     .main-container { flex-direction: column; }
     .left-panel { min-width: 100%; border-right: none; padding: 20px; }
-    .right-panel { display: none; } /* 仅在屏幕上隐藏 */
+    .right-panel { display: none; } 
 }
 
-/* --- 7. 打印专用样式 (修复空白) --- */
+/* --- 7. 打印专用样式 (所见即所得) --- */
 @media print {
-    /* 隐藏所有界面元素 */
+    /* 开启背景打印（关键！） */
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
     body > * { display: none !important; }
     
-    /* 恢复主容器显示，但隐藏其子元素 */
-    .main-container { 
-        display: block !important; 
-        margin: 0 !important; padding: 0 !important; width: 100% !important; 
-    }
-    .left-panel, .top-bar { display: none !important; }
-
-    /* 强制显示右侧面板，并重置背景 */
+    .main-container { display: block !important; margin: 0 !important; width: 100% !important; }
+    
+    /* 强制显示右侧面板 */
     .right-panel { 
         display: block !important; 
         width: 100% !important; 
-        height: auto !important; 
-        background: white !important;
+        height: 100vh !important;
         position: absolute; top: 0; left: 0;
+        background: white !important; /* 打印时背景底色为白，省墨 */
     }
 
-    /* 纸张样式重置：去掉3D，变成白纸黑字 */
-    .preview-stage { transform: none !important; padding: 0 !important; }
+    .preview-stage { transform: none !important; padding: 0 !important; margin: 0 auto; width: 100%; }
+    
+    /* 核心：保留纸张样式，不要去掉背景图 */
     #paper-preview {
         display: block !important;
-        position: relative !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
+        margin: 20px auto !important; /* 居中 */
         box-shadow: none !important;
         transform: none !important;
-        border: 2px solid #000 !important;
-        background-color: white !important;
-        color: black !important;
+        border: none !important; /* 去掉外框，保留内部边框 */
+        /* 背景图会保留 */
     }
     
-    /* 强制内部元素颜色为黑 */
-    #paper-preview *, .paper-header, .paper-body, .paper-footer {
-        color: black !important;
-        visibility: visible !important;
-    }
     .preview-hint { display: none !important; }
 }
