@@ -146,7 +146,7 @@ function handlePaymentClick() {
 }
 
 // ============================================================
-// 7. 超高清截图下载（2400×3360px 打印级别）
+// 7. 超高清截图下载（优化版：更快、更稳定）
 // ============================================================
 function verifyAndDownload() {
     const key = document.getElementById('license-key').value.trim();
@@ -155,21 +155,28 @@ function verifyAndDownload() {
         return;
     }
     
-    // 1. 生成更大的二维码
+    // 检查 html2canvas 是否加载成功
+    if (typeof html2canvas === 'undefined') {
+        alert("⚠️ Screenshot library not loaded.\n\nFalling back to browser print dialog.");
+        generateQRAndPrint();
+        return;
+    }
+    
+    // 1. 生成二维码
     const qrContainer = document.getElementById('preview-qr');
     if (qrContainer) {
         qrContainer.innerHTML = "";
         new QRCode(qrContainer, {
             text: "https://www.my-echo-box.com",
-            width: 150,
-            height: 150,
+            width: 120,
+            height: 120,
             colorDark: "#000000",
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
         });
     }
     
-    // 2. 准备截图：移除 3D 效果 + 放大元素
+    // 2. 准备截图
     const paper = document.getElementById('paper-preview');
     const originalWidth = paper.style.width;
     const originalHeight = paper.style.height;
@@ -179,16 +186,35 @@ function verifyAndDownload() {
     
     // 显示加载提示
     const loadingMsg = document.createElement('div');
+    loadingMsg.id = 'loading-overlay';
     loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.95);color:#fff;padding:30px 50px;border-radius:15px;font-size:18px;z-index:99999;text-align:center;border:2px solid #D4AF37;box-shadow:0 0 40px rgba(212,175,55,0.5);';
-    loadingMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;color:#D4AF37;"></i><br><br><strong>Generating Ultra HD Certificate...</strong><br><small style="opacity:0.7;margin-top:10px;display:block;">This may take 5-10 seconds</small>';
+    loadingMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;color:#D4AF37;"></i><br><br><strong>Generating HD Certificate...</strong><br><small style="opacity:0.7;margin-top:10px;display:block;">Please wait 3-5 seconds</small>';
     document.body.appendChild(loadingMsg);
     
-    // 瞬间"摆正"并放大
+    // 设置 15 秒超时保护
+    const timeoutId = setTimeout(() => {
+        console.error("Screenshot timeout, falling back to print");
+        document.body.removeChild(loadingMsg);
+        restorePaperStyle();
+        alert("⚠️ Screenshot generation timeout.\n\nOpening print dialog instead.");
+        window.print();
+    }, 15000);
+    
+    // 函数：恢复纸张样式
+    function restorePaperStyle() {
+        paper.style.width = originalWidth;
+        paper.style.height = originalHeight;
+        paper.style.transition = originalTransition;
+        paper.style.transform = originalTransform;
+        paper.style.boxShadow = originalBoxShadow;
+    }
+    
+    // 瞬间摆正并放大（降低到 1600px，更快）
     paper.style.transition = 'none';
     paper.style.transform = 'none';
     paper.style.boxShadow = 'none';
-    paper.style.width = '2400px';
-    paper.style.height = '3360px';
+    paper.style.width = '1600px';   // 从 2400 降到 1600
+    paper.style.height = '2240px';  // 从 3360 降到 2240
     
     // 给 DOM 渲染时间
     setTimeout(() => {
@@ -197,42 +223,58 @@ function verifyAndDownload() {
             useCORS: true,
             backgroundColor: null,
             logging: false,
-            width: 2400,
-            height: 3360,
-            windowWidth: 2400,
-            windowHeight: 3360
+            width: 1600,
+            height: 2240,
+            windowWidth: 1600,
+            windowHeight: 2240,
+            onclone: function(clonedDoc) {
+                // 确保克隆的文档样式正确
+                const clonedPaper = clonedDoc.getElementById('paper-preview');
+                if (clonedPaper) {
+                    clonedPaper.style.transform = 'none';
+                }
+            }
         }).then(canvas => {
+            clearTimeout(timeoutId);  // 取消超时
+            
             // 创建下载链接
             const link = document.createElement('a');
             const themeName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
             link.download = `EchoBox_${themeName}_Certificate_${Date.now()}.png`;
-            link.href = canvas.toDataURL("image/png", 1.0);
+            link.href = canvas.toDataURL("image/png", 0.95);  // 95% 质量，减小文件
             link.click();
             
-            // 恢复原始尺寸
-            paper.style.width = originalWidth;
-            paper.style.height = originalHeight;
-            paper.style.transition = originalTransition;
-            paper.style.transform = originalTransform;
-            paper.style.boxShadow = originalBoxShadow;
-            
+            // 恢复样式
+            restorePaperStyle();
             document.body.removeChild(loadingMsg);
             
-            alert("✅ Ultra HD Certificate Generated!\n\n📐 Resolution: 2400×3360 pixels\n📄 Perfect for A4 printing at 300 DPI\n🎨 Theme: " + themeName);
+            alert("✅ HD Certificate Generated!\n\n📐 Resolution: 1600×2240 pixels\n📄 Perfect for printing\n🎨 Theme: " + themeName);
             
         }).catch(err => {
-            console.error("Screenshot error:", err);
+            clearTimeout(timeoutId);
+            console.error("html2canvas error:", err);
             
-            paper.style.width = originalWidth;
-            paper.style.height = originalHeight;
-            paper.style.transition = originalTransition;
-            paper.style.transform = originalTransform;
-            paper.style.boxShadow = originalBoxShadow;
+            restorePaperStyle();
             document.body.removeChild(loadingMsg);
             
-            alert("❌ Error generating image. Please try again.");
+            alert("❌ Screenshot failed.\n\nOpening print dialog instead.");
+            window.print();
         });
-    }, 800);
+    }, 500);  // 从 800ms 降到 500ms
+}
+
+// 降级方案：如果 html2canvas 失败，用浏览器打印
+function generateQRAndPrint() {
+    const qrContainer = document.getElementById('preview-qr');
+    if (qrContainer) {
+        qrContainer.innerHTML = "";
+        new QRCode(qrContainer, {
+            text: "https://www.my-echo-box.com",
+            width: 80,
+            height: 80
+        });
+    }
+    setTimeout(() => window.print(), 500);
 }
 
 // ============================================================
