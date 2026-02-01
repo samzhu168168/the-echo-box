@@ -5,11 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Echo Box | Digital Legacy Vault</title>
     
-    <!-- 引入字体：Inter (正文), Playfair (标题), Dancing Script (手写体) -->
+    <!-- 引入字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    
+    <!-- QR Code 库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <!-- ⭐ html2canvas 多CDN备用加载方案 -->
+    <script>
+        (function() {
+            // 多个CDN源，按优先级尝试
+            var cdns = [
+                'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+                'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+                'https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
+            ];
+            
+            var currentIndex = 0;
+            
+            function loadScript(url) {
+                return new Promise(function(resolve, reject) {
+                    var script = document.createElement('script');
+                    script.src = url;
+                    script.async = false;  // 确保按顺序加载
+                    
+                    script.onload = function() {
+                        console.log('✅ html2canvas loaded from:', url);
+                        window.html2canvasLoaded = true;
+                        resolve();
+                    };
+                    
+                    script.onerror = function() {
+                        console.warn('❌ Failed to load from:', url);
+                        reject();
+                    };
+                    
+                    // 5秒超时
+                    setTimeout(function() {
+                        if (!window.html2canvasLoaded) {
+                            console.warn('⏱️ Timeout loading from:', url);
+                            reject();
+                        }
+                    }, 5000);
+                    
+                    document.head.appendChild(script);
+                });
+            }
+            
+            function tryNextCDN() {
+                if (currentIndex >= cdns.length) {
+                    console.error('⚠️ All CDN sources failed. Screenshot disabled.');
+                    window.html2canvasAvailable = false;
+                    return;
+                }
+                
+                console.log('🔄 Trying CDN ' + (currentIndex + 1) + '/' + cdns.length + '...');
+                
+                loadScript(cdns[currentIndex])
+                    .then(function() {
+                        window.html2canvasAvailable = true;
+                        console.log('🎉 html2canvas ready!');
+                    })
+                    .catch(function() {
+                        currentIndex++;
+                        setTimeout(tryNextCDN, 100);  // 等100ms再试下一个
+                    });
+            }
+            
+            // 页面加载完成后开始尝试
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', tryNextCDN);
+            } else {
+                tryNextCDN();
+            }
+        })();
+    </script>
 </head>
 <body>
 
@@ -20,7 +93,7 @@
 
     <div class="main-container">
         
-        <!-- 左侧：操作区 (Input) -->
+        <!-- 左侧：操作区 -->
         <div class="left-panel">
             <header>
                 <div class="logo"><i class="fa-solid fa-box-open"></i> Echo Box</div>
@@ -30,7 +103,6 @@
 
             <!-- 状态 1: 输入 -->
             <div id="step-create">
-                <!-- 模板选择器 -->
                 <div class="template-section">
                     <p class="section-label">Choose Template:</p>
                     <div class="btn-group">
@@ -66,16 +138,15 @@
                     <h2><i class="fa-solid fa-key"></i> Verify License</h2>
                     <p>Enter the key from your Gumroad email.</p>
                     <input type="text" id="license-key" placeholder="Paste Key Here (e.g. EB-2026...)">
-                    <button class="action-btn" onclick="verifyAndDownload()">Verify & Download</button>
+                    <button class="action-btn" onclick="verifyAndDownload()">Verify & Download HD Certificate</button>
                     <p class="login-link"><a href="#" onclick="toggleUnlock()">Back</a></p>
                 </div>
             </div>
         </div>
 
-        <!-- 右侧：实时预览区 (Visual) -->
+        <!-- 右侧：实时预览区 -->
         <div class="right-panel">
             <div class="preview-stage">
-                <!-- 拟物化纸张 -->
                 <div id="paper-preview" class="paper">
                     <div class="paper-border">
                         <div class="paper-header">
