@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             subtitle: 'Leave an echo, not just a memory.',
             placeholder: 'In the silence between your victories, what is the one truth you fear might die with you?',
             buttonText: 'IMPRINT INTO ETERNITY',
-            gumroadLink: 'https://samzhu168.gumroad.com/l/fmrrxr',
+            gumroadLink: 'https://samzhu168.gumroad.com/l/echo-box-family-emergency-binder',
             certificateTitle: 'CERTIFICATE OF LEGACY',
             backgroundImage: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=1920&h=1080&fit=crop&q=80'
         };
