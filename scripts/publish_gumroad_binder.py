@@ -2,7 +2,6 @@
 import os
 import re
 import sys
-import uuid
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.parse import urlencode
@@ -12,18 +11,11 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ENV = Path(r"F:\MyTraeProjects\tools\.env")
 API_BASE = "https://api.gumroad.com/v2"
-SLUG = "fmrrxr"
-PDF_PATH = ROOT / "output" / "pdf" / "The-Echo-Box-Family-Emergency-Binder-Kit.pdf"
-
+SLUG = "echo-box-family-emergency-binder"
+PDF_RAW_URL = "https://raw.githubusercontent.com/samzhu168168/the-echo-box/main/output/pdf/The-Echo-Box-Family-Emergency-Binder-Kit.pdf"
 
 PRODUCT_NAME = "The Echo Box - Family Emergency Binder Full Kit"
-PRICE_DOLLARS = 9.99
-TAGS = [
-    "family emergency binder",
-    "caregiver checklist",
-    "aging parents",
-    "printable planner",
-]
+PRICE_CENTS = 999
 
 DESCRIPTION = """
 <h2>The family emergency file you hope you never need.</h2>
@@ -45,14 +37,6 @@ DESCRIPTION = """
   <li>6-month update checklist</li>
 </ul>
 
-<h3>Who it is for</h3>
-<ul>
-  <li>Adult children helping aging parents get organized</li>
-  <li>Spouses who do not want one person to carry all the household knowledge</li>
-  <li>Caregivers who need emergency information in one place</li>
-  <li>Anyone who wants their family to have a simple plan before a crisis</li>
-</ul>
-
 <h3>Important note</h3>
 <p>This is an organization and communication tool. It is not legal, medical, financial, tax, or estate planning advice. It does not replace a will, power of attorney, advance directive, insurance policy, or professional advice.</p>
 """
@@ -61,7 +45,6 @@ DESCRIPTION = """
 def load_token(env_path: Path = DEFAULT_ENV) -> str:
     if os.environ.get("GUMROAD_TOKEN"):
         return os.environ["GUMROAD_TOKEN"].strip()
-
     text = env_path.read_text(encoding="utf-8", errors="ignore")
     match = re.search(r"GUMROAD_TOKEN\s*=\s*([^\r\n]+)", text)
     if not match:
@@ -82,10 +65,12 @@ def read_json(req: Request, timeout=120):
     return data
 
 
-def form_request(method: str, path: str, fields: dict, timeout=120):
-    body = urlencode(fields).encode("utf-8")
+def api(method: str, path: str, token: str, fields: dict | None = None, timeout=120):
+    query = urlencode({"access_token": token})
+    url = f"{API_BASE}{path}?{query}"
+    body = urlencode(fields or {}).encode("utf-8") if fields is not None else None
     req = Request(
-        f"{API_BASE}{path}",
+        url,
         data=body,
         method=method,
         headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -93,40 +78,8 @@ def form_request(method: str, path: str, fields: dict, timeout=120):
     return read_json(req, timeout=timeout)
 
 
-def multipart_request(method: str, path: str, fields: dict, file_field: str, file_path: Path):
-    boundary = f"----EchoBox{uuid.uuid4().hex}"
-    chunks = []
-    for name, value in fields.items():
-        chunks.append(f"--{boundary}\r\n".encode("utf-8"))
-        chunks.append(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode("utf-8"))
-        chunks.append(str(value).encode("utf-8"))
-        chunks.append(b"\r\n")
-
-    chunks.append(f"--{boundary}\r\n".encode("utf-8"))
-    chunks.append(
-        (
-            f'Content-Disposition: form-data; name="{file_field}"; filename="{file_path.name}"\r\n'
-            "Content-Type: application/pdf\r\n\r\n"
-        ).encode("utf-8")
-    )
-    chunks.append(file_path.read_bytes())
-    chunks.append(b"\r\n")
-    chunks.append(f"--{boundary}--\r\n".encode("utf-8"))
-
-    req = Request(
-        f"{API_BASE}{path}",
-        data=b"".join(chunks),
-        method=method,
-        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
-    )
-    return read_json(req, timeout=120)
-
-
 def list_products(token: str):
-    query = urlencode({"access_token": token})
-    req = Request(f"{API_BASE}/products?{query}", method="GET")
-    data = read_json(req, timeout=30)
-    return data.get("products", [])
+    return api("GET", "/products", token, None, timeout=30).get("products", [])
 
 
 def find_product(products):
@@ -138,51 +91,32 @@ def find_product(products):
     return None
 
 
-def product_payload(token: str):
+def payload():
     return {
-        "access_token": token,
         "name": PRODUCT_NAME,
-        "price": int(PRICE_DOLLARS * 100),
+        "price": PRICE_CENTS,
         "description": DESCRIPTION,
         "custom_permalink": SLUG,
         "require_shipping": "false",
-        "tags": json.dumps(TAGS),
     }
 
 
 def main():
-    if not PDF_PATH.exists():
-        raise RuntimeError(f"Missing PDF: {PDF_PATH}")
-
     token = load_token()
-    products = list_products(token)
-    existing = find_product(products)
+    existing = find_product(list_products(token))
 
     if existing:
         product_id = existing["id"]
-        data = multipart_request(
-            "PUT",
-            f"/products/{product_id}",
-            product_payload(token),
-            "file",
-            PDF_PATH,
-        )
+        data = api("PUT", f"/products/{product_id}", token, payload())
         action = "updated"
     else:
-        data = multipart_request("POST", "/products", product_payload(token), "file", PDF_PATH)
+        data = api("POST", "/products", token, payload())
         product_id = data["product"]["id"]
         action = "created"
 
     product = data.get("product", {})
-
     if not product.get("published"):
-        publish_data = form_request(
-            "PUT",
-            f"/products/{product_id}/enable",
-            {"access_token": token},
-            timeout=30,
-        )
-        product = publish_data.get("product", product)
+        product = api("PUT", f"/products/{product_id}/enable", token).get("product", product)
 
     print(
         json.dumps(
@@ -190,9 +124,12 @@ def main():
                 "action": action,
                 "id": product_id,
                 "name": product.get("name", PRODUCT_NAME),
-                "price_cents": product.get("price", int(PRICE_DOLLARS * 100)),
-                "published": product.get("published", True),
+                "price_cents": product.get("price", PRICE_CENTS),
+                "published": product.get("published"),
                 "url": product.get("short_url") or f"https://samzhu168.gumroad.com/l/{SLUG}",
+                "files_attached": product.get("files", []),
+                "pdf_raw_url_for_manual_attachment": PDF_RAW_URL,
+                "note": "Gumroad's current API rejects legacy file uploads. Attach the PDF in Gumroad UI or implement the files/presign flow.",
             },
             ensure_ascii=False,
             indent=2,
