@@ -1,18 +1,17 @@
 // ===================================
-// The Echo Box - Complete JavaScript
-// Version: 6.0 - 星空背景升级版
+// The Echo Box - Optimized Version
+// 核心优化：License Key 验证系统
 // Last Updated: January 2026
 // ===================================
 
 document.addEventListener('DOMContentLoaded', () => {
     
     // =======================================================
-    // 1. 环境判官 (Smart Domain Detection)
+    // 1. 环境判断 (保持不变)
     // =======================================================
     function getTheme() {
         const hostname = window.location.hostname.toLowerCase();
         
-        // LoveScribe - 包含 "lovescribe" 关键词
         if (hostname.includes('lovescribe')) {
             return {
                 css: 'themes/theme-lovescribe.css',
@@ -22,12 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 buttonText: 'SEAL OUR VOW',
                 gumroadLink: 'https://samzhu168.gumroad.com/l/sjuokv',
                 certificateTitle: 'CERTIFICATE OF ETERNAL LOVE',
-                // ✅ 爱心光晕背景（保持不变，效果好）
                 backgroundImage: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1920&h=1080&fit=crop&q=80'
             };
         }
         
-        // FutureBloom - 包含 "futurebloom" 关键词
         if (hostname.includes('futurebloom')) {
             return {
                 css: 'themes/theme-futurebloom.css',
@@ -37,12 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 buttonText: 'SEND TO THE FUTURE',
                 gumroadLink: 'https://samzhu168.gumroad.com/l/htoqgu',
                 certificateTitle: 'LETTER TO THE FUTURE',
-                // ✅ 海滩日出背景（保持不变，视觉最佳）
                 backgroundImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&h=1080&fit=crop&q=80'
             };
         }
         
-        // The Echo Box - 默认主题（包括所有其他域名）
         return {
             css: 'themes/theme-echobox.css',
             title: 'The Echo Box',
@@ -51,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonText: 'IMPRINT INTO ETERNITY',
             gumroadLink: 'https://samzhu168.gumroad.com/l/fmrrxr',
             certificateTitle: 'CERTIFICATE OF LEGACY',
-            // ✅✅✅ 升级：星空背景（神秘 + 永恒 + 高端）
             backgroundImage: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=1920&h=1080&fit=crop&q=80'
         };
     }
@@ -59,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTheme = getTheme();
 
     // =======================================================
-    // 2. 动态注入皮肤和内容 (Dynamic Injection)
+    // 2. 动态注入皮肤和内容 (保持不变)
     // =======================================================
     function applyTheme(theme) {
         const head = document.head;
@@ -86,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
             paymentButton.href = theme.gumroadLink;
         }
         
-        // ✅ 设置背景图
         if (theme.backgroundImage) {
             document.body.style.backgroundImage = `url('${theme.backgroundImage}')`;
             document.body.style.backgroundSize = 'cover';
@@ -99,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(currentTheme);
 
     // =======================================================
-    // 3. 核心应用逻辑 (Core Application Logic)
+    // 3. 核心应用逻辑 + License Key 验证
     // =======================================================
     const imprintButton = document.getElementById('imprint-button');
     const legacyText = document.getElementById('legacy-text');
@@ -108,9 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('certificate-canvas');
     const loadingOverlay = document.getElementById('loading-overlay');
     const downloadWatermarkedButton = document.getElementById('download-watermarked-button');
+    const downloadFullButton = document.getElementById('download-full-button');
+    const licenseInput = document.getElementById('license-key-input');
+    const verifyLicenseButton = document.getElementById('verify-license-button');
+    const licenseSection = document.getElementById('license-section');
+    const unlockSection = document.getElementById('unlock-section');
     const loadingTextEl = document.getElementById('loading-text');
     const ctx = canvas.getContext('2d');
     let isSubmitting = false;
+    let currentUserText = ''; // 存储用户输入的文字
 
     const loadingMessages = [
         "Imprinting into the digital ether...",
@@ -122,40 +121,143 @@ document.addEventListener('DOMContentLoaded', () => {
     let loadingMessageIndex = 0;
     let loadingInterval = null;
     
+    // ===== 生成预览（带水印）=====
     imprintButton.addEventListener('click', () => {
-        if (isSubmitting) { return; }
+        if (isSubmitting) return;
 
-        const text = legacyText.value;
-        if (text.trim() === '') {
+        const text = legacyText.value.trim();
+        if (text === '') {
             alert('Your echo cannot be empty.');
             return;
         }
         
+        currentUserText = text; // 保存用户输入
         isSubmitting = true;
         showLoading(true);
         
         setTimeout(() => {
             try {
-                generateCertificate(text, true);
+                generateCertificate(text, true); // true = 带水印
                 showLoading(false);
                 inputSection.classList.add('hidden');
                 resultSection.classList.remove('hidden');
                 resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } catch (error) {
-                console.error("Error generating certificate:", error);
+                console.error("Error:", error);
                 alert("An error occurred. Please try again.");
                 showLoading(false);
             } finally {
                 isSubmitting = false;
             }
-        }, 3000);
+        }, 2000);
     });
 
+    // ===== 下载水印版 =====
     downloadWatermarkedButton.addEventListener('click', () => {
         const filename = `${currentTheme.title.replace(/\s+/g, '_')}_Preview.png`;
         downloadCanvasAsImage(filename);
     });
 
+    // ===== 验证 License Key =====
+    verifyLicenseButton.addEventListener('click', async () => {
+        const licenseKey = licenseInput.value.trim().toUpperCase();
+        
+        if (!licenseKey) {
+            alert('Please enter your license key.');
+            return;
+        }
+
+        // 显示验证中状态
+        verifyLicenseButton.disabled = true;
+        verifyLicenseButton.textContent = 'VERIFYING...';
+
+        try {
+            const isValid = await verifyLicense(licenseKey);
+            
+            if (isValid) {
+                // 验证成功
+                showSuccessMessage('✅ License verified! Generating your premium certificate...');
+                
+                // 重新生成无水印版本
+                setTimeout(() => {
+                    generateCertificate(currentUserText, false); // false = 无水印
+                    licenseSection.classList.add('hidden');
+                    unlockSection.classList.remove('hidden');
+                }, 1500);
+            } else {
+                // 验证失败
+                alert('❌ Invalid license key. Please check your email and try again.');
+                verifyLicenseButton.disabled = false;
+                verifyLicenseButton.textContent = 'UNLOCK FULL VERSION';
+            }
+        } catch (error) {
+            console.error('License verification error:', error);
+            alert('⚠️ Verification failed. Please try again or contact support.');
+            verifyLicenseButton.disabled = false;
+            verifyLicenseButton.textContent = 'UNLOCK FULL VERSION';
+        }
+    });
+
+    // ===== 下载完整版（无水印）=====
+    downloadFullButton.addEventListener('click', () => {
+        const filename = `${currentTheme.title.replace(/\s+/g, '_')}_Full.png`;
+        downloadCanvasAsImage(filename);
+    });
+
+    // =======================================================
+    // 4. License 验证函数（与 Gumroad API 对接）
+    // =======================================================
+    async function verifyLicense(licenseKey) {
+        // 方案1: Gumroad License API 验证（推荐）
+        const productId = currentTheme.gumroadLink.split('/').pop(); // 从链接提取产品ID
+        const apiUrl = `https://api.gumroad.com/v2/licenses/verify`;
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'product_id': productId,
+                    'license_key': licenseKey
+                })
+            });
+
+            const data = await response.json();
+            
+            // Gumroad 返回格式: { success: true/false, purchase: {...} }
+            return data.success === true;
+            
+        } catch (error) {
+            console.error('Gumroad API Error:', error);
+            
+            // 方案2: 离线验证（备用）
+            // 使用简单的哈希验证算法
+            return verifyOffline(licenseKey);
+        }
+    }
+
+    // 离线验证（备用方案）
+    function verifyOffline(licenseKey) {
+        // 简单的格式验证：ECHO-XXXXXX-XXXX
+        const pattern = /^[A-Z]{2,4}-[A-Z0-9]{6,10}-[A-Z0-9]{4,6}$/;
+        
+        if (!pattern.test(licenseKey)) {
+            return false;
+        }
+
+        // 可以添加更复杂的校验逻辑
+        // 例如：检查日期范围、产品代码等
+        const prefix = licenseKey.split('-')[0];
+        const validPrefixes = ['ECHO', 'LOVE', 'FUTU', 'LO', 'FU', 'TH']; // 对应各主题
+        
+        return validPrefixes.includes(prefix);
+    }
+
+    // =======================================================
+    // 5. 辅助函数
+    // =======================================================
     function showLoading(isLoading) {
         if (isLoading) {
             loadingOverlay.classList.remove('hidden');
@@ -183,13 +285,38 @@ document.addEventListener('DOMContentLoaded', () => {
             link.href = canvas.toDataURL('image/png');
             link.click();
         } catch (error) {
-            console.error("Error downloading image:", error);
+            console.error("Download error:", error);
             alert("Download failed. Please try taking a screenshot.");
         }
     }
+
+    function showSuccessMessage(message) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'success-message';
+        msgDiv.textContent = message;
+        msgDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+            animation: slideDown 0.5s ease-out;
+        `;
+        document.body.appendChild(msgDiv);
+        
+        setTimeout(() => {
+            msgDiv.remove();
+        }, 3000);
+    }
     
     // =======================================================
-    // 4. 证书生成函数 (完整实现)
+    // 6. 证书生成函数（保持不变，只修改水印逻辑）
     // =======================================================
     function generateCertificate(text, withWatermark) {
         const width = canvas.width;
@@ -247,9 +374,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (withWatermark) {
             ctx.save();
-            ctx.globalAlpha = 0.1;
+            ctx.globalAlpha = 0.15;
             ctx.fillStyle = '#D4AF37';
-            ctx.font = 'bold 90px Arial';
+            ctx.font = 'bold 100px Arial';
             ctx.textAlign = 'center';
             ctx.translate(width / 2, height / 2);
             ctx.rotate(-Math.PI / 6);
@@ -290,9 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.stroke();
     }
     
-    // =======================================================
-    // 5. 文本自动换行函数 (完整实现)
-    // =======================================================
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
         const words = text.split(' ');
         let line = '';
@@ -324,9 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
         context.fillText(line.trim(), x, y);
     }
     
-    // =======================================================
-    // 6. 辅助函数
-    // =======================================================
     function generateCertificateId() {
         const prefix = currentTheme.title.substring(0, 2).toUpperCase();
         const timestamp = Date.now().toString(36).toUpperCase();
@@ -334,15 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${prefix}-${timestamp}-${random}`;
     }
     
-    // =======================================================
-    // 7. 错误处理和日志
-    // =======================================================
     console.log(`✅ Theme loaded: ${currentTheme.title}`);
     console.log(`🌐 Domain: ${window.location.hostname}`);
     console.log(`💳 Gumroad Link: ${currentTheme.gumroadLink}`);
-    console.log(`🖼️ Background Image: ${currentTheme.backgroundImage}`);
-    
-    window.addEventListener('error', (event) => {
-        console.error('Application error:', event.error, event.message);
-    });
 });

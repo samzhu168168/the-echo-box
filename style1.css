@@ -1,0 +1,516 @@
+/* ===================================
+   The Echo Box - Optimized Stylesheet
+   新增: License验证UI + 支付选项卡片
+   =================================== */
+
+:root {
+    --color-background: #0a0a0a;
+    --color-primary: #D4AF37;
+    --color-text-light: #e0e0e0;
+    --color-text-dark: #1a1a1a;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Inter', sans-serif;
+    
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 3rem;
+    
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-background);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-md);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Header ===== */
+header h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--color-primary);
+    letter-spacing: 3px;
+    margin-bottom: var(--spacing-xs);
+    animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% { text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3); }
+    50% { text-shadow: 0 2px 20px rgba(212, 175, 55, 0.6); }
+}
+
+.subtitle {
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    opacity: 0.8;
+    font-style: italic;
+}
+
+/* ===== Input Section ===== */
+#legacy-text {
+    width: 100%;
+    height: 200px;
+    background-color: rgba(26, 26, 26, 0.8);
+    border: 1px solid #333;
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: var(--spacing-sm);
+    resize: vertical;
+    border-radius: 8px;
+    transition: all var(--transition-normal);
+}
+
+#legacy-text:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.privacy-note {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: var(--spacing-sm);
+}
+
+/* ===== Buttons ===== */
+#imprint-button {
+    background: linear-gradient(135deg, var(--color-primary), #c5a028);
+    color: var(--color-text-dark);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    letter-spacing: 2px;
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+#imprint-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+/* ===== Result Section ===== */
+#result-section {
+    margin-top: var(--spacing-lg);
+}
+
+#result-section h2 {
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+#certificate-canvas {
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    margin-bottom: var(--spacing-md);
+}
+
+/* ===== 💎 支付选项卡片 ===== */
+.payment-section {
+    margin-top: var(--spacing-md);
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.option-card {
+    background: rgba(17, 17, 17, 0.9);
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.premium-option {
+    border-color: var(--color-primary);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(17, 17, 17, 0.95));
+}
+
+.badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.option-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    margin: 1rem 0;
+}
+
+.price-note {
+    font-size: 0.9rem;
+    color: #999;
+    font-weight: 400;
+}
+
+.features {
+    list-style: none;
+    text-align: left;
+    margin: 1.5rem 0;
+    padding: 0;
+}
+
+.features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #2a2a2a;
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+.features li:last-child {
+    border-bottom: none;
+}
+
+/* ===== 按钮样式 ===== */
+.payment-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    width: 100%;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.payment-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(40, 167, 69, 0.6);
+}
+
+.secondary-button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #555;
+    color: #ccc;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    transition: all var(--transition-normal);
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.secondary-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-text-light);
+    color: white;
+}
+
+.trust-note {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+/* ===== 📧 License Key 输入区域 ===== */
+.license-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(17, 17, 17, 0.8);
+    border: 1px solid #333;
+    border-radius: 12px;
+}
+
+.divider {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #555);
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.divider span {
+    background: rgba(17, 17, 17, 0.9);
+    padding: 0 1rem;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.license-instruction {
+    color: #ccc;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.license-input-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+#license-key-input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    background: rgba(26, 26, 26, 0.9);
+    border: 1px solid #444;
+    color: var(--color-text-light);
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all var(--transition-normal);
+}
+
+#license-key-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.verify-button {
+    background: linear-gradient(135deg, var(--color-primary), #c5a028);
+    color: var(--color-text-dark);
+    font-weight: 700;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.verify-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.verify-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.license-help {
+    font-size: 0.8rem;
+    color: #999;
+    text-align: center;
+}
+
+.license-help a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.license-help a:hover {
+    text-decoration: underline;
+}
+
+/* ===== ✅ 解锁成功区域 ===== */
+.unlock-section {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(17, 17, 17, 0.9));
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.success-banner {
+    margin-bottom: 1.5rem;
+}
+
+.success-banner h3 {
+    color: #28a745;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.success-banner p {
+    color: #ccc;
+}
+
+.download-premium-button {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    width: 100%;
+}
+
+.download-premium-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(40, 167, 69, 0.6);
+}
+
+.download-note {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 1rem;
+}
+
+/* ===== Loading Overlay ===== */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(10px);
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--color-primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== Footer ===== */
+.visible-footer {
+    text-align: center;
+    padding: var(--spacing-md) 0;
+    margin-top: var(--spacing-lg);
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.visible-footer a {
+    color: #999;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.visible-footer a:hover {
+    color: var(--color-primary);
+}
+
+/* ===== Utility ===== */
+.hidden {
+    display: none !important;
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {
+    .payment-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .license-input-group {
+        flex-direction: column;
+    }
+    
+    .verify-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .option-card {
+        padding: 1rem;
+    }
+    
+    .price {
+        font-size: 2rem;
+    }
+}

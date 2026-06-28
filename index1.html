@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Echo Box - Imprint Your Legacy</title>
+    
+    <!-- SEO Tags -->
+    <meta name="description" content="Create permanent digital legacy messages. Record messages for family after death. $19.99 one-time payment.">
+    <meta property="og:title" content="The Echo Box - Leave an Echo, Not Just a Memory">
+    <meta property="og:description" content="Create a permanent digital legacy for your loved ones. Write a message that lasts forever.">
+    <meta property="og:image" content="https://the-echo-box.vercel.app/assets/echobox_social.jpg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-56RE20V4H7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-56RE20V4H7');
+    </script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>The Echo Box</h1>
+            <p class="subtitle">Leave an echo, not just a memory.</p>
+        </header>
+
+        <main id="main-content">
+            <!-- ========== 步骤1: 输入内容 ========== -->
+            <div id="input-section">
+                <textarea id="legacy-text" placeholder="In the silence between your victories, what is the one truth you fear might die with you?" aria-label="Legacy message input"></textarea>
+                <button id="imprint-button">IMPRINT INTO ETERNITY</button>
+                <p class="privacy-note">✅ Your message is processed locally. We never see or store your content.</p>
+            </div>
+
+            <!-- ========== 步骤2: 预览 + 支付选择 ========== -->
+            <div id="result-section" class="hidden">
+                <h2>✨ Your Echo is Cast</h2>
+                <canvas id="certificate-canvas" width="1200" height="630" aria-label="Certificate preview"></canvas>
+                
+                <!-- 💰 支付选项区域 -->
+                <div class="payment-section">
+                    <div class="payment-options">
+                        <div class="option-card free-option">
+                            <h3>🎁 Free Preview</h3>
+                            <p class="price">$0</p>
+                            <ul class="features">
+                                <li>✅ Watermarked certificate</li>
+                                <li>✅ Standard resolution</li>
+                                <li>❌ Not suitable for printing</li>
+                            </ul>
+                            <button id="download-watermarked-button" class="secondary-button">
+                                Download Preview (Free)
+                            </button>
+                        </div>
+
+                        <div class="option-card premium-option">
+                            <div class="badge">🔥 Most Popular</div>
+                            <h3>💎 Premium Certificate</h3>
+                            <p class="price">$19.99 <span class="price-note">one-time</span></p>
+                            <ul class="features">
+                                <li>✅ <strong>No watermark</strong></li>
+                                <li>✅ High-resolution (1200x630)</li>
+                                <li>✅ Print-quality PDF included</li>
+                                <li>✅ Lifetime ownership</li>
+                                <li>✅ No subscription required</li>
+                            </ul>
+                            <a href="#" class="payment-button" target="_blank" rel="noopener">
+                                🔒 SECURE CHECKOUT - $19.99
+                            </a>
+                            <p class="trust-note">💳 Secure payment via Gumroad • Instant delivery</p>
+                        </div>
+                    </div>
+
+                    <!-- 📧 License Key 输入区域 -->
+                    <div id="license-section" class="license-section">
+                        <div class="divider">
+                            <span>Already purchased?</span>
+                        </div>
+                        <p class="license-instruction">
+                            Enter the license key from your purchase email to unlock the full version:
+                        </p>
+                        <div class="license-input-group">
+                            <input 
+                                type="text" 
+                                id="license-key-input" 
+                                placeholder="ECHO-XXXXXX-XXXX"
+                                maxlength="25"
+                                autocomplete="off"
+                                spellcheck="false"
+                            >
+                            <button id="verify-license-button" class="verify-button">
+                                UNLOCK FULL VERSION
+                            </button>
+                        </div>
+                        <p class="license-help">
+                            💡 Can't find your license? Check your email or 
+                            <a href="mailto:support@the-echobox.com">contact support</a>
+                        </p>
+                    </div>
+
+                    <!-- ✅ 解锁成功后显示 -->
+                    <div id="unlock-section" class="unlock-section hidden">
+                        <div class="success-banner">
+                            <h3>🎉 License Verified Successfully!</h3>
+                            <p>Your premium certificate is ready. Download the watermark-free version below:</p>
+                        </div>
+                        <button id="download-full-button" class="download-premium-button">
+                            ⬇️ DOWNLOAD FULL VERSION (No Watermark)
+                        </button>
+                        <p class="download-note">
+                            💾 Save this file to your device or cloud storage for safekeeping
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Imprinting into the digital ether...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="visible-footer">
+        <nav aria-label="Legal information">
+            <a href="privacy.html">Privacy Policy</a> | 
+            <a href="terms.html">Terms of Service</a> | 
+            <a href="mailto:support@the-echobox.com">Contact</a>
+        </nav>
+        <p class="copyright">© 2026 The Echo Box. All rights reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
