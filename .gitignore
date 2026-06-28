@@ -11,3 +11,6 @@ yarn-error.log*
 
 # Keep the code repository deploy-focused; archive marketing deliverables elsewhere.
 营销素材/
+
+# Local MCP/browser automation config.
+config/
