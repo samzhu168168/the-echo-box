@@ -100,7 +100,7 @@ Thank you for purchasing The Echo Box. Your legacy is now ready to download.
 ECHO-XXXXXX-XXXX
 
 📝 HOW TO USE:
-1. Go back to https://the-echo-box.vercel.app/create.html
+1. Go back to https://www.my-echo-box.com/create.html
 2. Scroll to "Already purchased?"
 3. Enter your license key
 4. Download your full certificate (no watermark)
