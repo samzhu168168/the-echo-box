@@ -1,3 +1,10 @@
+const PAID_KIT_CONFIG = {
+    enabled: false,
+    price: '$9.99',
+    productName: 'The Echo Box - 30-Day No Contact Reset Kit',
+    checkoutUrl: ''
+};
+
 function initEmergencyBinder() {
     const form = document.getElementById('binder-form');
     if (!form) return;
@@ -190,6 +197,12 @@ function initBreakupReset() {
     const clearRealityButton = document.getElementById('clear-reality-button');
     const necessaryReason = document.getElementById('necessary-reason');
     const necessaryGuidance = document.getElementById('necessary-guidance');
+    const paidKitPanel = document.getElementById('paid-kit-panel');
+    const paidKitPrice = document.getElementById('paid-kit-price');
+    const paidKitButton = document.getElementById('paid-kit-button');
+    const paidKitNote = document.getElementById('paid-kit-note');
+    const exportAllDataButton = document.getElementById('export-all-data-button');
+    const clearAllDataButton = document.getElementById('clear-all-data-button');
 
     const triggerCopy = {
         they_texted: ['A reply can wake up hope fast.', 'Read it later. You do not need to prove availability tonight.', 'Wait ten minutes before opening the thread again.'],
@@ -215,8 +228,11 @@ function initBreakupReset() {
     };
 
     applyExperiment();
+    setupPaidKit();
+    setupPricingTracking();
     restoreScreen();
-    trackEvent('page_view');
+    trackEvent('landing_page_view');
+    if (Object.keys(state).length > 0) trackEvent('return_visit_detected');
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -242,11 +258,16 @@ function initBreakupReset() {
             : 'Do not decide from the spike. Let your body come down first.';
         startTimer();
         trackEvent('reset_started', { saveMode: doNotSave.checked ? 'no_save' : 'local_save', safetyFlag });
+        if (!doNotSave.checked) trackEvent('unsent_message_saved_local', { saveMode: 'local_save' });
         resetFlow.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     messageInput.addEventListener('input', () => {
         messageStatus.textContent = messageInput.value.trim() ? 'Private draft' : 'Private draft';
+        if (messageInput.value.trim() && !messageInput.dataset.started) {
+            messageInput.dataset.started = 'true';
+            trackEvent('unsent_message_started');
+        }
     });
 
     document.getElementById('trigger-grid').addEventListener('click', (event) => {
@@ -262,7 +283,7 @@ function initBreakupReset() {
         const note = getCurrentMessage();
         if (!note) return;
         downloadFile('echo-box-unsent-message.txt', note, 'text/plain;charset=utf-8');
-        trackEvent('message_exported');
+        trackEvent('local_data_exported', { reason: 'unsent_message' });
     });
 
     deleteMessageButton.addEventListener('click', () => {
@@ -272,7 +293,7 @@ function initBreakupReset() {
         saveState();
         messageInput.value = '';
         messageStatus.textContent = 'Deleted locally';
-        trackEvent('message_deleted');
+        trackEvent('local_data_cleared', { reason: 'unsent_message' });
     });
 
     saveCounterButton.addEventListener('click', () => {
@@ -280,7 +301,7 @@ function initBreakupReset() {
         state.lastContactAt = new Date(lastContactInput.value).getTime();
         saveState();
         renderCounter();
-        trackEvent('counter_saved');
+        trackEvent('no_contact_counter_created');
     });
 
     restartCounterButton.addEventListener('click', () => {
@@ -288,14 +309,14 @@ function initBreakupReset() {
         lastContactInput.value = toDatetimeLocal(state.lastContactAt);
         saveState();
         renderCounter();
-        trackEvent('counter_restarted');
+        trackEvent('no_contact_counter_created', { reason: 'restart' });
     });
 
     realityForm.addEventListener('submit', (event) => {
         event.preventDefault();
         state.realityBox = Object.fromEntries(new FormData(realityForm).entries());
         saveState();
-        trackEvent('reality_saved');
+        trackEvent('reality_box_created');
         const button = realityForm.querySelector('button[type="submit"]');
         const previous = button.textContent;
         button.textContent = 'Saved locally';
@@ -305,7 +326,7 @@ function initBreakupReset() {
     exportRealityButton.addEventListener('click', () => {
         const data = Object.fromEntries(new FormData(realityForm).entries());
         downloadFile('echo-box-reality-box.json', JSON.stringify(data, null, 2), 'application/json;charset=utf-8');
-        trackEvent('reality_exported');
+        trackEvent('local_data_exported', { reason: 'reality_box' });
     });
 
     clearRealityButton.addEventListener('click', () => {
@@ -313,19 +334,90 @@ function initBreakupReset() {
         state.realityBox = {};
         saveState();
         realityForm.reset();
-        trackEvent('reality_cleared');
+        trackEvent('local_data_cleared', { reason: 'reality_box' });
     });
 
     necessaryReason.addEventListener('change', () => {
         necessaryGuidance.textContent = necessaryCopy[necessaryReason.value] || necessaryCopy.miss;
-        trackEvent('necessary_filter_used', { reason: necessaryReason.value });
+        trackEvent('trigger_selected', { trigger: 'necessary_' + necessaryReason.value });
     });
+
+    if (exportAllDataButton) {
+        exportAllDataButton.addEventListener('click', () => {
+            const payload = {
+                breakupData: state,
+                analyticsEvents: safeJson(localStorage.getItem(window.echoAnalytics?.STORAGE_KEY || 'echoBoxAnalyticsEvents.v1')) || []
+            };
+            downloadFile('echo-box-local-data.json', JSON.stringify(payload, null, 2), 'application/json;charset=utf-8');
+            trackEvent('local_data_exported', { reason: 'all_local_data' });
+        });
+    }
+
+    if (clearAllDataButton) {
+        clearAllDataButton.addEventListener('click', () => {
+            if (!confirm('Clear all local Echo Box data on this browser?')) return;
+            localStorage.removeItem(keys.data);
+            localStorage.removeItem('echoBoxAnalyticsEvents.v1');
+            localStorage.removeItem('echoBoxAnalyticsSession.v1');
+            localStorage.removeItem(keys.experiment);
+            trackEvent('local_data_cleared', { reason: 'all_local_data' });
+            form.reset();
+            realityForm.reset();
+            messageInput.value = '';
+            resetFlow.classList.add('hidden');
+            counterResult.innerHTML = '<strong>No counter set yet.</strong><span>Set a date to see your protected time.</span>';
+            messageStatus.textContent = 'Cleared locally';
+        });
+    }
 
     window.addEventListener('beforeunload', () => {
         if (state.resetEndsAt && Date.now() < state.resetEndsAt) {
             trackEvent('left_during_reset');
         }
     });
+
+    function setupPaidKit() {
+        if (!paidKitButton) return;
+        if (paidKitPrice) paidKitPrice.textContent = PAID_KIT_CONFIG.price;
+        paidKitButton.textContent = PAID_KIT_CONFIG.enabled ? 'Get the 30-Day Reset Kit - ' + PAID_KIT_CONFIG.price : 'Coming soon';
+        paidKitButton.disabled = !PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl;
+        if (paidKitNote) {
+            paidKitNote.textContent = PAID_KIT_CONFIG.enabled
+                ? 'One-time purchase. No subscription. Digital delivery through Gumroad.'
+                : 'Waiting for the Gumroad product URL. This button will not send users to the old Family Emergency Binder product.';
+        }
+        paidKitButton.addEventListener('click', () => {
+            trackEvent('paid_kit_cta_clicked', { price: PAID_KIT_CONFIG.price, enabled: PAID_KIT_CONFIG.enabled });
+            if (!PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl) {
+                trackEvent('gumroad_checkout_failed', { reason: 'missing_checkout_url' });
+                return;
+            }
+            trackEvent('gumroad_checkout_opened', { destination: 'gumroad' });
+            window.location.href = PAID_KIT_CONFIG.checkoutUrl;
+        });
+    }
+
+    function setupPricingTracking() {
+        if (!paidKitPanel) return;
+        let viewed = false;
+        const markViewed = () => {
+            if (viewed) return;
+            viewed = true;
+            trackEvent('pricing_viewed');
+            trackEvent('paid_kit_cta_viewed', { price: PAID_KIT_CONFIG.price, enabled: PAID_KIT_CONFIG.enabled });
+        };
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    markViewed();
+                    observer.disconnect();
+                }
+            }, { threshold: 0.45 });
+            observer.observe(paidKitPanel);
+        } else {
+            markViewed();
+        }
+    }
 
     function restoreScreen() {
         if (state.unsentMessage) {
@@ -425,39 +517,9 @@ function initBreakupReset() {
     }
 
     function trackEvent(name, details = {}) {
-        const events = safeJson(localStorage.getItem(keys.events)) || [];
-        const session = getSessionId();
-        const params = new URLSearchParams(window.location.search);
-        const event = {
-            name,
-            at: new Date().toISOString(),
-            path: window.location.pathname,
-            session,
-            experiment,
-            device: window.matchMedia('(max-width: 640px)').matches ? 'mobile' : 'desktop',
-            source: params.get('utm_source') || '',
-            campaign: params.get('utm_campaign') || '',
-            details: sanitizeDetails(details)
-        };
-        events.push(event);
-        localStorage.setItem(keys.events, JSON.stringify(events.slice(-80)));
-    }
-
-    function getSessionId() {
-        let session = localStorage.getItem(keys.session);
-        if (!session) {
-            session = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-            localStorage.setItem(keys.session, session);
+        if (window.echoAnalytics && typeof window.echoAnalytics.trackEvent === 'function') {
+            window.echoAnalytics.trackEvent(name, details);
         }
-        return session;
-    }
-
-    function sanitizeDetails(details) {
-        const allowed = {};
-        ['trigger', 'reason', 'saveMode', 'safetyFlag'].forEach((key) => {
-            if (Object.prototype.hasOwnProperty.call(details, key)) allowed[key] = details[key];
-        });
-        return allowed;
     }
 }
 

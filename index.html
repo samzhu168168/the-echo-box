@@ -6,9 +6,7 @@
     <meta name="description" content="The Echo Box is a private breakup reset and no-contact tool. Write the message you should not send yet, wait ten minutes, and protect your peace locally in your browser.">
     <meta name="theme-color" content="#182024">
     <title>The Echo Box - Private Breakup Reset</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="breakup-page">
@@ -165,22 +163,23 @@
 
         <section class="pricing-reset" id="pricing">
             <div class="section-heading compact">
-                <p class="reset-eyebrow">Offer test</p>
-                <h2>Free reset now. Paid recovery pack later.</h2>
-                <p>The free tool is live first. The paid Gumroad product should be created only after the promise and checkout assets are reviewed.</p>
+                <p class="reset-eyebrow">30-day structure</p>
+                <h2>Ready for more structure?</h2>
+                <p>The 30-Day No Contact Reset Kit gives you one small action each day, an emergency reset plan, Reality Box prompts, and practical scripts for necessary communication.</p>
             </div>
             <div class="pricing-grid reset-pricing-grid">
                 <div class="price-panel featured">
                     <h3>Free Breakup Reset</h3>
                     <p class="price">$0</p>
                     <p>Unsent message box, ten-minute reset, no-contact counter, and Reality Box.</p>
-                    <a class="button primary" href="#reset">Start the reset</a>
+                    <a class="button primary" href="#reset" data-track="free_reset_cta">Start the reset</a>
                 </div>
-                <div class="price-panel">
-                    <h3>30-Day No Contact Kit</h3>
-                    <p class="price">Pending</p>
-                    <p>Daily prompts, relapse scripts, boundary templates, and printables. Gumroad setup is still waiting for owner approval.</p>
-                    <button class="button secondary" type="button" disabled>Checkout pending</button>
+                <div class="price-panel" id="paid-kit-panel">
+                    <h3>The Echo Box - 30-Day No Contact Reset Kit</h3>
+                    <p class="price" id="paid-kit-price">$9.99</p>
+                    <p>One-time purchase. No subscription. Digital delivery through Gumroad after the owner creates the product.</p>
+                    <button class="button secondary" id="paid-kit-button" type="button">Coming soon</button>
+                    <p class="privacy-note" id="paid-kit-note">Waiting for the Gumroad product URL. This button will not send users to the old Family Emergency Binder product.</p>
                 </div>
                 <div class="price-panel">
                     <h3>Family Emergency Binder</h3>
@@ -188,6 +187,18 @@
                     <p>The old product is preserved during the pivot and moved to its own route.</p>
                     <a class="button secondary" href="family-emergency-binder.html">Open old product</a>
                 </div>
+            </div>
+        </section>
+
+        <section class="tool-band" id="privacy-controls">
+            <div class="section-heading compact">
+                <p class="reset-eyebrow">Local data controls</p>
+                <h2>Export or clear what this browser saved.</h2>
+                <p>These controls only affect this device. They do not contact a server.</p>
+            </div>
+            <div class="form-actions tight">
+                <button class="button secondary" id="export-all-data-button" type="button">Export local data</button>
+                <button class="button subtle" id="clear-all-data-button" type="button">Clear local data</button>
             </div>
         </section>
 
@@ -205,9 +216,10 @@
             <a href="safety.html">Safety</a>
             <a href="family-emergency-binder.html">Family Emergency Binder</a>
         </nav>
-        <p>© 2026 The Echo Box. Private tools for moments when you should pause first.</p>
+        <p>Copyright 2026 The Echo Box. Private tools for moments when you should pause first.</p>
     </footer>
 
+    <script src="analytics.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
