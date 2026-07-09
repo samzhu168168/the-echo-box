@@ -1,0 +1,107 @@
+﻿[
+    {
+        "Name":  "Homepage HTTP 200",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: Do not send that message yet."
+    },
+    {
+        "Name":  "CSS loads",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/style.css",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: reset-hero"
+    },
+    {
+        "Name":  "app.js loads",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/app.js",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: openPaidKitCheckout"
+    },
+    {
+        "Name":  "analytics.js loads",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/analytics.js",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: echoAnalytics"
+    },
+    {
+        "Name":  "commerce-config.js loads",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/commerce-config.js",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: echo-box-30-day-no-contact-reset-kit"
+    },
+    {
+        "Name":  "favicon loads",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/favicon.ico",
+        "Status":  "PASS",
+        "Code":  200,
+        "Detail":  "loaded"
+    },
+    {
+        "Name":  "Privacy page",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/privacy.html",
+        "Status":  "PASS",
+        "Code":  200,
+        "Detail":  "expects: Privacy"
+    },
+    {
+        "Name":  "Terms page",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/terms.html",
+        "Status":  "PASS",
+        "Code":  200,
+        "Detail":  "expects: Terms"
+    },
+    {
+        "Name":  "Safety page",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/safety.html",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: This is not crisis care"
+    },
+    {
+        "Name":  "Family Emergency Binder legacy page",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/family-emergency-binder.html",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: Family Emergency Binder"
+    },
+    {
+        "Name":  "robots.txt",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/robots.txt",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: Sitemap"
+    },
+    {
+        "Name":  "sitemap.xml",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/sitemap.xml",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: \u003curlset"
+    },
+    {
+        "Name":  "OG title",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: The Echo Box - Don\u0027t Text Your Ex Yet"
+    },
+    {
+        "Name":  "Canonical",
+        "Url":  "https://the-echo-qkc6498q9-samzhu168168s-projects.vercel.app/",
+        "Status":  "FAIL",
+        "Code":  200,
+        "Detail":  "expects: https://www.my-echo-box.com/"
+    },
+    {
+        "Name":  "Gumroad product page",
+        "Url":  "https://samzhu168.gumroad.com/l/echo-box-30-day-no-contact-reset-kit",
+        "Status":  "PASS",
+        "Code":  200,
+        "Detail":  "expects: The Echo Box"
+    }
+]

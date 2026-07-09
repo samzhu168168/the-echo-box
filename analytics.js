@@ -2,6 +2,7 @@
     const STORAGE_KEY = 'echoBoxAnalyticsEvents.v1';
     const SESSION_KEY = 'echoBoxAnalyticsSession.v1';
     const PRODUCT_VERSION = 'breakup-reset-mvp-2026-07-09';
+    const ANALYTICS_CONFIG = Object.assign({ enabled: false, provider: '', id: '', debug: false }, window.ANALYTICS_CONFIG || {});
     const ALLOWED_EVENTS = new Set([
         'landing_page_view',
         'unsent_message_started',
@@ -90,10 +91,30 @@
         const events = safeJson(localStorage.getItem(STORAGE_KEY));
         events.push(event);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(events.slice(-150)));
-        if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
+        sendToProvider(event);
+        if (ANALYTICS_CONFIG.debug || location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
             console.info('[EchoAnalytics]', event.eventName, event.properties);
         }
     }
 
-    window.echoAnalytics = { trackEvent, STORAGE_KEY, PRODUCT_VERSION };
+    function sendToProvider(event) {
+        if (!ANALYTICS_CONFIG.enabled || !ANALYTICS_CONFIG.provider || !ANALYTICS_CONFIG.id) return;
+        if (ANALYTICS_CONFIG.provider === 'plausible' && typeof window.plausible === 'function') {
+            window.plausible(event.eventName, {
+                props: {
+                    page: event.page,
+                    placement: event.properties.placement || '',
+                    trigger: event.properties.trigger || '',
+                    device_category: event.device_category,
+                    utm_source: event.utm_source,
+                    utm_medium: event.utm_medium,
+                    utm_campaign: event.utm_campaign,
+                    utm_content: event.utm_content,
+                    product_version: event.product_version
+                }
+            });
+        }
+    }
+
+    window.echoAnalytics = { trackEvent, STORAGE_KEY, PRODUCT_VERSION, ANALYTICS_CONFIG };
 })();

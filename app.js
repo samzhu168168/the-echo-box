@@ -427,8 +427,8 @@ function initBreakupReset() {
 
     function buildCheckoutUrl(placement) {
         const url = new URL(PAID_KIT_CONFIG.checkoutUrl);
-        url.searchParams.set('utm_source', 'echo_box_site');
-        url.searchParams.set('utm_medium', 'website');
+        url.searchParams.set('utm_source', 'website');
+        url.searchParams.set('utm_medium', 'checkout_cta');
         url.searchParams.set('utm_campaign', 'no_contact_reset_kit');
         url.searchParams.set('utm_content', placement);
         return url.toString();
