@@ -360,11 +360,11 @@ function initBreakupReset() {
     if (clearAllDataButton) {
         clearAllDataButton.addEventListener('click', () => {
             if (!confirm('Clear all local Echo Box data on this browser?')) return;
+            trackEvent('local_data_cleared', { reason: 'all_local_data' });
             localStorage.removeItem(keys.data);
             localStorage.removeItem('echoBoxAnalyticsEvents.v1');
             localStorage.removeItem('echoBoxAnalyticsSession.v1');
             localStorage.removeItem(keys.experiment);
-            trackEvent('local_data_cleared', { reason: 'all_local_data' });
             form.reset();
             realityForm.reset();
             messageInput.value = '';
