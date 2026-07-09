@@ -264,3 +264,6 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
     .reset-copy, .unsent-card, .tool-band, .timer-panel, .trigger-panel, .necessary-box, .safety-strip { box-shadow: none; }
     .trigger-grid { grid-template-columns: 1fr; }
 }
+.post-reset-offer { margin-top: 18px; padding: 18px; border: 1px solid rgba(185,139,76,.42); border-radius: 8px; background: rgba(255,248,232,.96); color: var(--reset-ink); }
+.post-reset-offer h3 { font-size: 1.25rem; }
+.checkout-fallback-link { margin-top: 10px; }

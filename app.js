@@ -1,8 +1,10 @@
-const PAID_KIT_CONFIG = {
+const PAID_KIT_CONFIG = window.COMMERCE_CONFIG?.paidKit || {
     enabled: false,
+    provider: 'gumroad',
     price: '$9.99',
     productName: 'The Echo Box - 30-Day No Contact Reset Kit',
-    checkoutUrl: ''
+    checkoutUrl: '',
+    productVersion: '2026-07-v1'
 };
 
 function initEmergencyBinder() {
@@ -200,7 +202,9 @@ function initBreakupReset() {
     const paidKitPanel = document.getElementById('paid-kit-panel');
     const paidKitPrice = document.getElementById('paid-kit-price');
     const paidKitButton = document.getElementById('paid-kit-button');
+    const paidKitButtons = Array.from(document.querySelectorAll('[data-paid-kit-cta]'));
     const paidKitNote = document.getElementById('paid-kit-note');
+    const postResetOffer = document.getElementById('post-reset-offer');
     const exportAllDataButton = document.getElementById('export-all-data-button');
     const clearAllDataButton = document.getElementById('clear-all-data-button');
 
@@ -377,24 +381,57 @@ function initBreakupReset() {
     });
 
     function setupPaidKit() {
-        if (!paidKitButton) return;
         if (paidKitPrice) paidKitPrice.textContent = PAID_KIT_CONFIG.price;
-        paidKitButton.textContent = PAID_KIT_CONFIG.enabled ? 'Get the 30-Day Reset Kit - ' + PAID_KIT_CONFIG.price : 'Coming soon';
-        paidKitButton.disabled = !PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl;
+        const label = PAID_KIT_CONFIG.enabled ? 'Get the 30-Day Reset Kit - ' + PAID_KIT_CONFIG.price : 'Coming soon';
+        paidKitButtons.forEach((button) => {
+            const placement = button.dataset.placement || 'unknown';
+            button.textContent = label;
+            button.disabled = !PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl;
+            button.addEventListener('click', () => openPaidKitCheckout(placement, button));
+        });
         if (paidKitNote) {
             paidKitNote.textContent = PAID_KIT_CONFIG.enabled
-                ? 'One-time purchase. No subscription. Digital delivery through Gumroad.'
+                ? 'One-time purchase. No subscription. Opens the Gumroad product page in a new tab.'
                 : 'Waiting for the Gumroad product URL. This button will not send users to the old Family Emergency Binder product.';
         }
-        paidKitButton.addEventListener('click', () => {
-            trackEvent('paid_kit_cta_clicked', { price: PAID_KIT_CONFIG.price, enabled: PAID_KIT_CONFIG.enabled });
-            if (!PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl) {
-                trackEvent('gumroad_checkout_failed', { reason: 'missing_checkout_url' });
+    }
+
+    function openPaidKitCheckout(placement, sourceButton) {
+        trackEvent('paid_kit_cta_clicked', { placement });
+        if (!PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl) {
+            trackEvent('gumroad_checkout_failed', { placement });
+            return;
+        }
+        const checkoutUrl = buildCheckoutUrl(placement);
+        try {
+            const opened = window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
+            if (opened) {
+                trackEvent('gumroad_checkout_opened', { placement });
                 return;
             }
-            trackEvent('gumroad_checkout_opened', { destination: 'gumroad' });
-            window.location.href = PAID_KIT_CONFIG.checkoutUrl;
-        });
+            trackEvent('gumroad_checkout_fallback_used', { placement });
+            window.location.href = checkoutUrl;
+        } catch (error) {
+            trackEvent('gumroad_checkout_failed', { placement });
+            if (sourceButton && !sourceButton.parentElement.querySelector('.checkout-fallback-link')) {
+                const fallback = document.createElement('a');
+                fallback.href = checkoutUrl;
+                fallback.target = '_blank';
+                fallback.rel = 'noopener noreferrer';
+                fallback.textContent = 'Open Gumroad checkout';
+                fallback.className = 'button secondary checkout-fallback-link';
+                sourceButton.insertAdjacentElement('afterend', fallback);
+            }
+        }
+    }
+
+    function buildCheckoutUrl(placement) {
+        const url = new URL(PAID_KIT_CONFIG.checkoutUrl);
+        url.searchParams.set('utm_source', 'echo_box_site');
+        url.searchParams.set('utm_medium', 'website');
+        url.searchParams.set('utm_campaign', 'no_contact_reset_kit');
+        url.searchParams.set('utm_content', placement);
+        return url.toString();
     }
 
     function setupPricingTracking() {
@@ -404,7 +441,7 @@ function initBreakupReset() {
             if (viewed) return;
             viewed = true;
             trackEvent('pricing_viewed');
-            trackEvent('paid_kit_cta_viewed', { price: PAID_KIT_CONFIG.price, enabled: PAID_KIT_CONFIG.enabled });
+            trackEvent('paid_kit_cta_viewed', { placement: 'pricing' });
         };
         if ('IntersectionObserver' in window) {
             const observer = new IntersectionObserver((entries) => {
@@ -486,6 +523,7 @@ function initBreakupReset() {
             if (remaining <= 0) {
                 clearInterval(timerHandle);
                 timerGuidance.textContent = 'The spike passed. You can still choose silence, a factual message, or no action.';
+                if (postResetOffer) postResetOffer.classList.remove('hidden');
                 trackEvent('reset_completed');
             }
         }, 250);

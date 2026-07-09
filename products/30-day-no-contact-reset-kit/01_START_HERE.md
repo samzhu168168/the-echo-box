@@ -10,6 +10,6 @@ Use it in this order:
 4. Read one Reality Box prompt.
 5. Choose one small action from the daily plan.
 
-This is not therapy, crisis support, legal advice, medical advice, a get-your-ex-back system, or a guarantee that you will never contact them.
+This is not professional counseling, crisis support, legal advice, medical advice, a reunion-strategy system, or a guarantee that you will never contact them.
 
 If you are unsafe, threatened, or at risk of hurting yourself or someone else, contact local emergency services or a trusted person near you now.

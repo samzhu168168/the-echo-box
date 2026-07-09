@@ -1,0 +1,34 @@
+{
+    "actionType":  "CREATE_GUMROAD_DRAFT",
+    "status":  "PENDING_OWNER_CONFIRMATION",
+    "requiredConfirmationText":  "CREATE DRAFT",
+    "productName":  "The Echo Box - 30-Day No Contact Reset Kit",
+    "gumroadTitle":  "The Echo Box - 30-Day No Contact Reset Kit",
+    "subtitle":  "A private, practical 30-day plan for the moments when you want to text, check, or go back.",
+    "price":  9.99,
+    "currency":  "USD",
+    "productType":  "Digital product, one-time payment, not subscription, not pay-what-you-want",
+    "category":  "self-improvement/dating-and-relationships",
+    "tags":  [
+                 "no contact",
+                 "breakup recovery",
+                 "self reflection",
+                 "emotional reset",
+                 "relationship boundaries",
+                 "journaling",
+                 "personal growth"
+             ],
+    "deliveryFiles":  [
+                          "echo-box-30-day-no-contact-reset-kit.zip"
+                      ],
+    "zipPath":  "F:\\MyTraeProjects\\The Echo Box\\products\\echo-box-30-day-no-contact-reset-kit.zip",
+    "coverPath":  "F:\\MyTraeProjects\\The Echo Box\\products\\echo-box-30-day-no-contact-reset-kit-cover.png",
+    "descriptionHtmlPath":  "F:\\MyTraeProjects\\The Echo Box\\docs\\GUMROAD_ECHO_BOX_FINAL_DESCRIPTION.html",
+    "receiptNotePath":  "F:\\MyTraeProjects\\The Echo Box\\docs\\GUMROAD_ECHO_BOX_RECEIPT_NOTE.txt",
+    "freeWebsiteUrl":  "https://www.my-echo-box.com/",
+    "sensitivePromiseCheck":  "No fake reviews, no fake sales, no promised outcomes, no return-to-ex positioning, no local paths, no Chinese in Gumroad description.",
+    "qualityScore":  94,
+    "plannedAction":  "If owner confirms CREATE DRAFT, create a Gumroad draft product only. File upload, cover upload, metadata update, and publishing require later confirmation.",
+    "explicitWarning":  "Clicking/confirming CREATE DRAFT will create a real Gumroad draft product in account samzhu168.",
+    "createdAt":  "2026-07-09T20:37:57"
+}

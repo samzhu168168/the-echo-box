@@ -38,8 +38,8 @@ It is practical and short by design. Most days take less than five minutes.
 
 ## Not a good fit for
 
-- Anyone seeking therapy, crisis support, medical care, legal advice, or domestic violence support
-- Anyone looking for a get-your-ex-back system
+- Anyone seeking professional counseling, crisis support, medical care, legal advice, or domestic violence support
+- Anyone looking for a reunion-strategy system
 - Anyone looking for manipulation scripts
 - Anyone in immediate danger
 
@@ -53,7 +53,7 @@ The website tool stores notes locally in your browser. The digital kit is a down
 
 ## Disclaimer
 
-This product is a self-reflection and organization tool. It is not therapy, medical treatment, legal advice, crisis support, or a guarantee of healing or no contact.
+This product is a self-reflection and organization tool. It is not professional counseling, medical care, legal advice, crisis support, or a promise of a specific emotional outcome or no contact.
 
 ## Refund policy suggestion
 
@@ -61,7 +61,7 @@ Because this is a digital product delivered immediately, refunds are generally n
 
 ## FAQ
 
-### Is this therapy?
+### Is this professional counseling?
 No.
 
 ### Does it help me get my ex back?

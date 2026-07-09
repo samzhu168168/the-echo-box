@@ -17,6 +17,7 @@
         'paid_kit_cta_clicked',
         'gumroad_checkout_opened',
         'gumroad_checkout_failed',
+        'gumroad_checkout_fallback_used',
         'return_visit_detected',
         'local_data_exported',
         'local_data_cleared'
@@ -30,7 +31,8 @@
         'productVersion',
         'price',
         'enabled',
-        'destination'
+        'destination',
+        'placement'
     ]);
 
     function getSessionId() {
@@ -71,13 +73,18 @@
 
     function trackEvent(eventName, properties = {}) {
         if (!ALLOWED_EVENTS.has(eventName)) return;
+        const utm = readUtm();
         const event = {
             eventName,
             at: new Date().toISOString(),
-            session_id: getSessionId(),
+            anonymous_session_id: getSessionId(),
             page: window.location.pathname,
-            device: window.matchMedia('(max-width: 640px)').matches ? 'mobile' : 'desktop',
-            utm: readUtm(),
+            device_category: window.matchMedia('(max-width: 640px)').matches ? 'mobile' : 'desktop',
+            utm_source: utm.utm_source,
+            utm_medium: utm.utm_medium,
+            utm_campaign: utm.utm_campaign,
+            utm_content: utm.utm_content,
+            product_version: PRODUCT_VERSION,
             properties: sanitizeProperties(properties)
         };
         const events = safeJson(localStorage.getItem(STORAGE_KEY));

@@ -1,6 +1,6 @@
 # Safety and Limits
 
-The Echo Box is not crisis care, therapy, legal advice, medical advice, or domestic violence support.
+The Echo Box is not crisis care, professional counseling, legal advice, medical advice, or domestic violence support.
 
 Use qualified support if:
 

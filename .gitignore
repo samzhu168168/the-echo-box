@@ -21,3 +21,5 @@ scripts/__pycache__/
 # Local backups and generated campaign outputs are not deploy artifacts.
 backups/
 output/
+dist/
+release/
