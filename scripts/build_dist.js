@@ -22,7 +22,8 @@ const files = [
   'favicon.ico',
   'assets/echobox_icon.png.png',
   'assets/echobox_social.jpg.jpg',
-  'assets/echo-box-30-day-no-contact-reset-kit-cover.png'
+  'assets/echo-box-30-day-no-contact-reset-kit-cover.png',
+  'assets/echo-box-breakup-reset-social-20260710.png'
 ];
 
 const forbiddenTopLevel = new Set(['docs', 'marketing', 'products', 'backups', '.git', '.codex_deps', 'output', 'release']);
