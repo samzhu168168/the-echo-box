@@ -7,6 +7,47 @@ const PAID_KIT_CONFIG = window.COMMERCE_CONFIG?.paidKit || {
     productVersion: '2026-07-v1'
 };
 
+function initStandalonePaidKitCtas() {
+    if (document.getElementById('unsent-form')) return;
+    const buttons = Array.from(document.querySelectorAll('[data-paid-kit-cta]'));
+    if (!buttons.length) return;
+    buttons.forEach((button) => {
+        const placement = button.dataset.placement || 'standalone';
+        button.textContent = PAID_KIT_CONFIG.enabled ? `Get the 30-Day Reset Kit - ${PAID_KIT_CONFIG.price}` : 'Coming soon';
+        if (button.tagName.toLowerCase() === 'a') {
+            button.href = PAID_KIT_CONFIG.enabled ? buildPaidKitCheckoutUrl(placement) : '#';
+            button.target = '_blank';
+            button.rel = 'noopener noreferrer';
+        }
+        if (!PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl) button.setAttribute('aria-disabled', 'true');
+        button.addEventListener('click', (event) => {
+            if (!PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl) {
+                event.preventDefault();
+                trackGlobalEvent('gumroad_checkout_failed', { placement });
+                return;
+            }
+            trackGlobalEvent('paid_kit_cta_clicked', { placement });
+            trackGlobalEvent('gumroad_checkout_opened', { placement });
+        });
+    });
+    trackGlobalEvent('paid_kit_cta_viewed', { placement: 'product_page' });
+}
+
+function buildPaidKitCheckoutUrl(placement) {
+    const url = new URL(PAID_KIT_CONFIG.checkoutUrl);
+    url.searchParams.set('utm_source', 'website');
+    url.searchParams.set('utm_medium', 'checkout_cta');
+    url.searchParams.set('utm_campaign', 'no_contact_reset_kit');
+    url.searchParams.set('utm_content', placement);
+    return url.toString();
+}
+
+function trackGlobalEvent(name, details = {}) {
+    if (window.echoAnalytics && typeof window.echoAnalytics.trackEvent === 'function') {
+        window.echoAnalytics.trackEvent(name, details);
+    }
+}
+
 function initEmergencyBinder() {
     const form = document.getElementById('binder-form');
     if (!form) return;
@@ -236,7 +277,10 @@ function initBreakupReset() {
     setupPricingTracking();
     restoreScreen();
     trackEvent('landing_page_view');
-    if (Object.keys(state).length > 0) trackEvent('return_visit_detected');
+    if (Object.keys(state).length > 0) {
+        trackEvent('return_visit_detected');
+        trackReturnVisitMilestones();
+    }
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -343,7 +387,7 @@ function initBreakupReset() {
 
     necessaryReason.addEventListener('change', () => {
         necessaryGuidance.textContent = necessaryCopy[necessaryReason.value] || necessaryCopy.miss;
-        trackEvent('trigger_selected', { trigger: 'necessary_' + necessaryReason.value });
+        trackEvent('necessary_contact_filter_used', { reason: necessaryReason.value });
     });
 
     if (exportAllDataButton) {
@@ -476,8 +520,29 @@ function initBreakupReset() {
                 const field = realityForm.elements[name];
                 if (field) field.value = value;
             });
+            if (Object.values(state.realityBox).some((value) => String(value || '').trim())) {
+                trackEvent('reality_box_reopened');
+            }
         }
         necessaryGuidance.textContent = necessaryCopy[necessaryReason.value];
+    }
+
+    function trackReturnVisitMilestones() {
+        if (!state.lastStartedAt) return;
+        const elapsedDays = Math.floor((Date.now() - state.lastStartedAt) / 86400000);
+        const milestones = [
+            [1, 'return_visit_day_1'],
+            [3, 'return_visit_day_3'],
+            [7, 'return_visit_day_7']
+        ];
+        state.returnMilestones = state.returnMilestones || {};
+        milestones.forEach(([day, eventName]) => {
+            if (elapsedDays >= day && !state.returnMilestones[day]) {
+                trackEvent(eventName, { day });
+                state.returnMilestones[day] = true;
+            }
+        });
+        saveState();
     }
 
     function loadState() {
@@ -607,5 +672,6 @@ function detectSafetyLanguage(text) {
 
 document.addEventListener('DOMContentLoaded', () => {
     initEmergencyBinder();
+    initStandalonePaidKitCtas();
     initBreakupReset();
 });

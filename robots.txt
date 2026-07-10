@@ -1,4 +1,18 @@
 User-agent: *
 Allow: /
 
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# GPTBot is a model-training crawler, not a search-indexing crawler.
+# Current policy: keep training access closed until the owner explicitly approves it.
+User-agent: GPTBot
+Disallow: /
+
 Sitemap: https://www.my-echo-box.com/sitemap.xml

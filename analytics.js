@@ -19,9 +19,18 @@
         'gumroad_checkout_opened',
         'gumroad_checkout_failed',
         'gumroad_checkout_fallback_used',
+        'necessary_contact_filter_used',
         'return_visit_detected',
+        'return_visit_day_1',
+        'return_visit_day_3',
+        'return_visit_day_7',
         'local_data_exported',
-        'local_data_cleared'
+        'local_data_cleared',
+        'seo_tool_started',
+        'seo_tool_completed',
+        'email_opt_in_viewed',
+        'email_opt_in_completed',
+        'left_during_reset'
     ]);
     const ALLOWED_PROPERTIES = new Set([
         'trigger',
@@ -33,7 +42,8 @@
         'price',
         'enabled',
         'destination',
-        'placement'
+        'placement',
+        'day'
     ]);
 
     function getSessionId() {
