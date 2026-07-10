@@ -102,7 +102,7 @@
         events.push(event);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(events.slice(-150)));
         sendToProvider(event);
-        if (ANALYTICS_CONFIG.debug || location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
+        if (ANALYTICS_CONFIG.debug) {
             console.info('[EchoAnalytics]', event.eventName, event.properties);
         }
     }
