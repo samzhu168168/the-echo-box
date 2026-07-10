@@ -1,32 +1,44 @@
 # Online Network Privacy Audit
 
 Date: 2026-07-10
-Preview URL under review: https://the-echo-mkb04h6lb-samzhu168168s-projects.vercel.app
+Preview URL under review: https://the-echo-box-git-pivot-private-br-b3584d-samzhu168168s-projects.vercel.app
+Access method: Vercel Shareable Link, security parameter redacted
+Code commit under final test: aa1e3ca
 
 ## Current Status
 
-BLOCKED: online network privacy QA cannot be completed until the protected Preview app is reachable.
+PASS.
 
-## What Is Already Known
+The online browser QA used a redacted private test message. The exact message was checked against browser network request URLs and request payload data. It was not found in outbound requests.
 
-- Local network privacy audit passed in `docs/NETWORK_PRIVACY_AUDIT.md`.
-- Local browser QA passed in `docs/BROWSER_QA_REPORT.md`.
-- The current online Preview returns Vercel login HTML, not the app.
-- Analytics is disabled by default until the owner provides a production analytics ID.
+## Privacy Checks
 
-## Online Privacy Checks Still Required
+| Check | Result |
+|---|---|
+| test message absent from request URLs | PASS |
+| test message absent from request payloads | PASS |
+| Reality Box text absent from request URLs and payloads | PASS |
+| Gumroad CTA URLs do not include private text | PASS |
+| Gumroad CTA URLs do not include Shareable Link security parameter | PASS |
+| Shareable Link security parameter not reused after initial access | PASS |
+| analytics network requests disabled | PASS |
+| no session replay network detected | PASS |
+| no automatic form-capture network detected | PASS |
+| local clear-data control leaves local storage clear after fix | PASS |
 
-Once protected access is available, verify:
+## Analytics State
 
-- No unsent message text leaves the browser.
-- No Reality Box text leaves the browser.
-- No email, order id, buyer name, or Gumroad buyer data is collected.
-- No local storage payload is sent to analytics.
-- Purchase CTA click events contain only safe event names and CTA metadata.
-- Gumroad checkout opens without leaking private user-written content in query params.
-- No Automation Bypass Secret appears in requests except the single approved protection-bypass request.
-- No secret appears in HTML, console logs, screenshots, or committed files.
+`ANALYTICS_CONFIG.enabled=false` remains the current production-safe state.
+
+No Plausible, GA, GTM, Segment, Mixpanel, PostHog, FullStory, Hotjar, or Clarity network request was detected during the tested flow.
+
+## Notes
+
+- Browser downloads were intercepted during QA so exports could be tested without leaving files behind.
+- Gumroad clicks were intercepted at `window.open` level to verify generated URLs without making a real purchase.
+- Official Gumroad product page was separately checked by HTTP and returned title plus `$9.99` price text.
 
 ## Status
 
-WAITING_FOR_OWNER_AUTOMATION_BYPASS: yes
+ONLINE_NETWORK_PRIVACY_AUDIT: PASS
+CRITICAL_PRIVACY_LEAKS: 0

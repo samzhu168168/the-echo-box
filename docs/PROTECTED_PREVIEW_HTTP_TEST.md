@@ -1,39 +1,63 @@
 # Protected Preview HTTP Test
 
 Date: 2026-07-10
-Preview URL tested: https://the-echo-mkb04h6lb-samzhu168168s-projects.vercel.app
+Preview URL tested: https://the-echo-box-git-pivot-private-br-b3584d-samzhu168168s-projects.vercel.app
+Access method: Vercel Shareable Link, security parameter redacted
+Code commit under test: aa1e3ca
 
 ## Current Status
 
-BLOCKED: protected access credentials are not available in this Codex session.
+PASS: protected Preview is reachable through the owner-provided Shareable Link and returns The Echo Box app HTML, not Vercel login HTML.
 
-## Direct Request Result
+## Direct Shareable-Link Request Result
 
 | Check | Result |
 |---|---|
 | HTTP status | 200 |
-| `X-Matched-Path` | `/login` |
+| `X-Matched-Path` | empty / not `/login` |
 | Content type | `text/html; charset=utf-8` |
-| App HTML found | no |
-| Vercel login/protection page found | yes |
+| App HTML found | yes |
+| Vercel login/protection page found | no |
+| Hero/app copy found | yes |
+| Paid kit copy found | yes |
 
-The Preview server is reachable, but it returns Vercel Authentication HTML instead of The Echo Box.
+## Cookie-Session Request Result
 
-## Bypass Request Result
+After the initial shareable-link request, same-session access to the normal Preview host returned app HTML.
 
-Not run.
+| Path | Result |
+|---|---|
+| `/` | PASS |
+| `/style.css` | PASS |
+| `/app.js` | PASS |
+| `/analytics.js` | PASS |
+| `/commerce-config.js` | PASS |
+| `/favicon.ico` | PASS |
+| `/privacy.html` | PASS |
+| `/terms.html` | PASS |
+| `/safety.html` | PASS |
+| `/family-emergency-binder.html` | PASS |
+| `/robots.txt` | PASS |
+| `/sitemap.xml` | PASS |
+| `/assets/echo-box-30-day-no-contact-reset-kit-cover.png` | PASS |
 
-Reason: no Automation Bypass Secret is available locally, and this audit must not invent or expose one.
+## Gumroad Config Checks
 
-## Required Pass Criteria After Owner Provides Bypass
+| Check | Result |
+|---|---|
+| `enabled=true` | PASS |
+| `provider=gumroad` | PASS |
+| product name is No Contact Reset Kit | PASS |
+| price is `$9.99` | PASS |
+| checkout URL points to official No Contact product | PASS |
+| no old Family Binder Gumroad product URL in config | PASS |
+| product version exists | PASS |
 
-- HTTP 200 returns The Echo Box app HTML, not `/login`.
-- Homepage contains current breakup reset messaging.
-- Pricing section contains `Get the 30-Day Reset Kit - $9.99`.
-- Gumroad URL points to `echo-box-30-day-no-contact-reset-kit`.
-- No local file path appears in HTML.
-- No secret or protection bypass value appears in HTML.
+## Gumroad Product Page Check
+
+Official product page returned HTTP 200. Product title and `$9.99` price text were found. No purchase was attempted.
 
 ## Status
 
-WAITING_FOR_OWNER_AUTOMATION_BYPASS: yes
+WAITING_FOR_OWNER_SHAREABLE_LINK: no
+WAITING_FOR_OWNER_AUTOMATION_BYPASS: no

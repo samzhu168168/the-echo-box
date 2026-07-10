@@ -1,32 +1,44 @@
 # Production Go/No-Go
 
 Date: 2026-07-10
-Preview URL under review: https://the-echo-mkb04h6lb-samzhu168168s-projects.vercel.app
-Latest committed preview code known before this audit: e37c692
+Preview URL under review: https://the-echo-box-git-pivot-private-br-b3584d-samzhu168168s-projects.vercel.app
+Shareable Link: available, security parameter redacted
+Latest code commit under online QA: aa1e3ca
 
 ## Scorecard
 
 | Dimension | Status | Notes |
 |---|---|---|
-| Product core flow | CONDITIONAL GO | Local browser QA passed core reset and state restore; online Preview QA is blocked by Vercel protection. |
-| Mobile | CONDITIONAL GO | Local mobile viewport QA passed; real protected Preview mobile QA is still pending. |
-| Desktop | CONDITIONAL GO | Local desktop QA passed; real protected Preview desktop QA is still pending. |
-| Gumroad purchase link | CONDITIONAL GO | Correct product URL and UTM verified locally; online CTA click test is blocked by Preview protection. |
-| Product price | GO | Website copy and config show $9.99 one-time. |
-| Privacy | CONDITIONAL GO | Local network privacy audit passed; online Preview audit is blocked until protected access is available. |
-| Analytics | CONDITIONAL GO | Safe disabled-by-default config exists, but owner has not provided production analytics ID. |
+| Shareable Preview access | GO | Owner-provided Shareable Link opens app HTML, not Vercel login. |
+| Online HTTP smoke | GO | Home, CSS, JS, config, favicon, legal pages, safety page, robots, sitemap, and OG image passed. |
+| Product core flow | GO | Online browser QA passed reset, refresh recovery, trigger guidance, post-reset offer, counter, Reality Box, exports, and clear-data control. |
+| Mobile | GO | iPhone 13, iPhone SE, and Android 390x844 passed. |
+| Desktop | GO | 1440x900 and 1366x768 passed. |
+| Gumroad Pricing link | GO | Pricing CTA opens official No Contact Reset Kit URL with safe UTM. |
+| Gumroad post-reset link | GO | Post-reset CTA opens official No Contact Reset Kit URL with safe UTM. |
+| Product price | GO | Website config and Gumroad page show `$9.99`. |
+| Privacy | GO | Test message and Reality Box text were not found in network request URLs or payloads. |
+| Analytics | CONDITIONAL GO | Analytics is intentionally disabled until owner provides provider ID. No analytics network requests detected. |
 | Performance | GO | Static package, no heavy first-paint scripts, favicon reduced. |
-| SEO/social | GO | Homepage title, description, canonical, OG, and Twitter card updated. |
-| Safety | GO | Crisis/safety disclaimer exists; no therapy/legal/medical promise added. |
+| SEO/social | GO | Homepage metadata and OG image asset are reachable in Preview. |
+| Safety | GO | Safety page reachable and safety copy present. |
 | Rollback | GO | Git revert available; Gumroad changes require separate approval. |
-| Preview access | NO-GO | Current Preview returns Vercel login HTML, not The Echo Box app HTML. |
+
+## Issue Found And Fixed
+
+Online QA found one HIGH issue before final pass: the clear-data control recreated a local analytics session/event after deletion.
+
+Fix: `aa1e3ca fix: clear local analytics after data reset`.
+
+Retest: PASS across all 5 viewports and 140 browser checks.
 
 ## Current Production Recommendation
 
-NO-GO for production.
+CONDITIONAL GO.
 
-Reason: the Preview deployment is successful but still protected by Vercel Authentication. Production should not be approved until either a Shareable Link or Automation Bypass Secret is created by the owner, and online HTTP, browser, and network privacy QA pass against the real Preview app.
+Reason: online Preview access, core flow, Gumroad CTA paths, mobile/desktop QA, and network privacy all passed. The only remaining launch condition is formal analytics provider setup, which is intentionally not configured in this round.
 
 ## Production Approval Status
 
+WAITING_FOR_OWNER_ANALYTICS: yes
 WAITING_FOR_OWNER_PRODUCTION_APPROVAL: yes

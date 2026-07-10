@@ -4,46 +4,47 @@ Date: 2026-07-10
 
 ## Scope
 
-This review covers the Preview access fix attempt for:
+This review covers protected Preview access for:
 
 - Project: `the-echo-box`
 - Branch: `pivot/private-breakup-reset`
-- Preview URL: https://the-echo-mkb04h6lb-samzhu168168s-projects.vercel.app
+- Preview host: `the-echo-box-git-pivot-private-br-b3584d-samzhu168168s-projects.vercel.app`
+- Shareable Link: provided by owner, security parameter redacted in all reports
 
 ## Security Decision
 
 Do not disable project-wide Deployment Protection.
 
-Reason: the owner authorized Shareable Link and Automation Bypass creation, but explicitly did not authorize disabling protection across the project or production.
+The owner-provided Shareable Link was enough for online QA. No production protection setting was changed.
 
-## Secret Handling
+## Secret And Link Handling
 
 Current status:
 
-- No Vercel token variable name was found in the local environment.
-- No Automation Bypass Secret variable name was found in the local environment.
-- No secret value was printed.
-- No secret value was written to docs.
-- No secret value was committed.
-- No shareable link query parameter was committed.
+- Full Shareable Link security parameter was not written to docs.
+- Full Shareable Link security parameter was not committed.
+- No Automation Bypass Secret was used.
+- No Vercel token was used.
+- No Gumroad token was used.
+- No cookie value was written to docs.
+- No production deployment was triggered.
 
-If the owner creates an Automation Bypass Secret, it must be handled as temporary test-only access:
+## Online Access Result
 
-- Store it only in a local environment variable.
-- Do not paste it into chat.
-- Do not place it in `.env` unless `.env` is ignored and the file is local-only.
-- Do not include it in screenshots.
-- Revoke it in Vercel after QA if it is no longer needed.
+| Check | Result |
+|---|---|
+| Shareable Link bypasses `/login` | PASS |
+| App HTML returned | PASS |
+| Normal same-session host access after Shareable Link | PASS |
+| Share parameter reused in app/asset/Gumroad requests | PASS, not reused |
+| Security parameter committed to repo | PASS, not committed |
 
-## Allowed Next Step
+## Required Owner Handling
 
-Owner can provide either:
+Keep the Shareable Link private. It should be used only for review and QA while Preview protection remains enabled.
 
-- A Vercel Shareable Link for human browser QA.
-- A local Automation Bypass Secret set as `VERCEL_AUTOMATION_BYPASS_SECRET` for automated HTTP/browser/network QA.
+## Status
 
-## Blockers
-
-- WAITING_FOR_OWNER_SHAREABLE_LINK: yes
-- WAITING_FOR_OWNER_AUTOMATION_BYPASS: yes
-- WAITING_FOR_OWNER_PRODUCTION_APPROVAL: yes
+WAITING_FOR_OWNER_SHAREABLE_LINK: no
+WAITING_FOR_OWNER_AUTOMATION_BYPASS: no
+WAITING_FOR_OWNER_PRODUCTION_APPROVAL: yes
