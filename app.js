@@ -624,6 +624,8 @@ function initBreakupReset() {
             window.echoAnalytics.trackEvent(name, details);
         }
     }
+
+    window.echoBoxBreakupResetReady = true;
 }
 
 function downloadFile(filename, content, type) {
