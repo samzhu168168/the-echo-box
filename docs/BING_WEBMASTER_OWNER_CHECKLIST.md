@@ -1,10 +1,10 @@
 # Bing Webmaster Owner Checklist
 
-Date: 2026-07-10
+Date: 2026-07-11
 
 ## Status
 
-WAITING_FOR_OWNER_BING: Yes.
+WAITING_FOR_OWNER_BING_VERIFICATION: Yes.
 
 No Bing verification token, DNS record, or Webmaster Tools claim was created in this batch.
 
@@ -15,7 +15,8 @@ No Bing verification token, DNS record, or Webmaster Tools claim was created in 
 3. Import from Google Search Console if already verified, or use Bing's verification method.
 4. Submit sitemap: `https://www.my-echo-box.com/sitemap.xml`.
 5. Review IndexNow settings after the public key file is deployed.
-6. Use URL Inspection for the homepage and product page after production deployment.
+6. Use URL Inspection for the homepage and product page.
+7. Do not create IndexNow keys or DNS records in this Codex batch unless explicitly approved.
 
 ## Do not claim
 
