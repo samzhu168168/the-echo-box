@@ -155,12 +155,16 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 }
 @media (max-width: 640px) {
     .topbar { align-items: flex-start; flex-direction: column; gap: 10px; }
-    .topnav { width: 100%; justify-content: space-between; gap: 10px; font-size: .92rem; }
-    main { width: min(100% - 20px, 1180px); }
+    .topbar { width: 100%; max-width: 100%; padding-inline: 10px; }
+    .topnav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; max-width: 100%; gap: 8px; }
+    .topnav a { min-width: 0; font-size: .82rem; overflow-wrap: anywhere; }
+    main { width: calc(100% - 20px); max-width: 1180px; min-width: 0; }
+    main > *, .hero > *, .checklist-hero > *, .guide-hero > *, .builder-layout > *, .split-section > * { min-width: 0; max-width: 100%; }
+    h1, h2, h3, p, li, a, .button { overflow-wrap: anywhere; }
     .hero, .checklist-hero { padding-top: 28px; }
     .hero-copy, .scenario-panel, .binder-form, .preview-panel, .price-panel, .conversation-section, .checklist-hero-copy, .mini-offer, .checklist-sheet, .guide-copy, .guide-callout, .quote-card { box-shadow: none; }
     .hero-actions, .form-actions, .preview-actions, .section-actions { flex-direction: column; }
-    .button { width: 100%; }
+    .button { width: 100%; max-width: 100%; white-space: normal; text-align: center; }
 }
 @media print {
     body { background: white; }
@@ -258,9 +262,17 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
     .reset-hero, .reset-flow, .counter-layout, .reality-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
-    .reset-topbar { align-items: flex-start; flex-direction: column; }
-    .reset-nav { width: 100%; flex-wrap: wrap; gap: 10px 14px; }
-    .breakup-page main.reset-shell { width: min(100% - 20px, 1180px); }
+    .reset-topbar { align-items: flex-start; flex-direction: column; width: 100%; max-width: 100%; padding-inline: 10px; }
+    .reset-brand { min-width: 0; }
+    .reset-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; max-width: 100%; gap: 8px; }
+    .reset-nav a { min-width: 0; font-size: .82rem; overflow-wrap: anywhere; }
+    .breakup-page main.reset-shell { width: calc(100% - 20px); max-width: 1180px; min-width: 0; }
+    .reset-shell > *, .reset-hero > *, .reset-flow > *, .counter-layout > *, .reality-grid > * { min-width: 0; max-width: 100%; }
+    .reset-copy { padding: 26px 20px 30px 28px; }
+    .reset-copy h1 { max-width: 100%; font-size: clamp(2.15rem, 11vw, 2.75rem); overflow-wrap: anywhere; }
+    .reset-lede, .reset-copy p, .card-label-row { max-width: 100%; overflow-wrap: anywhere; }
+    .card-label-row { flex-wrap: wrap; }
+    .reset-proof-row span, .button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
     .reset-copy, .unsent-card, .tool-band, .timer-panel, .trigger-panel, .necessary-box, .safety-strip { box-shadow: none; }
     .trigger-grid { grid-template-columns: 1fr; }
 }
