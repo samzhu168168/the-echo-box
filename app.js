@@ -35,11 +35,16 @@ function initStandalonePaidKitCtas() {
 
 function buildPaidKitCheckoutUrl(placement) {
     const url = new URL(PAID_KIT_CONFIG.checkoutUrl);
-    url.searchParams.set('utm_source', 'website');
-    url.searchParams.set('utm_medium', 'checkout_cta');
-    url.searchParams.set('utm_campaign', 'no_contact_reset_kit');
-    url.searchParams.set('utm_content', placement);
+    applyCheckoutUtm(url, placement);
     return url.toString();
+}
+
+function applyCheckoutUtm(url, placement) {
+    const params = new URLSearchParams(window.location.search);
+    url.searchParams.set('utm_source', params.get('utm_source') || 'website');
+    url.searchParams.set('utm_medium', params.get('utm_medium') || 'checkout_cta');
+    url.searchParams.set('utm_campaign', params.get('utm_campaign') || 'no_contact_reset_kit');
+    url.searchParams.set('utm_content', params.get('utm_content') || placement);
 }
 
 function trackGlobalEvent(name, details = {}) {
@@ -488,10 +493,7 @@ function initBreakupReset() {
 
     function buildCheckoutUrl(placement) {
         const url = new URL(PAID_KIT_CONFIG.checkoutUrl);
-        url.searchParams.set('utm_source', 'website');
-        url.searchParams.set('utm_medium', 'checkout_cta');
-        url.searchParams.set('utm_campaign', 'no_contact_reset_kit');
-        url.searchParams.set('utm_content', placement);
+        applyCheckoutUtm(url, placement);
         return url.toString();
     }
 
