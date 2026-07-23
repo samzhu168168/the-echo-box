@@ -110,11 +110,18 @@
     function sendToProvider(event) {
         if (!ANALYTICS_CONFIG.enabled || !ANALYTICS_CONFIG.provider || !ANALYTICS_CONFIG.id) return;
         if (ANALYTICS_CONFIG.provider === 'plausible' && typeof window.plausible === 'function') {
+            const PLAUSIBLE_FUNNEL_EVENTS = new Set([
+                'landing_page_view',
+                'reset_started',
+                'reset_completed',
+                'pricing_viewed',
+                'paid_kit_cta_clicked'
+            ]);
+            if (!PLAUSIBLE_FUNNEL_EVENTS.has(event.eventName)) return;
             window.plausible(event.eventName, {
                 props: {
                     page: event.page,
                     placement: event.properties.placement || '',
-                    trigger: event.properties.trigger || '',
                     device_category: event.device_category,
                     utm_source: event.utm_source,
                     utm_medium: event.utm_medium,
