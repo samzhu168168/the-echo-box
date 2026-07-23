@@ -217,6 +217,17 @@ function initBreakupReset() {
         experiment: 'echoBoxBreakupExperiment.v1'
     };
 
+    const heroVariants = {
+        direct_late_night: {
+            headline: 'Alone at night with their chat open?',
+            lede: 'Put the message here before the room gets quieter and the urge gets louder. The Echo Box gives you a private ten-minute pause, a no-contact counter, and a reality check. No login. Local browser storage. Delete anytime.'
+        },
+        second_person_alone: {
+            headline: 'It is late. You are alone. Do not send it yet.',
+            lede: 'Type the text here instead of reopening the thread. The Echo Box gives you ten private minutes before you decide, with a no-contact counter and a reality check. No login. Local browser storage. Delete anytime.'
+        }
+    };
+
     const state = loadState();
     const experiment = loadExperiment();
     let timerHandle = null;
@@ -224,6 +235,9 @@ function initBreakupReset() {
     const messageInput = document.getElementById('unsent-message');
     const doNotSave = document.getElementById('do-not-save');
     const messageStatus = document.getElementById('message-status');
+    const heroLede = document.getElementById('hero-lede');
+    const chatPreview = document.getElementById('unsent-chat-preview');
+    const chatEmptyState = document.getElementById('chat-empty-state');
     const resetFlow = document.getElementById('reset-flow');
     const timerMinutes = document.getElementById('timer-minutes');
     const timerSeconds = document.getElementById('timer-seconds');
@@ -299,7 +313,8 @@ function initBreakupReset() {
         saveState();
 
         messageInput.value = doNotSave.checked ? '' : message;
-        messageStatus.textContent = doNotSave.checked ? 'Not saved' : 'Saved locally';
+        renderUnsentBubble(message);
+        messageStatus.textContent = doNotSave.checked ? 'Not sent' : 'Not sent - saved locally';
         resetFlow.classList.remove('hidden');
         timerGuidance.textContent = safetyFlag
             ? 'Safety note: if you or someone else may be unsafe, contact local emergency services or a trusted person near you now.'
@@ -341,6 +356,7 @@ function initBreakupReset() {
         saveState();
         messageInput.value = '';
         messageStatus.textContent = 'Deleted locally';
+        clearUnsentBubble();
         trackEvent('local_data_cleared', { reason: 'unsent_message' });
     });
 
@@ -415,6 +431,7 @@ function initBreakupReset() {
             resetFlow.classList.add('hidden');
             counterResult.innerHTML = '<strong>No counter set yet.</strong><span>Set a date to see your protected time.</span>';
             messageStatus.textContent = 'Cleared locally';
+            clearUnsentBubble();
         });
     }
 
@@ -503,7 +520,8 @@ function initBreakupReset() {
     function restoreScreen() {
         if (state.unsentMessage) {
             messageInput.value = state.unsentMessage;
-            messageStatus.textContent = 'Saved locally';
+            messageStatus.textContent = 'Not sent - saved locally';
+            renderUnsentBubble(state.unsentMessage);
         }
         if (state.resetEndsAt && Date.now() < state.resetEndsAt) {
             resetFlow.classList.remove('hidden');
@@ -525,6 +543,34 @@ function initBreakupReset() {
             }
         }
         necessaryGuidance.textContent = necessaryCopy[necessaryReason.value];
+    }
+
+    function renderUnsentBubble(message) {
+        if (!chatPreview || !message) return;
+        clearUnsentBubble();
+        chatPreview.classList.add('has-message');
+        if (chatEmptyState) chatEmptyState.classList.add('hidden');
+
+        const row = document.createElement('div');
+        row.className = 'chat-bubble-row';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble unsent-bubble';
+        bubble.textContent = message;
+
+        const receipt = document.createElement('div');
+        receipt.className = 'chat-receipt';
+        receipt.textContent = 'Not sent - stays on this device';
+
+        row.append(bubble, receipt);
+        chatPreview.append(row);
+    }
+
+    function clearUnsentBubble() {
+        if (!chatPreview) return;
+        chatPreview.querySelectorAll('.chat-bubble-row').forEach((row) => row.remove());
+        chatPreview.classList.remove('has-message');
+        if (chatEmptyState) chatEmptyState.classList.remove('hidden');
     }
 
     function trackReturnVisitMilestones() {
@@ -560,10 +606,9 @@ function initBreakupReset() {
 
     function loadExperiment() {
         const existing = safeJson(localStorage.getItem(keys.experiment));
-        if (existing && existing.headline && existing.cta) return existing;
         const created = {
-            headline: Math.random() < 0.5 ? 'pause' : 'peace',
-            cta: Math.random() < 0.5 ? 'box' : 'wait'
+            hero: 'direct_late_night',
+            cta: existing && existing.cta ? existing.cta : Math.random() < 0.5 ? 'box' : 'wait'
         };
         localStorage.setItem(keys.experiment, JSON.stringify(created));
         return created;
@@ -572,9 +617,9 @@ function initBreakupReset() {
     function applyExperiment() {
         const headline = document.getElementById('hero-headline');
         const cta = document.getElementById('put-in-box-button');
-        headline.textContent = experiment.headline === 'peace'
-            ? 'Protect your peace before you text.'
-            : 'Do not send that message yet.';
+        const variant = heroVariants[experiment.hero] || heroVariants.direct_late_night;
+        if (headline) headline.textContent = variant.headline;
+        if (heroLede) heroLede.textContent = variant.lede;
         cta.textContent = experiment.cta === 'wait'
             ? 'Wait 10 minutes before sending'
             : 'Put it in the box for 10 minutes';

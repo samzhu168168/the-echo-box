@@ -23,6 +23,7 @@
     <meta name="twitter:image:alt" content="The Echo Box private breakup reset - do not send that message yet.">
     <title>The Echo Box - Don't Text Your Ex Yet</title>
     <link rel="icon" href="favicon.ico">
+    <script defer data-domain="my-echo-box.com" src="https://plausible.io/js/script.js"></script>
     <link rel="stylesheet" href="style.css">
     <script type="application/ld+json">
     {
@@ -77,9 +78,9 @@
     <main class="reset-shell">
         <section class="reset-hero" id="reset">
             <div class="reset-copy">
-                <p class="reset-eyebrow">Private breakup reset</p>
-                <h1 id="hero-headline">Do not send that message yet.</h1>
-                <p class="reset-lede">Put the text here first. The Echo Box gives you a ten-minute pause, a no-contact counter, and a reality check before one emotional moment becomes another wound.</p>
+                <p class="reset-eyebrow">Private late-night reset</p>
+                <h1 id="hero-headline">Alone at night with their chat open?</h1>
+                <p class="reset-lede" id="hero-lede">Put the message here before the room gets quieter and the urge gets louder. The Echo Box gives you a private ten-minute pause, a no-contact counter, and a reality check. No login. Local browser storage. Delete anytime.</p>
                 <div class="reset-proof-row" aria-label="Privacy and use notes">
                     <span>No login</span>
                     <span>Local browser storage</span>
@@ -92,16 +93,22 @@
                     <span>Unsent Message</span>
                     <span id="message-status">Private draft</span>
                 </div>
-                <label class="field-block" for="unsent-message">
-                    <span>Write the message you want to send</span>
-                    <textarea id="unsent-message" name="unsentMessage" rows="8" maxlength="5000" placeholder="Type it here instead of sending it..."></textarea>
-                </label>
+                <div class="chat-draft-shell" aria-label="Private unsent message composer">
+                    <div class="chat-thread" id="unsent-chat-preview" aria-live="polite">
+                        <div class="chat-time">Tonight - private draft</div>
+                        <p class="chat-empty" id="chat-empty-state">Type the message here instead of opening their chat.</p>
+                    </div>
+                    <label class="field-block chat-composer" for="unsent-message">
+                        <span>Write the message you want to send</span>
+                        <textarea id="unsent-message" name="unsentMessage" rows="5" maxlength="5000" placeholder="Type it here instead of sending it..."></textarea>
+                    </label>
+                </div>
                 <label class="checkbox-row">
                     <input type="checkbox" id="do-not-save">
                     <span>Do not save this message after I start the reset.</span>
                 </label>
                 <p class="privacy-note">Your message stays in this browser. The page does not send message text to analytics, a server, or an AI tool.</p>
-                <button class="button primary" id="put-in-box-button" type="submit">Put it in the box for 10 minutes</button>
+                <button class="button primary chat-send-button" id="put-in-box-button" type="submit">Put it in the box for 10 minutes</button>
             </form>
         </section>
 
@@ -275,6 +282,13 @@
     </footer>
 
     <script src="commerce-config.js"></script>
+    <script>
+        window.ANALYTICS_CONFIG = {
+            enabled: true,
+            provider: 'plausible',
+            id: 'my-echo-box.com'
+        };
+    </script>
     <script src="analytics.js"></script>
     <script src="app.js"></script>
 </body>

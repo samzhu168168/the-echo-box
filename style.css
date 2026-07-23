@@ -228,6 +228,22 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 .reset-proof-row span { padding: 8px 11px; border: 1px solid #d7d0c3; border-radius: 999px; background: #eef3f1; color: #31524d; font-size: .9rem; font-weight: 800; }
 .unsent-card, .tool-band, .necessary-box { background: rgba(255,253,248,.92); padding: clamp(20px, 4vw, 32px); }
 .card-label-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; color: var(--reset-muted); font-size: .9rem; font-weight: 800; }
+.chat-draft-shell { display: grid; gap: 12px; margin-bottom: 14px; padding: 14px; border: 1px solid rgba(23,32,38,.14); border-radius: 26px; background: #182125; }
+.chat-thread { min-height: 150px; display: grid; align-content: start; gap: 12px; padding: 14px; border: 1px solid rgba(255,255,255,.09); border-radius: 22px; background: linear-gradient(180deg, #10171a, #1d282c); color: #f8f4ea; }
+.chat-time { justify-self: center; padding: 4px 9px; border-radius: 999px; background: rgba(255,255,255,.08); color: #d9d2c8; font-size: .74rem; font-weight: 800; }
+.chat-empty { align-self: center; justify-self: center; max-width: 260px; margin: 16px 0 4px; color: #bdb5aa; font-size: .93rem; text-align: center; }
+.chat-empty.hidden { display: none; }
+.chat-bubble-row { display: grid; justify-items: end; gap: 6px; animation: chatBubbleIn .18s ease-out; }
+.chat-bubble { max-width: min(92%, 360px); padding: 12px 14px; border-radius: 18px 18px 5px 18px; background: var(--teal); color: white; box-shadow: 0 10px 24px rgba(0,0,0,.22); font-size: .98rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-receipt { color: #cfc8bd; font-size: .78rem; font-weight: 800; text-align: right; }
+.chat-composer { margin: 0; }
+.chat-composer span { color: #f8f4ea; font-size: .86rem; }
+.chat-composer textarea { min-height: 130px; border-radius: 22px; background: #fffaf0; line-height: 1.45; }
+.chat-send-button { width: 100%; margin-top: 4px; border-radius: 999px; }
+@keyframes chatBubbleIn {
+    from { opacity: 0; transform: translateY(6px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
 .checkbox-row { display: flex; align-items: flex-start; gap: 10px; color: var(--reset-muted); font-size: .93rem; }
 .checkbox-row input { width: auto; margin-top: 5px; }
 .reset-flow { display: grid; grid-template-columns: minmax(280px, .55fr) minmax(0, 1fr); gap: 18px; padding: 16px 0 40px; }
@@ -274,6 +290,9 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
     .card-label-row { flex-wrap: wrap; }
     .reset-proof-row span, .button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
     .reset-copy, .unsent-card, .tool-band, .timer-panel, .trigger-panel, .necessary-box, .safety-strip { box-shadow: none; }
+    .chat-draft-shell { padding: 10px; border-radius: 20px; }
+    .chat-thread { min-height: 132px; border-radius: 18px; }
+    .chat-bubble { max-width: 96%; }
     .trigger-grid { grid-template-columns: 1fr; }
 }
 .post-reset-offer { margin-top: 18px; padding: 18px; border: 1px solid rgba(185,139,76,.42); border-radius: 8px; background: rgba(255,248,232,.96); color: var(--reset-ink); }
