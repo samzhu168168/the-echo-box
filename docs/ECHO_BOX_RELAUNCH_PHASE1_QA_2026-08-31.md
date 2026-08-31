@@ -141,19 +141,24 @@ Visual screenshot review: **NOT VERIFIED**. The local command-line screenshot at
 
 ## 12. Preview URL
 
-**NOT VERIFIED.** The one-time Vercel CLI attempt was stopped by the local npm security lock: `ECOMPROMISED: Lock compromised`. No Production deployment or promotion was attempted.
+[Vercel Preview](https://the-echo-box-git-feat-echo-box-re-00d0b2-samzhu168168s-projects.vercel.app)
+
+- Git/Vercel deployment status: **PASS**
+- Vercel Preview Comments check: **PASS**, no unresolved feedback
+- Anonymous HTTP content smoke test: **NOT VERIFIED** because Vercel Authentication redirects unauthenticated requests to the Vercel login page
+- Direct Vercel CLI path: unavailable because the local npm security lock returned `ECOMPROMISED: Lock compromised`; no security lock was bypassed
+- Production deployment/promotion: **NOT PERFORMED**
 
 ## 13. Unfinished items
 
-- Obtain the actual Vercel Preview URL through the repository's Git integration after the feature branch is pushed, or resolve the local npm security lock outside this task.
-- Run a human visual check of the Preview at 375/390/430/desktop.
+- Open the authenticated Vercel Preview and run the human visual check at 375/390/430/desktop.
 - Confirm real custom-event arrival only if a usable analytics account is configured later.
 
 ## 14. Risks
 
 - Without access to the Plausible dashboard, code-level event correctness does not prove dashboard ingestion.
 - Guide pages are new and have no ranking, crawl, or conversion history yet.
-- Preview visual review remains a manual gate before any Production promotion.
+- Vercel Authentication prevents an anonymous external smoke test; authenticated visual review remains a manual gate before any Production promotion.
 - Historical untracked files make broad `git add .` unsafe; release staging must remain file-specific.
 
 ## 15. Single Next Action
