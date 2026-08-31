@@ -5,6 +5,7 @@ const root = path.resolve(__dirname, '..');
 const dist = path.join(root, 'dist');
 
 const files = [
+  'e9e5243d49d4ff9366b41ad67087fd6a.txt',
   'index.html',
   'style.css',
   'app.js',
@@ -57,6 +58,10 @@ function copyFile(relativePath) {
 removeDir(dist);
 fs.mkdirSync(dist, { recursive: true });
 files.forEach(copyFile);
+
+const indexNowKey = 'e9e5243d49d4ff9366b41ad67087fd6a';
+const indexNowKeyPath = path.join(dist, `${indexNowKey}.txt`);
+fs.writeFileSync(indexNowKeyPath, indexNowKey, 'utf8');
 
 for (const forbidden of forbiddenTopLevel) {
   if (fs.existsSync(path.join(dist, forbidden))) {

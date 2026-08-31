@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build_dist.js",
+    "indexnow": "node scripts/indexnow-submit.mjs"
+  }
+}
