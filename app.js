@@ -9,11 +9,12 @@ const PAID_KIT_CONFIG = window.COMMERCE_CONFIG?.paidKit || {
 
 function initStandalonePaidKitCtas() {
     if (document.getElementById('unsent-form')) return;
+    trackGlobalEvent('landing_view');
     const buttons = Array.from(document.querySelectorAll('[data-paid-kit-cta]'));
     if (!buttons.length) return;
     buttons.forEach((button) => {
         const placement = button.dataset.placement || 'standalone';
-        button.textContent = PAID_KIT_CONFIG.enabled ? `Get the 30-Day Reset Kit - ${PAID_KIT_CONFIG.price}` : 'Coming soon';
+        button.textContent = PAID_KIT_CONFIG.enabled ? `Get the 30-Day Reset Kit — ${PAID_KIT_CONFIG.price}` : 'Coming soon';
         if (button.tagName.toLowerCase() === 'a') {
             button.href = PAID_KIT_CONFIG.enabled ? buildPaidKitCheckoutUrl(placement) : '#';
             button.target = '_blank';
@@ -26,11 +27,10 @@ function initStandalonePaidKitCtas() {
                 trackGlobalEvent('gumroad_checkout_failed', { placement });
                 return;
             }
-            trackGlobalEvent('paid_kit_cta_clicked', { placement });
-            trackGlobalEvent('gumroad_checkout_opened', { placement });
+            trackGlobalEvent('checkout_start', { cta_location: placement });
         });
     });
-    trackGlobalEvent('paid_kit_cta_viewed', { placement: 'product_page' });
+    trackGlobalEvent('kit_view', { cta_location: 'product_page' });
 }
 
 function buildPaidKitCheckoutUrl(placement) {
@@ -222,19 +222,7 @@ function initBreakupReset() {
         experiment: 'echoBoxBreakupExperiment.v1'
     };
 
-    const heroVariants = {
-        direct_late_night: {
-            headline: 'Alone at night with their chat open?',
-            lede: 'Put the message here before the room gets quieter and the urge gets louder. The Echo Box gives you a private ten-minute pause, a no-contact counter, and a reality check. No login. Local browser storage. Delete anytime.'
-        },
-        second_person_alone: {
-            headline: 'It is late. You are alone. Do not send it yet.',
-            lede: 'Type the text here instead of reopening the thread. The Echo Box gives you ten private minutes before you decide, with a no-contact counter and a reality check. No login. Local browser storage. Delete anytime.'
-        }
-    };
-
     const state = loadState();
-    const experiment = loadExperiment();
     let timerHandle = null;
 
     const messageInput = document.getElementById('unsent-message');
@@ -291,11 +279,10 @@ function initBreakupReset() {
         safety: 'If someone is unsafe or threatened, contact local emergency services or a trusted person near you now.'
     };
 
-    applyExperiment();
     setupPaidKit();
     setupPricingTracking();
     restoreScreen();
-    trackEvent('landing_page_view');
+    trackEvent('landing_view');
     if (Object.keys(state).length > 0) {
         trackEvent('return_visit_detected');
         trackReturnVisitMilestones();
@@ -325,7 +312,7 @@ function initBreakupReset() {
             ? 'Safety note: if you or someone else may be unsafe, contact local emergency services or a trusted person near you now.'
             : 'Do not decide from the spike. Let your body come down first.';
         startTimer();
-        trackEvent('reset_started', { saveMode: doNotSave.checked ? 'no_save' : 'local_save', safetyFlag });
+        trackEvent('reset_start');
         if (!doNotSave.checked) trackEvent('unsent_message_saved_local', { saveMode: 'local_save' });
         resetFlow.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -334,7 +321,7 @@ function initBreakupReset() {
         messageStatus.textContent = messageInput.value.trim() ? 'Private draft' : 'Private draft';
         if (messageInput.value.trim() && !messageInput.dataset.started) {
             messageInput.dataset.started = 'true';
-            trackEvent('unsent_message_started');
+            trackEvent('echo_start');
         }
     });
 
@@ -448,7 +435,7 @@ function initBreakupReset() {
 
     function setupPaidKit() {
         if (paidKitPrice) paidKitPrice.textContent = PAID_KIT_CONFIG.price;
-        const label = PAID_KIT_CONFIG.enabled ? 'Get the 30-Day Reset Kit - ' + PAID_KIT_CONFIG.price : 'Coming soon';
+        const label = PAID_KIT_CONFIG.enabled ? 'Get the 30-Day Reset Kit — ' + PAID_KIT_CONFIG.price : 'Coming soon';
         paidKitButtons.forEach((button) => {
             const placement = button.dataset.placement || 'unknown';
             button.textContent = label;
@@ -463,16 +450,15 @@ function initBreakupReset() {
     }
 
     function openPaidKitCheckout(placement, sourceButton) {
-        trackEvent('paid_kit_cta_clicked', { placement });
         if (!PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl) {
             trackEvent('gumroad_checkout_failed', { placement });
             return;
         }
         const checkoutUrl = buildCheckoutUrl(placement);
+        trackEvent('checkout_start', { cta_location: placement });
         try {
             const opened = window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
             if (opened) {
-                trackEvent('gumroad_checkout_opened', { placement });
                 return;
             }
             trackEvent('gumroad_checkout_fallback_used', { placement });
@@ -503,8 +489,7 @@ function initBreakupReset() {
         const markViewed = () => {
             if (viewed) return;
             viewed = true;
-            trackEvent('pricing_viewed');
-            trackEvent('paid_kit_cta_viewed', { placement: 'pricing' });
+            trackEvent('kit_view', { cta_location: 'pricing' });
         };
         if ('IntersectionObserver' in window) {
             const observer = new IntersectionObserver((entries) => {
@@ -606,27 +591,6 @@ function initBreakupReset() {
         localStorage.setItem(keys.data, JSON.stringify(state));
     }
 
-    function loadExperiment() {
-        const existing = safeJson(localStorage.getItem(keys.experiment));
-        const created = {
-            hero: 'direct_late_night',
-            cta: existing && existing.cta ? existing.cta : Math.random() < 0.5 ? 'box' : 'wait'
-        };
-        localStorage.setItem(keys.experiment, JSON.stringify(created));
-        return created;
-    }
-
-    function applyExperiment() {
-        const headline = document.getElementById('hero-headline');
-        const cta = document.getElementById('put-in-box-button');
-        const variant = heroVariants[experiment.hero] || heroVariants.direct_late_night;
-        if (headline) headline.textContent = variant.headline;
-        if (heroLede) heroLede.textContent = variant.lede;
-        cta.textContent = experiment.cta === 'wait'
-            ? 'Wait 10 minutes before sending'
-            : 'Put it in the box for 10 minutes';
-    }
-
     function startTimer() {
         clearInterval(timerHandle);
         timerHandle = setInterval(() => {
@@ -636,7 +600,7 @@ function initBreakupReset() {
                 clearInterval(timerHandle);
                 timerGuidance.textContent = 'The spike passed. You can still choose silence, a factual message, or no action.';
                 if (postResetOffer) postResetOffer.classList.remove('hidden');
-                trackEvent('reset_completed');
+                trackEvent('reset_complete');
             }
         }, 250);
     }

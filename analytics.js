@@ -1,21 +1,22 @@
 (function () {
     const STORAGE_KEY = 'echoBoxAnalyticsEvents.v1';
     const SESSION_KEY = 'echoBoxAnalyticsSession.v1';
-    const PRODUCT_VERSION = 'breakup-reset-mvp-2026-07-09';
+    const PRODUCT_VERSION = 'relaunch-phase1-2026-08-31';
     const ANALYTICS_CONFIG = Object.assign({ enabled: false, provider: '', id: '', debug: false }, window.ANALYTICS_CONFIG || {});
     const ALLOWED_EVENTS = new Set([
-        'landing_page_view',
+        'landing_view',
+        'echo_start',
         'unsent_message_started',
         'unsent_message_saved_local',
-        'reset_started',
+        'reset_start',
         'trigger_selected',
-        'reset_completed',
+        'reset_complete',
         'no_contact_counter_created',
         'reality_box_created',
         'reality_box_reopened',
-        'pricing_viewed',
+        'kit_view',
         'paid_kit_cta_viewed',
-        'paid_kit_cta_clicked',
+        'checkout_start',
         'gumroad_checkout_opened',
         'gumroad_checkout_failed',
         'gumroad_checkout_fallback_used',
@@ -33,17 +34,11 @@
         'left_during_reset'
     ]);
     const ALLOWED_PROPERTIES = new Set([
-        'trigger',
-        'reason',
-        'saveMode',
-        'safetyFlag',
-        'completed',
-        'productVersion',
-        'price',
-        'enabled',
-        'destination',
-        'placement',
-        'day'
+        'page_slug',
+        'cta_location',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign'
     ]);
 
     function getSessionId() {
@@ -68,7 +63,6 @@
         Object.entries(properties || {}).forEach(([key, value]) => {
             if (ALLOWED_PROPERTIES.has(key)) clean[key] = value;
         });
-        clean.productVersion = PRODUCT_VERSION;
         return clean;
     }
 
@@ -78,7 +72,7 @@
             utm_source: params.get('utm_source') || '',
             utm_medium: params.get('utm_medium') || '',
             utm_campaign: params.get('utm_campaign') || '',
-            utm_content: params.get('utm_content') || ''
+            page_slug: window.location.pathname
         };
     }
 
@@ -94,9 +88,14 @@
             utm_source: utm.utm_source,
             utm_medium: utm.utm_medium,
             utm_campaign: utm.utm_campaign,
-            utm_content: utm.utm_content,
             product_version: PRODUCT_VERSION,
-            properties: sanitizeProperties(properties)
+            properties: sanitizeProperties({
+                ...properties,
+                page_slug: window.location.pathname,
+                utm_source: utm.utm_source,
+                utm_medium: utm.utm_medium,
+                utm_campaign: utm.utm_campaign
+            })
         };
         const events = safeJson(localStorage.getItem(STORAGE_KEY));
         events.push(event);
@@ -111,23 +110,21 @@
         if (!ANALYTICS_CONFIG.enabled || !ANALYTICS_CONFIG.provider || !ANALYTICS_CONFIG.id) return;
         if (ANALYTICS_CONFIG.provider === 'plausible' && typeof window.plausible === 'function') {
             const PLAUSIBLE_FUNNEL_EVENTS = new Set([
-                'landing_page_view',
-                'reset_started',
-                'reset_completed',
-                'pricing_viewed',
-                'paid_kit_cta_clicked'
+                'landing_view',
+                'echo_start',
+                'reset_start',
+                'reset_complete',
+                'kit_view',
+                'checkout_start'
             ]);
             if (!PLAUSIBLE_FUNNEL_EVENTS.has(event.eventName)) return;
             window.plausible(event.eventName, {
                 props: {
-                    page: event.page,
-                    placement: event.properties.placement || '',
-                    device_category: event.device_category,
-                    utm_source: event.utm_source,
-                    utm_medium: event.utm_medium,
-                    utm_campaign: event.utm_campaign,
-                    utm_content: event.utm_content,
-                    product_version: event.product_version
+                    page_slug: event.properties.page_slug,
+                    cta_location: event.properties.cta_location || '',
+                    utm_source: event.properties.utm_source,
+                    utm_medium: event.properties.utm_medium,
+                    utm_campaign: event.properties.utm_campaign
                 }
             });
         }

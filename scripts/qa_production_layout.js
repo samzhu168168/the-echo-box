@@ -11,6 +11,8 @@ let chromeStderr = '';
 const targets = [
     { name: 'home-iphone-13', path: '/', width: 390, height: 844, mobile: true },
     { name: 'home-iphone-se', path: '/', width: 375, height: 667, mobile: true },
+    { name: 'home-large-mobile', path: '/', width: 430, height: 932, mobile: true },
+    { name: 'guide-iphone-13', path: '/guides/should-i-text-my-ex.html', width: 390, height: 844, mobile: true },
     { name: 'product-iphone-13', path: '/30-day-no-contact-reset-kit.html', width: 390, height: 844, mobile: true },
     { name: 'product-iphone-se', path: '/30-day-no-contact-reset-kit.html', width: 375, height: 667, mobile: true },
     { name: 'about-android', path: '/about.html', width: 390, height: 844, mobile: true },
