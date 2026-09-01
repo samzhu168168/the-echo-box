@@ -1,6 +1,7 @@
 (function () {
     const STORAGE_KEY = 'echoBoxAnalyticsEvents.v1';
     const SESSION_KEY = 'echoBoxAnalyticsSession.v1';
+    const ATTRIBUTION_KEY = 'echoBoxAttribution.v1';
     const PRODUCT_VERSION = 'relaunch-phase1-2026-08-31';
     const ANALYTICS_CONFIG = Object.assign({ enabled: false, provider: '', id: '', debug: false }, window.ANALYTICS_CONFIG || {});
     const ALLOWED_EVENTS = new Set([
@@ -66,12 +67,35 @@
         return clean;
     }
 
+    function readStoredAttribution() {
+        try {
+            return JSON.parse(sessionStorage.getItem(ATTRIBUTION_KEY) || '{}');
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function storeAttribution(attribution) {
+        try {
+            sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
+        } catch (error) {
+            // Attribution remains available for the current page when session storage is unavailable.
+        }
+    }
+
     function readUtm() {
         const params = new URLSearchParams(window.location.search);
+        const stored = readStoredAttribution();
+        const attribution = {
+            utm_source: params.get('utm_source') || stored.utm_source || '',
+            utm_medium: params.get('utm_medium') || stored.utm_medium || '',
+            utm_campaign: params.get('utm_campaign') || stored.utm_campaign || ''
+        };
+        if (attribution.utm_source || attribution.utm_medium || attribution.utm_campaign) {
+            storeAttribution(attribution);
+        }
         return {
-            utm_source: params.get('utm_source') || '',
-            utm_medium: params.get('utm_medium') || '',
-            utm_campaign: params.get('utm_campaign') || '',
+            ...attribution,
             page_slug: window.location.pathname
         };
     }
@@ -130,5 +154,11 @@
         }
     }
 
-    window.echoAnalytics = { trackEvent, STORAGE_KEY, PRODUCT_VERSION, ANALYTICS_CONFIG };
+    window.echoAnalytics = {
+        trackEvent,
+        getAttribution: readUtm,
+        STORAGE_KEY,
+        PRODUCT_VERSION,
+        ANALYTICS_CONFIG
+    };
 })();

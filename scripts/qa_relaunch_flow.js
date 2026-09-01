@@ -5,6 +5,15 @@ const path = require('path');
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const debugPort = Number(process.env.QA_CHROME_PORT || 9248);
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173/';
+const entryUrl = new URL(baseUrl);
+const expectedUtm = {
+  utm_source: entryUrl.searchParams.get('utm_source') || '',
+  utm_medium: entryUrl.searchParams.get('utm_medium') || '',
+  utm_campaign: entryUrl.searchParams.get('utm_campaign') || ''
+};
+const hasExpectedUtm = Boolean(expectedUtm.utm_source || expectedUtm.utm_medium || expectedUtm.utm_campaign);
+const crossPage = process.env.QA_CROSS_PAGE === '1';
+const guidePath = process.env.QA_GUIDE_PATH || '/guides/should-i-text-my-ex.html';
 const profilePath = path.resolve(__dirname, '..', '.codex_deps', `echo-box-flow-qa-${process.pid}`);
 let chromeStderr = '';
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -49,6 +58,23 @@ async function main() {
       if (ready.result.value) break;
       await delay(250);
     }
+    let guideCheckoutUrl = '';
+    if (crossPage) {
+      await client.send('Page.navigate', { url: `${entryUrl.origin}${guidePath}` });
+      await delay(1000);
+      const guideCheckout = await client.send('Runtime.evaluate', { expression: `(() => {
+        window.open = (url) => { window.__qaGuideCheckoutUrl = url; return {}; };
+        document.querySelector('[data-paid-kit-cta]').click();
+        return window.__qaGuideCheckoutUrl || '';
+      })()`, returnByValue: true });
+      guideCheckoutUrl = guideCheckout.result.value;
+      await client.send('Page.navigate', { url: `${entryUrl.origin}/#reset` });
+      for (let attempt = 0; attempt < 40; attempt += 1) {
+        const ready = await client.send('Runtime.evaluate', { expression: 'document.readyState === "complete" && window.echoBoxBreakupResetReady === true', returnByValue: true });
+        if (ready.result.value) break;
+        await delay(250);
+      }
+    }
     const start = await client.send('Runtime.evaluate', { expression: `(() => {
       const input = document.getElementById('unsent-message');
       input.value = 'QA private draft';
@@ -66,16 +92,41 @@ async function main() {
     })()`, returnByValue: true });
     await client.send('Runtime.evaluate', { expression: 'window.__qaRealDateNow = Date.now; Date.now = () => window.__qaRealDateNow() + 600001;' });
     await delay(700);
+    await client.send('Runtime.evaluate', { expression: 'document.getElementById("paid-kit-panel").scrollIntoView();' });
+    await delay(700);
     const finish = await client.send('Runtime.evaluate', { expression: `(() => {
+      window.open = (url) => { window.__qaCheckoutUrl = url; return {}; };
+      document.getElementById('paid-kit-button').click();
+      const allEvents = JSON.parse(localStorage.getItem('echoBoxAnalyticsEvents.v1') || '[]');
       const events = JSON.parse(localStorage.getItem('echoBoxAnalyticsEvents.v1') || '[]').map((event) => event.eventName);
+      const required = ['landing_view', 'echo_start', 'reset_start', 'reset_complete', 'kit_view', 'checkout_start'];
+      const funnelEvents = allEvents.filter((event) => required.includes(event.eventName));
+      const allowedProperties = ['page_slug', 'cta_location', 'utm_source', 'utm_medium', 'utm_campaign'];
+      const attributionPreserved = !${hasExpectedUtm} || (funnelEvents.length >= required.length && funnelEvents.every((event) =>
+        event.properties.utm_source === ${JSON.stringify(expectedUtm.utm_source)} &&
+        event.properties.utm_medium === ${JSON.stringify(expectedUtm.utm_medium)} &&
+        event.properties.utm_campaign === ${JSON.stringify(expectedUtm.utm_campaign)}
+      ));
+      const propertiesRestricted = allEvents.every((event) => Object.keys(event.properties || {}).every((key) => allowedProperties.includes(key)));
       return {
         timer: document.getElementById('timer-minutes').textContent + ':' + document.getElementById('timer-seconds').textContent,
         resetComplete: events.includes('reset_complete'),
-        postResetOfferVisible: !document.getElementById('post-reset-offer').classList.contains('hidden')
+        postResetOfferVisible: !document.getElementById('post-reset-offer').classList.contains('hidden'),
+        kitView: events.includes('kit_view'),
+        checkoutStart: events.includes('checkout_start'),
+        checkoutUrl: window.__qaCheckoutUrl || '',
+        attributionPreserved,
+        propertiesRestricted
       };
     })()`, returnByValue: true });
-    const result = { ...start.result.value, ...finish.result.value };
-    const pass = result.resetVisible && result.draftStored && result.echoStart && result.resetStart && !result.analyticsContainsDraft && result.resetComplete && result.postResetOfferVisible && result.timer === '00:00';
+    const result = { ...start.result.value, ...finish.result.value, guideCheckoutUrl };
+    const checkout = new URL(result.checkoutUrl);
+    const guideCheckout = guideCheckoutUrl ? new URL(guideCheckoutUrl) : null;
+    const checkoutUtmPreserved = !hasExpectedUtm || ['utm_source', 'utm_medium', 'utm_campaign'].every((key) => checkout.searchParams.get(key) === expectedUtm[key]);
+    const guideCheckoutWorks = !crossPage || (guideCheckout && guideCheckout.hostname === 'samzhu168.gumroad.com' && (!hasExpectedUtm || ['utm_source', 'utm_medium', 'utm_campaign'].every((key) => guideCheckout.searchParams.get(key) === expectedUtm[key])));
+    result.checkoutUtmPreserved = checkoutUtmPreserved;
+    result.guideCheckoutWorks = Boolean(guideCheckoutWorks);
+    const pass = result.resetVisible && result.draftStored && result.echoStart && result.resetStart && !result.analyticsContainsDraft && result.resetComplete && result.postResetOfferVisible && result.timer === '00:00' && result.kitView && result.checkoutStart && result.attributionPreserved && result.propertiesRestricted && checkoutUtmPreserved && guideCheckoutWorks;
     console.log(JSON.stringify({ status: pass ? 'PASS' : 'FAIL', ...result }, null, 2));
     await client.send('Browser.close'); client.socket.close();
     if (!pass) process.exitCode = 1;

@@ -8,11 +8,31 @@ const baseUrl = process.argv[2] || 'http://127.0.0.1:4173';
 const profilePath = path.resolve(__dirname, '..', '.codex_deps', `echo-box-layout-qa-${process.pid}`);
 let chromeStderr = '';
 
+const coreGuidePaths = [
+    '/guides/should-i-text-my-ex.html',
+    '/guides/my-ex-texted-me-during-no-contact.html',
+    '/guides/i-broke-no-contact.html',
+    '/guides/should-i-text-my-ex-happy-birthday.html',
+    '/guides/i-miss-my-ex-at-night.html'
+];
+const mobileViewports = [
+    { suffix: '375', width: 375, height: 667 },
+    { suffix: '390', width: 390, height: 844 },
+    { suffix: '430', width: 430, height: 932 }
+];
+const guideTargets = coreGuidePaths.flatMap((guidePath, guideIndex) => mobileViewports.map((viewport) => ({
+    name: `guide-${guideIndex + 1}-${viewport.suffix}`,
+    path: guidePath,
+    width: viewport.width,
+    height: viewport.height,
+    mobile: true
+})));
+
 const targets = [
     { name: 'home-iphone-13', path: '/', width: 390, height: 844, mobile: true },
     { name: 'home-iphone-se', path: '/', width: 375, height: 667, mobile: true },
     { name: 'home-large-mobile', path: '/', width: 430, height: 932, mobile: true },
-    { name: 'guide-iphone-13', path: '/guides/should-i-text-my-ex.html', width: 390, height: 844, mobile: true },
+    ...guideTargets,
     { name: 'product-iphone-13', path: '/30-day-no-contact-reset-kit.html', width: 390, height: 844, mobile: true },
     { name: 'product-iphone-se', path: '/30-day-no-contact-reset-kit.html', width: 375, height: 667, mobile: true },
     { name: 'about-android', path: '/about.html', width: 390, height: 844, mobile: true },
@@ -75,7 +95,7 @@ async function measure(client, target) {
         mobile: target.mobile
     });
     await client.send('Page.navigate', { url: new URL(target.path, baseUrl).href });
-    await delay(1200);
+    await delay(600);
 
     const expression = `(() => {
         const viewportWidth = document.documentElement.clientWidth;
@@ -130,9 +150,19 @@ async function main() {
         const client = await createClient();
         const results = [];
         for (const target of targets) results.push(await measure(client, target));
-        console.log(JSON.stringify(results, null, 2));
+        const failures = results.filter((result) =>
+            result.scrollWidth > result.clientWidth + 1 ||
+            result.bodyScrollWidth > result.clientWidth + 1 ||
+            result.overflowing.length > 0
+        );
+        console.log(JSON.stringify({
+            status: failures.length ? 'FAIL' : 'PASS',
+            targetCount: results.length,
+            failures
+        }, null, 2));
         await client.send('Browser.close');
         client.socket.close();
+        if (failures.length) process.exitCode = 1;
     } finally {
         if (!chrome.killed) chrome.kill();
     }

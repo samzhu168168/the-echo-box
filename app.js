@@ -28,6 +28,11 @@ function initStandalonePaidKitCtas() {
                 return;
             }
             trackGlobalEvent('checkout_start', { cta_location: placement });
+            if (button.tagName.toLowerCase() !== 'a') {
+                const checkoutUrl = buildPaidKitCheckoutUrl(placement);
+                const opened = window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
+                if (!opened) window.location.href = checkoutUrl;
+            }
         });
     });
     trackGlobalEvent('kit_view', { cta_location: 'product_page' });
@@ -41,9 +46,10 @@ function buildPaidKitCheckoutUrl(placement) {
 
 function applyCheckoutUtm(url, placement) {
     const params = new URLSearchParams(window.location.search);
-    url.searchParams.set('utm_source', params.get('utm_source') || 'website');
-    url.searchParams.set('utm_medium', params.get('utm_medium') || 'checkout_cta');
-    url.searchParams.set('utm_campaign', params.get('utm_campaign') || 'no_contact_reset_kit');
+    const attribution = window.echoAnalytics?.getAttribution?.() || {};
+    url.searchParams.set('utm_source', params.get('utm_source') || attribution.utm_source || 'website');
+    url.searchParams.set('utm_medium', params.get('utm_medium') || attribution.utm_medium || 'checkout_cta');
+    url.searchParams.set('utm_campaign', params.get('utm_campaign') || attribution.utm_campaign || 'no_contact_reset_kit');
     url.searchParams.set('utm_content', params.get('utm_content') || placement);
 }
 

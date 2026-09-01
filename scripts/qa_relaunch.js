@@ -51,6 +51,7 @@ for (const slug of guideSlugs) {
   expect(count(html, /<h1[\s>]/gi) === 1, `${file}: expected one H1`);
   expect(html.includes(`<link rel="canonical" href="${origin}/${file}">`), `${file}: canonical mismatch`);
   expect(!/<meta[^>]+noindex/i.test(html), `${file}: noindex present`);
+  expect(html.includes('<meta name="twitter:image"'), `${file}: twitter:image missing`);
   expect(html.includes('Last reviewed: August 31, 2026'), `${file}: review date missing`);
   expect(html.includes('Put the message in The Echo Box for 10 minutes'), `${file}: free CTA missing`);
   expect(html.includes('30-Day No Contact Reset Kit — $9.99'), `${file}: kit CTA missing`);
@@ -80,10 +81,16 @@ for (const allowed of ['page_slug', 'cta_location', 'utm_source', 'utm_medium', 
 for (const forbidden of ['message text', 'relationship text', 'unsentMessage']) {
   expect(!analytics.includes(forbidden), `analytics: sensitive field reference ${forbidden}`);
 }
+expect(analytics.includes('echoBoxAttribution.v1'), 'analytics: session attribution storage missing');
+expect(analytics.includes('sessionStorage'), 'analytics: UTM persistence missing');
+expect(analytics.includes('getAttribution'), 'analytics: checkout attribution interface missing');
 
 const commerce = read('commerce-config.js');
 expect(commerce.includes("price: '$9.99'"), 'commerce: price changed');
 expect(commerce.includes("checkoutUrl: 'https://samzhu168.gumroad.com/l/echo-box-30-day-no-contact-reset-kit'"), 'commerce: Gumroad URL changed');
+const app = read('app.js');
+expect(app.includes("button.tagName.toLowerCase() !== 'a'"), 'commerce: standalone button checkout handler missing');
+expect(app.includes('window.open(checkoutUrl'), 'commerce: Gumroad checkout open missing');
 
 if (failures.length) {
   console.error(`RELAUNCH_QA FAIL\n${failures.join('\n')}`);
