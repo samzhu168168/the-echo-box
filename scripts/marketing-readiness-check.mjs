@@ -4,7 +4,10 @@ const GUIDE_PATHS = [
   '/guides/my-ex-texted-me-during-no-contact.html',
   '/guides/i-broke-no-contact.html',
   '/guides/should-i-text-my-ex-happy-birthday.html',
-  '/guides/i-miss-my-ex-at-night.html'
+  '/guides/i-miss-my-ex-at-night.html',
+  '/guides/should-i-block-my-ex-during-no-contact.html',
+  '/guides/how-to-stop-checking-my-ex-social-media.html',
+  '/guides/why-do-i-keep-rereading-old-messages-from-my-ex.html'
 ];
 const CORE_PATHS = ['/', ...GUIDE_PATHS];
 const UTM_SOURCES = ['tiktok', 'youtube', 'pinterest', 'x'];
@@ -100,7 +103,7 @@ async function main() {
 
   const { body: sitemap } = await get(`${ORIGIN}/sitemap.xml`, 'sitemap.xml');
   const sitemapUrls = [...sitemap.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1]);
-  check(sitemapUrls.length === 14, `sitemap.xml: expected 14 URLs, found ${sitemapUrls.length}`);
+  check(sitemapUrls.length === 17, `sitemap.xml: expected 17 URLs, found ${sitemapUrls.length}`);
   check(sitemapUrls.every((url) => url.startsWith(`${ORIGIN}/`)), 'sitemap.xml: non-Production URL found');
 
   const { body: robots } = await get(`${ORIGIN}/robots.txt`, 'robots.txt');

@@ -13,7 +13,10 @@ const coreGuidePaths = [
     '/guides/my-ex-texted-me-during-no-contact.html',
     '/guides/i-broke-no-contact.html',
     '/guides/should-i-text-my-ex-happy-birthday.html',
-    '/guides/i-miss-my-ex-at-night.html'
+    '/guides/i-miss-my-ex-at-night.html',
+    '/guides/should-i-block-my-ex-during-no-contact.html',
+    '/guides/how-to-stop-checking-my-ex-social-media.html',
+    '/guides/why-do-i-keep-rereading-old-messages-from-my-ex.html'
 ];
 const mobileViewports = [
     { suffix: '375', width: 375, height: 667 },
