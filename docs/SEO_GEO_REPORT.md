@@ -1,7 +1,7 @@
 ---
 title: "The Echo Box 2026-09 SEO + GEO Content Expansion Report"
 date: 2026-09-08
-status: pre-production
+status: production-verified
 ---
 
 # SEO/GEO Content Expansion Report
@@ -38,6 +38,21 @@ No existing Guide body, H1, metadata, date, schema, CTA, or slug was changed.
 - Message-text network privacy: PASS
 - Gumroad URL, `$9.99`, checkout event, and UTM preservation: PASS
 
-## Production status
+## Production QA
 
-PENDING DEPLOYMENT. Production HTTP, link, mobile, analytics, Gumroad, sitemap, robots, and IndexNow results will be recorded only after real checks.
+- Deployment commit: `f357ae5`
+- Vercel deployment: success
+- Four new Guide URLs: HTTP 200
+- Self-canonical, index/follow, one H1, Article schema, Breadcrumb schema: PASS on all four
+- Production linked targets: 17 checked, 0 broken
+- Sitemap: HTTP 200, 21 URLs, all four new URLs present
+- Robots: HTTP 200 with Production sitemap declaration
+- Preview-domain references in checked output: 0
+- Mobile 375/390/430: PASS; 45 targets, 0 overflow failures
+- All four new paid CTAs: PASS; correct Gumroad host, `$9.99`, `checkout_start`, and UTM preservation
+- Message text network privacy: PASS; no leaked draft in observed requests
+- IndexNow: seven in-scope URLs accepted with HTTP 200
+
+The broad marketing-readiness check reported that three pre-existing Phase 1 Guides do not match its expected paid-CTA text pattern. Those frozen pages were not changed during this sprint; their warning is retained as P1 follow-up rather than being silently repaired.
+
+Search-engine indexing and impressions are NOT VERIFIED because IndexNow acceptance does not prove indexing and no webmaster-console data was available.

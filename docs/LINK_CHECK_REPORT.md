@@ -1,7 +1,7 @@
 ---
 title: "The Echo Box SEO/GEO Sprint Link Check"
 date: 2026-09-08
-status: pre-production
+status: production-verified
 ---
 
 # Link Check Report
@@ -30,4 +30,9 @@ status: pre-production
 
 ## Production check
 
-PENDING DEPLOYMENT. This section must not be interpreted as a Production result until the deployed URLs are checked.
+- Four new Guide URLs: HTTP 200
+- Unique linked Production targets checked: 17
+- Broken Production targets: 0
+- Sitemap: HTTP 200, 21 URLs, all four new URLs present
+- Robots: HTTP 200 and correct Production sitemap declaration
+- Production mobile check: PASS across 45 targets
