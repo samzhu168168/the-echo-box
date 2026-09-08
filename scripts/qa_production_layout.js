@@ -16,7 +16,11 @@ const coreGuidePaths = [
     '/guides/i-miss-my-ex-at-night.html',
     '/guides/should-i-block-my-ex-during-no-contact.html',
     '/guides/how-to-stop-checking-my-ex-social-media.html',
-    '/guides/why-do-i-keep-rereading-old-messages-from-my-ex.html'
+    '/guides/why-do-i-keep-rereading-old-messages-from-my-ex.html',
+    '/guides/should-i-text-my-ex-on-our-anniversary.html',
+    '/guides/how-to-text-your-ex-when-you-have-to.html',
+    '/guides/how-to-handle-belongings-after-a-breakup.html',
+    '/guides/wedding-invitation-after-breakup.html'
 ];
 const mobileViewports = [
     { suffix: '375', width: 375, height: 667 },
