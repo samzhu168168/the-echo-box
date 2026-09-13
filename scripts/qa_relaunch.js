@@ -8,7 +8,14 @@ const guideSlugs = [
   'my-ex-texted-me-during-no-contact',
   'i-broke-no-contact',
   'should-i-text-my-ex-happy-birthday',
-  'i-miss-my-ex-at-night'
+  'i-miss-my-ex-at-night',
+  'should-i-block-my-ex-during-no-contact',
+  'how-to-stop-checking-my-ex-social-media',
+  'why-do-i-keep-rereading-old-messages-from-my-ex',
+  'should-i-text-my-ex-on-our-anniversary',
+  'how-to-text-your-ex-when-you-have-to',
+  'how-to-handle-belongings-after-a-breakup',
+  'wedding-invitation-after-breakup'
 ];
 const failures = [];
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
@@ -30,9 +37,10 @@ function parseJsonLd(html, file) {
 const home = read('index.html');
 expect(count(home, /<h1[\s>]/gi) === 1, 'homepage: expected one H1');
 expect(home.includes('About to text your ex?'), 'homepage: new hero H1 missing');
-expect(home.includes('Put it in the box for 10 minutes'), 'homepage: primary CTA missing');
-expect(home.includes('Get through tonight.'), 'homepage: kit positioning missing');
-expect(home.includes('Get the 30-Day Reset Kit — $9.99'), 'homepage: kit CTA/price missing');
+expect(home.includes('Start the 10-Minute Reset'), 'homepage: primary CTA missing');
+expect(home.includes('What usually happens next?'), 'homepage: scenario section missing');
+expect(home.includes('One moment or the next 30 days?'), 'homepage: free/paid distinction missing');
+expect(home.includes('Build My 30-Day Reset — $9.99'), 'homepage: system CTA/price missing');
 expect(home.includes('<meta name="robots"') === false, 'homepage: unexpected robots override');
 expect(!/<meta[^>]+noindex/i.test(home), 'homepage: noindex present');
 
@@ -52,9 +60,10 @@ for (const slug of guideSlugs) {
   expect(html.includes(`<link rel="canonical" href="${origin}/${file}">`), `${file}: canonical mismatch`);
   expect(!/<meta[^>]+noindex/i.test(html), `${file}: noindex present`);
   expect(html.includes('<meta name="twitter:image"'), `${file}: twitter:image missing`);
-  expect(html.includes('Last reviewed: August 31, 2026'), `${file}: review date missing`);
-  expect(html.includes('Put the message in The Echo Box for 10 minutes'), `${file}: free CTA missing`);
-  expect(html.includes('30-Day No Contact Reset Kit — $9.99'), `${file}: kit CTA missing`);
+  expect(/(?:Last reviewed|Published and reviewed):/.test(html), `${file}: review date missing`);
+  expect(html.includes('Use the free 10-minute reset'), `${file}: free CTA missing`);
+  expect(html.includes('Need more than one answer?'), `${file}: paid transition missing`);
+  expect(html.includes('Get the 30-Day Reset System — $9.99'), `${file}: system CTA missing`);
   expect(html.includes('../editorial-policy.html') && html.includes('../sources.html') && html.includes('../safety.html'), `${file}: trust links missing`);
   expect(count(html, /href="[^"]+\.html"/g) >= 8, `${file}: insufficient internal links`);
   const schemas = parseJsonLd(html, file).flatMap((entry) => entry['@graph'] || [entry]);
@@ -87,7 +96,14 @@ expect(analytics.includes('getAttribution'), 'analytics: checkout attribution in
 
 const commerce = read('commerce-config.js');
 expect(commerce.includes("price: '$9.99'"), 'commerce: price changed');
+expect(commerce.includes("productName: 'The Echo Box — 30-Day Breakup Reset System'"), 'commerce: product name mismatch');
 expect(commerce.includes("checkoutUrl: 'https://samzhu168.gumroad.com/l/echo-box-30-day-no-contact-reset-kit'"), 'commerce: Gumroad URL changed');
+const product = read('30-day-no-contact-reset-kit.html');
+expect(product.includes('<title>30-Day No Contact &amp; Breakup Reset System | The Echo Box</title>'), 'product: SEO title mismatch');
+expect(product.includes('A next step for every time the urge comes back.'), 'product: hero mismatch');
+expect(product.includes('The free reset handles one spike.'), 'product: differentiation missing');
+expect(product.includes('What’s inside the system'), 'product: modules missing');
+expect(product.includes('Get the 30-Day Reset System — $9.99'), 'product: CTA/price missing');
 const app = read('app.js');
 expect(app.includes("button.tagName.toLowerCase() !== 'a'"), 'commerce: standalone button checkout handler missing');
 expect(app.includes('window.open(checkoutUrl'), 'commerce: Gumroad checkout open missing');

@@ -42,10 +42,13 @@ const targets = [
     ...guideTargets,
     { name: 'product-iphone-13', path: '/30-day-no-contact-reset-kit.html', width: 390, height: 844, mobile: true },
     { name: 'product-iphone-se', path: '/30-day-no-contact-reset-kit.html', width: 375, height: 667, mobile: true },
+    { name: 'product-large-mobile', path: '/30-day-no-contact-reset-kit.html', width: 430, height: 932, mobile: true },
     { name: 'about-android', path: '/about.html', width: 390, height: 844, mobile: true },
     { name: 'contact-android', path: '/contact.html', width: 390, height: 844, mobile: true },
     { name: 'home-desktop', path: '/', width: 1440, height: 900, mobile: false },
-    { name: 'product-desktop', path: '/30-day-no-contact-reset-kit.html', width: 1440, height: 900, mobile: false }
+    { name: 'home-desktop-1280', path: '/', width: 1280, height: 800, mobile: false },
+    { name: 'product-desktop', path: '/30-day-no-contact-reset-kit.html', width: 1440, height: 900, mobile: false },
+    { name: 'product-desktop-1280', path: '/30-day-no-contact-reset-kit.html', width: 1280, height: 800, mobile: false }
 ];
 
 function delay(ms) {

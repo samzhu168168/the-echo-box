@@ -80,6 +80,16 @@ async function main() {
       input.value = 'QA private draft';
       input.dispatchEvent(new Event('input', { bubbles: true }));
       document.getElementById('put-in-box-button').click();
+      const reality = document.querySelector('#reality-form textarea[name="whyLeft"]');
+      reality.value = 'QA reality note';
+      reality.dispatchEvent(new Event('input', { bubbles: true }));
+      reality.dispatchEvent(new Event('change', { bubbles: true }));
+      document.querySelector('#reality-form button[type="submit"]').click();
+      const counter = document.getElementById('last-contact');
+      const now = new Date(Date.now() - 86400000);
+      counter.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      counter.dispatchEvent(new Event('change', { bubbles: true }));
+      document.getElementById('save-counter-button').click();
       const events = JSON.parse(localStorage.getItem('echoBoxAnalyticsEvents.v1') || '[]').map((event) => event.eventName);
       return {
         resetVisible: !document.getElementById('reset-flow').classList.contains('hidden'),
@@ -87,7 +97,9 @@ async function main() {
         draftStored: (localStorage.getItem('echoBoxBreakupData.v1') || '').includes('QA private draft'),
         echoStart: events.includes('echo_start'),
         resetStart: events.includes('reset_start'),
-        analyticsContainsDraft: (localStorage.getItem('echoBoxAnalyticsEvents.v1') || '').includes('QA private draft')
+        analyticsContainsDraft: (localStorage.getItem('echoBoxAnalyticsEvents.v1') || '').includes('QA private draft'),
+        realityBoxWorks: (localStorage.getItem('echoBoxBreakupData.v1') || '').includes('QA reality note'),
+        counterWorks: !document.getElementById('counter-result').textContent.includes('No counter set yet')
       };
     })()`, returnByValue: true });
     await client.send('Runtime.evaluate', { expression: 'window.__qaRealDateNow = Date.now; Date.now = () => window.__qaRealDateNow() + 600001;' });
@@ -108,6 +120,18 @@ async function main() {
         event.properties.utm_campaign === ${JSON.stringify(expectedUtm.utm_campaign)}
       ));
       const propertiesRestricted = allEvents.every((event) => Object.keys(event.properties || {}).every((key) => allowedProperties.includes(key)));
+      window.__qaExports = [];
+      window.confirm = () => true;
+      URL.createObjectURL = () => 'blob:qa-export';
+      HTMLAnchorElement.prototype.click = function () { window.__qaExports.push(this.download || 'link'); };
+      document.getElementById('export-message-button').click();
+      document.getElementById('export-reality-button').click();
+      document.getElementById('export-all-data-button').click();
+      const exportWorks = window.__qaExports.length === 3;
+      document.getElementById('delete-message-button').click();
+      const deleteMessageWorks = !(localStorage.getItem('echoBoxBreakupData.v1') || '').includes('QA private draft');
+      document.getElementById('clear-all-data-button').click();
+      const clearAllWorks = !localStorage.getItem('echoBoxBreakupData.v1');
       return {
         timer: document.getElementById('timer-minutes').textContent + ':' + document.getElementById('timer-seconds').textContent,
         resetComplete: events.includes('reset_complete'),
@@ -116,7 +140,10 @@ async function main() {
         checkoutStart: events.includes('checkout_start'),
         checkoutUrl: window.__qaCheckoutUrl || '',
         attributionPreserved,
-        propertiesRestricted
+        propertiesRestricted,
+        exportWorks,
+        deleteMessageWorks,
+        clearAllWorks
       };
     })()`, returnByValue: true });
     const result = { ...start.result.value, ...finish.result.value, guideCheckoutUrl };
@@ -126,7 +153,7 @@ async function main() {
     const guideCheckoutWorks = !crossPage || (guideCheckout && guideCheckout.hostname === 'samzhu168.gumroad.com' && (!hasExpectedUtm || ['utm_source', 'utm_medium', 'utm_campaign'].every((key) => guideCheckout.searchParams.get(key) === expectedUtm[key])));
     result.checkoutUtmPreserved = checkoutUtmPreserved;
     result.guideCheckoutWorks = Boolean(guideCheckoutWorks);
-    const pass = result.resetVisible && result.draftStored && result.echoStart && result.resetStart && !result.analyticsContainsDraft && result.resetComplete && result.postResetOfferVisible && result.timer === '00:00' && result.kitView && result.checkoutStart && result.attributionPreserved && result.propertiesRestricted && checkoutUtmPreserved && guideCheckoutWorks;
+    const pass = result.resetVisible && result.draftStored && result.echoStart && result.resetStart && !result.analyticsContainsDraft && result.realityBoxWorks && result.counterWorks && result.resetComplete && result.postResetOfferVisible && result.timer === '00:00' && result.kitView && result.checkoutStart && result.attributionPreserved && result.propertiesRestricted && result.exportWorks && result.deleteMessageWorks && result.clearAllWorks && checkoutUtmPreserved && guideCheckoutWorks;
     console.log(JSON.stringify({ status: pass ? 'PASS' : 'FAIL', ...result }, null, 2));
     await client.send('Browser.close'); client.socket.close();
     if (!pass) process.exitCode = 1;

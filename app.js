@@ -2,7 +2,7 @@ const PAID_KIT_CONFIG = window.COMMERCE_CONFIG?.paidKit || {
     enabled: false,
     provider: 'gumroad',
     price: '$9.99',
-    productName: 'The Echo Box - 30-Day No Contact Reset Kit',
+    productName: 'The Echo Box — 30-Day Breakup Reset System',
     checkoutUrl: '',
     productVersion: '2026-07-v1'
 };
@@ -14,7 +14,7 @@ function initStandalonePaidKitCtas() {
     if (!buttons.length) return;
     buttons.forEach((button) => {
         const placement = button.dataset.placement || 'standalone';
-        button.textContent = PAID_KIT_CONFIG.enabled ? `Get the 30-Day Reset Kit — ${PAID_KIT_CONFIG.price}` : 'Coming soon';
+        button.textContent = PAID_KIT_CONFIG.enabled ? `Get the 30-Day Reset System — ${PAID_KIT_CONFIG.price}` : 'Coming soon';
         if (button.tagName.toLowerCase() === 'a') {
             button.href = PAID_KIT_CONFIG.enabled ? buildPaidKitCheckoutUrl(placement) : '#';
             button.target = '_blank';
@@ -441,10 +441,12 @@ function initBreakupReset() {
 
     function setupPaidKit() {
         if (paidKitPrice) paidKitPrice.textContent = PAID_KIT_CONFIG.price;
-        const label = PAID_KIT_CONFIG.enabled ? 'Get the 30-Day Reset Kit — ' + PAID_KIT_CONFIG.price : 'Coming soon';
         paidKitButtons.forEach((button) => {
             const placement = button.dataset.placement || 'unknown';
-            button.textContent = label;
+            const label = placement === 'pricing'
+                ? 'Build My 30-Day Reset — ' + PAID_KIT_CONFIG.price
+                : 'Get the 30-Day Reset System — ' + PAID_KIT_CONFIG.price;
+            button.textContent = PAID_KIT_CONFIG.enabled ? label : 'Coming soon';
             button.disabled = !PAID_KIT_CONFIG.enabled || !PAID_KIT_CONFIG.checkoutUrl;
             button.addEventListener('click', () => openPaidKitCheckout(placement, button));
         });
