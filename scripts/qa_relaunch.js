@@ -15,7 +15,11 @@ const guideSlugs = [
   'should-i-text-my-ex-on-our-anniversary',
   'how-to-text-your-ex-when-you-have-to',
   'how-to-handle-belongings-after-a-breakup',
-  'wedding-invitation-after-breakup'
+  'wedding-invitation-after-breakup',
+  'should-i-unblock-my-ex',
+  'should-i-send-my-ex-something-funny',
+  'want-to-call-my-ex',
+  'when-contact-with-an-ex-is-necessary'
 ];
 const failures = [];
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');

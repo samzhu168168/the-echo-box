@@ -2,6 +2,8 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build_dist.js",
-    "indexnow": "node scripts/indexnow-submit.mjs"
+    "indexnow": "node scripts/indexnow-submit.mjs",
+    "qa:crawlers": "node scripts/qa_crawler_freshness.mjs",
+    "qa:links": "node scripts/qa_internal_links.mjs"
   }
 }

@@ -52,6 +52,7 @@ async function main() {
   try {
     await waitForDebugger();
     const client = await createClient();
+    await client.send('Emulation.setDeviceMetricsOverride', { width: 1366, height: 900, deviceScaleFactor: 1, mobile: false });
     await client.send('Page.navigate', { url: baseUrl });
     for (let attempt = 0; attempt < 40; attempt += 1) {
       const ready = await client.send('Runtime.evaluate', { expression: 'document.readyState === "complete" && window.echoBoxBreakupResetReady === true', returnByValue: true });
@@ -104,8 +105,8 @@ async function main() {
     })()`, returnByValue: true });
     await client.send('Runtime.evaluate', { expression: 'window.__qaRealDateNow = Date.now; Date.now = () => window.__qaRealDateNow() + 600001;' });
     await delay(700);
-    await client.send('Runtime.evaluate', { expression: 'document.getElementById("paid-kit-panel").scrollIntoView();' });
-    await delay(700);
+    await client.send('Runtime.evaluate', { expression: 'document.getElementById("paid-kit-panel").scrollIntoView({ block: "center" });' });
+    await delay(1200);
     const finish = await client.send('Runtime.evaluate', { expression: `(() => {
       window.open = (url) => { window.__qaCheckoutUrl = url; return {}; };
       document.getElementById('paid-kit-button').click();

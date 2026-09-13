@@ -6,6 +6,8 @@ const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const debugPort = Number(process.env.QA_CHROME_PORT || 9237);
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173';
 const profilePath = path.resolve(__dirname, '..', '.codex_deps', `echo-box-layout-qa-${process.pid}`);
+const captureDir = process.env.QA_CAPTURE_DIR ? path.resolve(process.env.QA_CAPTURE_DIR) : '';
+const captureLabel = process.env.QA_CAPTURE_LABEL || 'qa';
 let chromeStderr = '';
 
 const coreGuidePaths = [
@@ -20,7 +22,11 @@ const coreGuidePaths = [
     '/guides/should-i-text-my-ex-on-our-anniversary.html',
     '/guides/how-to-text-your-ex-when-you-have-to.html',
     '/guides/how-to-handle-belongings-after-a-breakup.html',
-    '/guides/wedding-invitation-after-breakup.html'
+    '/guides/wedding-invitation-after-breakup.html',
+    '/guides/should-i-unblock-my-ex.html',
+    '/guides/should-i-send-my-ex-something-funny.html',
+    '/guides/want-to-call-my-ex.html',
+    '/guides/when-contact-with-an-ex-is-necessary.html'
 ];
 const mobileViewports = [
     { suffix: '375', width: 375, height: 667 },
@@ -47,6 +53,7 @@ const targets = [
     { name: 'contact-android', path: '/contact.html', width: 390, height: 844, mobile: true },
     { name: 'home-desktop', path: '/', width: 1440, height: 900, mobile: false },
     { name: 'home-desktop-1280', path: '/', width: 1280, height: 800, mobile: false },
+    { name: 'home-desktop-1366', path: '/', width: 1366, height: 768, mobile: false },
     { name: 'product-desktop', path: '/30-day-no-contact-reset-kit.html', width: 1440, height: 900, mobile: false },
     { name: 'product-desktop-1280', path: '/30-day-no-contact-reset-kit.html', width: 1280, height: 800, mobile: false }
 ];
@@ -123,16 +130,38 @@ async function measure(client, target) {
             })
             .filter((item) => item.width > 0 && (item.left < -1 || item.right > viewportWidth + 1))
             .slice(0, 20);
+        const cta = document.querySelector('#put-in-box-button');
+        const input = document.querySelector('#unsent-message');
+        const h1 = document.querySelector('#hero-headline');
+        const rect = (element) => element ? (() => { const value = element.getBoundingClientRect(); return { top: Math.round(value.top), bottom: Math.round(value.bottom), height: Math.round(value.height) }; })() : null;
         return {
             innerWidth: window.innerWidth,
             clientWidth: viewportWidth,
             scrollWidth: document.documentElement.scrollWidth,
             bodyScrollWidth: document.body.scrollWidth,
-            overflowing
+            overflowing,
+            h1: rect(h1),
+            input: rect(input),
+            primaryCta: rect(cta),
+            primaryCtaInViewport: !cta || cta.getBoundingClientRect().bottom <= window.innerHeight
         };
     })()`;
 
     const result = await client.send('Runtime.evaluate', { expression, returnByValue: true });
+    const shouldCapture = target.path === '/' ||
+        ['product-iphone-13', 'product-desktop'].includes(target.name) ||
+        (target.path === '/guides/should-i-unblock-my-ex.html' && target.width === 390);
+    if (captureDir && shouldCapture && ['home-iphone-13', 'home-desktop', 'home-desktop-1280', 'home-desktop-1366', 'product-iphone-13', 'product-desktop', 'guide-13-390'].includes(target.name)) {
+        fs.mkdirSync(captureDir, { recursive: true });
+        const shot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true, captureBeyondViewport: false });
+        fs.writeFileSync(path.join(captureDir, `${captureLabel}-${target.name}.png`), Buffer.from(shot.data, 'base64'));
+        if (target.name === 'home-desktop-1366') {
+            await client.send('Runtime.evaluate', { expression: "window.scrollTo({ top: document.querySelector('#pricing')?.offsetTop || 0, behavior: 'instant' })" });
+            await delay(700);
+            const transitionShot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true, captureBeyondViewport: false });
+            fs.writeFileSync(path.join(captureDir, `${captureLabel}-paid-transition-1366.png`), Buffer.from(transitionShot.data, 'base64'));
+        }
+    }
     return { ...target, ...result.result.value };
 }
 
@@ -168,7 +197,8 @@ async function main() {
         console.log(JSON.stringify({
             status: failures.length ? 'FAIL' : 'PASS',
             targetCount: results.length,
-            failures
+            failures,
+            firstFold: results.filter((result) => result.path === '/').map(({ name, width, height, h1, input, primaryCta, primaryCtaInViewport }) => ({ name, width, height, h1, input, primaryCta, primaryCtaInViewport }))
         }, null, 2));
         await client.send('Browser.close');
         client.socket.close();
