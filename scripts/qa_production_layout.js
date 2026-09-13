@@ -29,7 +29,7 @@ const coreGuidePaths = [
     '/guides/when-contact-with-an-ex-is-necessary.html'
 ];
 const mobileViewports = [
-    { suffix: '375', width: 375, height: 667 },
+    { suffix: '375', width: 375, height: 812 },
     { suffix: '390', width: 390, height: 844 },
     { suffix: '430', width: 430, height: 932 }
 ];
@@ -43,11 +43,11 @@ const guideTargets = coreGuidePaths.flatMap((guidePath, guideIndex) => mobileVie
 
 const targets = [
     { name: 'home-iphone-13', path: '/', width: 390, height: 844, mobile: true },
-    { name: 'home-iphone-se', path: '/', width: 375, height: 667, mobile: true },
+    { name: 'home-375', path: '/', width: 375, height: 812, mobile: true },
     { name: 'home-large-mobile', path: '/', width: 430, height: 932, mobile: true },
     ...guideTargets,
     { name: 'product-iphone-13', path: '/30-day-no-contact-reset-kit.html', width: 390, height: 844, mobile: true },
-    { name: 'product-iphone-se', path: '/30-day-no-contact-reset-kit.html', width: 375, height: 667, mobile: true },
+    { name: 'product-375', path: '/30-day-no-contact-reset-kit.html', width: 375, height: 812, mobile: true },
     { name: 'product-large-mobile', path: '/30-day-no-contact-reset-kit.html', width: 430, height: 932, mobile: true },
     { name: 'about-android', path: '/about.html', width: 390, height: 844, mobile: true },
     { name: 'contact-android', path: '/contact.html', width: 390, height: 844, mobile: true },
