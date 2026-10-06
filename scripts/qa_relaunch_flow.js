@@ -4,6 +4,8 @@ const path = require('path');
 
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const debugPort = Number(process.env.QA_CHROME_PORT || 9248);
+const viewportWidth = Number(process.env.QA_VIEWPORT_WIDTH || 1366);
+const viewportHeight = Number(process.env.QA_VIEWPORT_HEIGHT || 900);
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173/';
 const entryUrl = new URL(baseUrl);
 const expectedUtm = {
@@ -52,7 +54,7 @@ async function main() {
   try {
     await waitForDebugger();
     const client = await createClient();
-    await client.send('Emulation.setDeviceMetricsOverride', { width: 1366, height: 900, deviceScaleFactor: 1, mobile: false });
+    await client.send('Emulation.setDeviceMetricsOverride', { width: viewportWidth, height: viewportHeight, deviceScaleFactor: 1, mobile: viewportWidth <= 640 });
     await client.send('Page.navigate', { url: baseUrl });
     for (let attempt = 0; attempt < 40; attempt += 1) {
       const ready = await client.send('Runtime.evaluate', { expression: 'document.readyState === "complete" && window.echoBoxBreakupResetReady === true', returnByValue: true });
@@ -96,8 +98,8 @@ async function main() {
         resetVisible: !document.getElementById('reset-flow').classList.contains('hidden'),
         timer: document.getElementById('timer-minutes').textContent + ':' + document.getElementById('timer-seconds').textContent,
         draftStored: (localStorage.getItem('echoBoxBreakupData.v1') || '').includes('QA private draft'),
-        echoStart: events.includes('echo_start'),
-        resetStart: events.includes('reset_start'),
+        echoStart: events.includes('unsent_message_started'),
+        resetStart: events.includes('reset_started'),
         analyticsContainsDraft: (localStorage.getItem('echoBoxAnalyticsEvents.v1') || '').includes('QA private draft'),
         realityBoxWorks: (localStorage.getItem('echoBoxBreakupData.v1') || '').includes('QA reality note'),
         counterWorks: !document.getElementById('counter-result').textContent.includes('No counter set yet')
@@ -112,9 +114,9 @@ async function main() {
       document.getElementById('paid-kit-button').click();
       const allEvents = JSON.parse(localStorage.getItem('echoBoxAnalyticsEvents.v1') || '[]');
       const events = JSON.parse(localStorage.getItem('echoBoxAnalyticsEvents.v1') || '[]').map((event) => event.eventName);
-      const required = ['landing_view', 'echo_start', 'reset_start', 'reset_complete', 'kit_view', 'checkout_start'];
+      const required = ['landing_view', 'unsent_message_started', 'reset_started', 'reset_completed', 'kit_view', 'paid_cta_clicked', 'checkout_started'];
       const funnelEvents = allEvents.filter((event) => required.includes(event.eventName));
-      const allowedProperties = ['page_slug', 'cta_location', 'utm_source', 'utm_medium', 'utm_campaign'];
+      const allowedProperties = ['page_slug', 'cta_location', 'utm_source', 'utm_medium', 'utm_campaign', 'share_method', 'referral_source'];
       const attributionPreserved = !${hasExpectedUtm} || (funnelEvents.length >= required.length && funnelEvents.every((event) =>
         event.properties.utm_source === ${JSON.stringify(expectedUtm.utm_source)} &&
         event.properties.utm_medium === ${JSON.stringify(expectedUtm.utm_medium)} &&
@@ -129,16 +131,25 @@ async function main() {
       document.getElementById('export-reality-button').click();
       document.getElementById('export-all-data-button').click();
       const exportWorks = window.__qaExports.length === 3;
+      const postResetOfferVisible = !document.getElementById('post-reset-offer').classList.contains('hidden');
+      const completionNoHorizontalOverflow = document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1;
+      document.getElementById('generate-reset-card').click();
+      const resetCanvas = document.getElementById('reset-card-canvas');
+      const cardGenerated = !document.getElementById('download-reset-card').disabled &&
+        !document.getElementById('share-reset-card').disabled &&
+        resetCanvas.getContext('2d').getImageData(10, 10, 1, 1).data[3] > 0;
       document.getElementById('delete-message-button').click();
       const deleteMessageWorks = !(localStorage.getItem('echoBoxBreakupData.v1') || '').includes('QA private draft');
       document.getElementById('clear-all-data-button').click();
       const clearAllWorks = !localStorage.getItem('echoBoxBreakupData.v1');
       return {
         timer: document.getElementById('timer-minutes').textContent + ':' + document.getElementById('timer-seconds').textContent,
-        resetComplete: events.includes('reset_complete'),
-        postResetOfferVisible: !document.getElementById('post-reset-offer').classList.contains('hidden'),
+        resetComplete: events.includes('reset_completed'),
+        postResetOfferVisible,
+        completionNoHorizontalOverflow,
+        cardGenerated,
         kitView: events.includes('kit_view'),
-        checkoutStart: events.includes('checkout_start'),
+        checkoutStart: events.includes('checkout_started'),
         checkoutUrl: window.__qaCheckoutUrl || '',
         attributionPreserved,
         propertiesRestricted,
@@ -154,7 +165,7 @@ async function main() {
     const guideCheckoutWorks = !crossPage || (guideCheckout && guideCheckout.hostname === 'samzhu168.gumroad.com' && (!hasExpectedUtm || ['utm_source', 'utm_medium', 'utm_campaign'].every((key) => guideCheckout.searchParams.get(key) === expectedUtm[key])));
     result.checkoutUtmPreserved = checkoutUtmPreserved;
     result.guideCheckoutWorks = Boolean(guideCheckoutWorks);
-    const pass = result.resetVisible && result.draftStored && result.echoStart && result.resetStart && !result.analyticsContainsDraft && result.realityBoxWorks && result.counterWorks && result.resetComplete && result.postResetOfferVisible && result.timer === '00:00' && result.kitView && result.checkoutStart && result.attributionPreserved && result.propertiesRestricted && result.exportWorks && result.deleteMessageWorks && result.clearAllWorks && checkoutUtmPreserved && guideCheckoutWorks;
+    const pass = result.resetVisible && result.draftStored && result.echoStart && result.resetStart && !result.analyticsContainsDraft && result.realityBoxWorks && result.counterWorks && result.resetComplete && result.postResetOfferVisible && result.completionNoHorizontalOverflow && result.cardGenerated && result.timer === '00:00' && result.kitView && result.checkoutStart && result.attributionPreserved && result.propertiesRestricted && result.exportWorks && result.deleteMessageWorks && result.clearAllWorks && checkoutUtmPreserved && guideCheckoutWorks;
     console.log(JSON.stringify({ status: pass ? 'PASS' : 'FAIL', ...result }, null, 2));
     await client.send('Browser.close'); client.socket.close();
     if (!pass) process.exitCode = 1;

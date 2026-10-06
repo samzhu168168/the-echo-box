@@ -259,6 +259,15 @@ function initBreakupReset() {
     const paidKitButtons = Array.from(document.querySelectorAll('[data-paid-kit-cta]'));
     const paidKitNote = document.getElementById('paid-kit-note');
     const postResetOffer = document.getElementById('post-reset-offer');
+    const startAnotherReset = document.getElementById('start-another-reset');
+    const openRealityBox = document.getElementById('open-reality-box');
+    const generateResetCardButton = document.getElementById('generate-reset-card');
+    const downloadResetCardButton = document.getElementById('download-reset-card');
+    const shareResetCardButton = document.getElementById('share-reset-card');
+    const copyResetLinkButton = document.getElementById('copy-reset-link');
+    const resetCardCanvas = document.getElementById('reset-card-canvas');
+    const shareStatus = document.getElementById('share-status');
+    const personTwoButtons = Array.from(document.querySelectorAll('[data-share-reset]'));
     const exportAllDataButton = document.getElementById('export-all-data-button');
     const clearAllDataButton = document.getElementById('clear-all-data-button');
 
@@ -289,6 +298,10 @@ function initBreakupReset() {
     setupPricingTracking();
     restoreScreen();
     trackEvent('landing_view');
+    const attribution = window.echoAnalytics?.getAttribution?.() || {};
+    if (attribution.referral_source) {
+        trackEvent('referral_visit', { referral_source: attribution.referral_source });
+    }
     if (Object.keys(state).length > 0) {
         trackEvent('return_visit_detected');
         trackReturnVisitMilestones();
@@ -314,11 +327,12 @@ function initBreakupReset() {
         renderUnsentBubble(message);
         messageStatus.textContent = doNotSave.checked ? 'Not sent' : 'Not sent - saved locally';
         resetFlow.classList.remove('hidden');
+        if (postResetOffer) postResetOffer.classList.add('hidden');
         timerGuidance.textContent = safetyFlag
             ? 'Safety note: if you or someone else may be unsafe, contact local emergency services or a trusted person near you now.'
             : 'Do not decide from the spike. Let your body come down first.';
         startTimer();
-        trackEvent('reset_start');
+        trackEvent('reset_started');
         if (!doNotSave.checked) trackEvent('unsent_message_saved_local', { saveMode: 'local_save' });
         resetFlow.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -327,7 +341,7 @@ function initBreakupReset() {
         messageStatus.textContent = messageInput.value.trim() ? 'Private draft' : 'Private draft';
         if (messageInput.value.trim() && !messageInput.dataset.started) {
             messageInput.dataset.started = 'true';
-            trackEvent('echo_start');
+            trackEvent('unsent_message_started');
         }
     });
 
@@ -363,7 +377,7 @@ function initBreakupReset() {
         state.lastContactAt = new Date(lastContactInput.value).getTime();
         saveState();
         renderCounter();
-        trackEvent('no_contact_counter_created');
+        trackEvent('no_contact_started');
     });
 
     restartCounterButton.addEventListener('click', () => {
@@ -371,14 +385,14 @@ function initBreakupReset() {
         lastContactInput.value = toDatetimeLocal(state.lastContactAt);
         saveState();
         renderCounter();
-        trackEvent('no_contact_counter_created', { reason: 'restart' });
+        trackEvent('no_contact_started');
     });
 
     realityForm.addEventListener('submit', (event) => {
         event.preventDefault();
         state.realityBox = Object.fromEntries(new FormData(realityForm).entries());
         saveState();
-        trackEvent('reality_box_created');
+        trackEvent('reality_box_opened');
         const button = realityForm.querySelector('button[type="submit"]');
         const previous = button.textContent;
         button.textContent = 'Saved locally';
@@ -404,6 +418,50 @@ function initBreakupReset() {
         trackEvent('necessary_contact_filter_used', { reason: necessaryReason.value });
     });
 
+    if (startAnotherReset) {
+        startAnotherReset.addEventListener('click', () => {
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            messageInput.focus();
+        });
+    }
+
+    if (openRealityBox) {
+        openRealityBox.addEventListener('click', () => trackEvent('reality_box_opened'));
+    }
+
+    if (generateResetCardButton) {
+        generateResetCardButton.addEventListener('click', () => {
+            drawResetCard();
+            downloadResetCardButton.disabled = false;
+            shareResetCardButton.disabled = false;
+            shareStatus.textContent = 'Your share-safe card is ready. It contains no private message text.';
+            trackEvent('reset_card_generated');
+        });
+    }
+
+    if (downloadResetCardButton) {
+        downloadResetCardButton.addEventListener('click', () => {
+            drawResetCard();
+            resetCardCanvas.toBlob((blob) => {
+                if (!blob) return;
+                downloadBlob('echo-box-reset-complete.png', blob);
+                trackEvent('reset_card_downloaded');
+            }, 'image/png');
+        });
+    }
+
+    if (shareResetCardButton) {
+        shareResetCardButton.addEventListener('click', () => shareReset('reset-card'));
+    }
+
+    if (copyResetLinkButton) {
+        copyResetLinkButton.addEventListener('click', () => copyShareLink('reset-card'));
+    }
+
+    personTwoButtons.forEach((button) => {
+        button.addEventListener('click', () => shareReset('friend-share'));
+    });
+
     if (exportAllDataButton) {
         exportAllDataButton.addEventListener('click', () => {
             const payload = {
@@ -422,11 +480,13 @@ function initBreakupReset() {
             localStorage.removeItem(keys.data);
             localStorage.removeItem('echoBoxAnalyticsEvents.v1');
             localStorage.removeItem('echoBoxAnalyticsSession.v1');
+            localStorage.removeItem('echoBoxAttribution.v2');
             localStorage.removeItem(keys.experiment);
             form.reset();
             realityForm.reset();
             messageInput.value = '';
             resetFlow.classList.add('hidden');
+            if (postResetOffer) postResetOffer.classList.add('hidden');
             counterResult.innerHTML = '<strong>No counter set yet.</strong><span>Set a date to see your protected time.</span>';
             messageStatus.textContent = 'Cleared locally';
             clearUnsentBubble();
@@ -463,7 +523,8 @@ function initBreakupReset() {
             return;
         }
         const checkoutUrl = buildCheckoutUrl(placement);
-        trackEvent('checkout_start', { cta_location: placement });
+        trackEvent('paid_cta_clicked', { cta_location: placement });
+        trackEvent('checkout_started', { cta_location: placement });
         try {
             const opened = window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
             if (opened) {
@@ -521,6 +582,8 @@ function initBreakupReset() {
         if (state.resetEndsAt && Date.now() < state.resetEndsAt) {
             resetFlow.classList.remove('hidden');
             startTimer();
+        } else if (state.resetEndsAt) {
+            completeReset();
         } else {
             renderTimer(10 * 60 * 1000);
         }
@@ -606,9 +669,7 @@ function initBreakupReset() {
             renderTimer(remaining);
             if (remaining <= 0) {
                 clearInterval(timerHandle);
-                timerGuidance.textContent = 'The spike passed. You can still choose silence, a factual message, or no action.';
-                if (postResetOffer) postResetOffer.classList.remove('hidden');
-                trackEvent('reset_complete');
+                completeReset();
             }
         }, 250);
     }
@@ -619,6 +680,98 @@ function initBreakupReset() {
         const secondsPart = seconds % 60;
         timerMinutes.textContent = String(minutesPart).padStart(2, '0');
         timerSeconds.textContent = String(secondsPart).padStart(2, '0');
+    }
+
+    function completeReset() {
+        renderTimer(0);
+        resetFlow.classList.remove('hidden');
+        timerGuidance.textContent = 'The spike passed. You can still choose silence, a factual message, or no action.';
+        if (postResetOffer) {
+            postResetOffer.classList.remove('hidden');
+            postResetOffer.focus({ preventScroll: true });
+        }
+        if (state.lastCompletedResetEndsAt !== state.resetEndsAt) {
+            state.lastCompletedResetEndsAt = state.resetEndsAt;
+            saveState();
+            trackEvent('reset_completed');
+        }
+    }
+
+    function getShareUrl(kind) {
+        const url = new URL('/', window.location.origin);
+        url.searchParams.set('ref', kind);
+        url.searchParams.set('utm_source', 'share');
+        url.searchParams.set('utm_medium', 'organic');
+        url.searchParams.set('utm_campaign', kind === 'friend-share' ? 'send_reset' : 'reset_card');
+        return url.toString();
+    }
+
+    function drawResetCard() {
+        if (!resetCardCanvas) return;
+        const context = resetCardCanvas.getContext('2d');
+        const gradient = context.createLinearGradient(0, 0, 1080, 1350);
+        gradient.addColorStop(0, '#182024');
+        gradient.addColorStop(1, '#2d4b48');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 1080, 1350);
+        context.strokeStyle = '#cfa85e';
+        context.lineWidth = 8;
+        context.strokeRect(64, 64, 952, 1222);
+        context.textAlign = 'left';
+        context.fillStyle = '#ddd3c4';
+        context.font = '52px Georgia, serif';
+        context.fillText('I almost texted them.', 130, 420);
+        context.fillStyle = '#fff8eb';
+        context.font = 'bold 112px Georgia, serif';
+        context.fillText("I didn't.", 130, 570);
+        context.fillStyle = '#f0cf8b';
+        context.font = 'bold 42px Arial, sans-serif';
+        context.fillText('10-minute reset completed.', 130, 680);
+        context.fillStyle = '#fff8eb';
+        context.font = 'bold 34px Arial, sans-serif';
+        context.fillText('THE ECHO BOX', 130, 1030);
+        context.fillStyle = '#ddd3c4';
+        context.font = '30px Arial, sans-serif';
+        context.fillText('Try the private reset', 130, 1090);
+    }
+
+    async function shareReset(kind) {
+        const url = getShareUrl(kind);
+        const shareData = {
+            title: 'The Echo Box private reset',
+            text: 'Almost texted your ex? Put the message here instead.',
+            url
+        };
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+                trackEvent('share_clicked', { share_method: 'native', referral_source: kind });
+                if (shareStatus) shareStatus.textContent = 'Share sheet opened.';
+                return;
+            } catch (error) {
+                if (error?.name === 'AbortError') return;
+            }
+        }
+        await copyShareLink(kind);
+    }
+
+    async function copyShareLink(kind) {
+        const url = getShareUrl(kind);
+        try {
+            await navigator.clipboard.writeText(url);
+        } catch (error) {
+            const field = document.createElement('textarea');
+            field.value = url;
+            field.setAttribute('readonly', '');
+            field.style.position = 'fixed';
+            field.style.opacity = '0';
+            document.body.append(field);
+            field.select();
+            document.execCommand('copy');
+            field.remove();
+        }
+        if (shareStatus) shareStatus.textContent = 'Private reset link copied.';
+        trackEvent('share_link_copied', { share_method: 'copy', referral_source: kind });
     }
 
     function renderCounter() {
@@ -649,11 +802,16 @@ function initBreakupReset() {
 
 function downloadFile(filename, content, type) {
     const blob = new Blob([content], { type });
+    downloadBlob(filename, blob);
+}
+
+function downloadBlob(filename, blob) {
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
+    const objectUrl = URL.createObjectURL(blob);
+    link.href = objectUrl;
     link.download = filename;
     link.click();
-    URL.revokeObjectURL(link.href);
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
 }
 
 function safeJson(value) {

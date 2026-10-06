@@ -121,12 +121,38 @@
                     <button class="button secondary" id="export-message-button" type="button">Export private note</button>
                     <button class="button subtle" id="delete-message-button" type="button">Delete note</button>
                 </div>
-                <div class="post-reset-offer hidden" id="post-reset-offer">
-                    <p class="reset-eyebrow">30-Day Breakup Reset System</p>
-                    <h3>You handled this moment. Have a plan for the next one.</h3>
-                    <p>Use one repeatable process when the next trigger arrives: Pause the urge. Reality-check what you want. Choose one next move.</p>
-                    <button class="button secondary" type="button" data-paid-kit-cta data-placement="post_reset">Get the 30-Day Reset System — $9.99</button>
-                    <p class="privacy-note">One-time purchase. No subscription.</p>
+                <div class="reset-completion hidden" id="post-reset-offer" tabindex="-1">
+                    <p class="reset-eyebrow">Reset complete</p>
+                    <h3>You didn't send it.</h3>
+                    <p class="completion-lede">That was the goal. You can decide what happens next when the urge is quieter.</p>
+                    <div class="completion-actions" aria-label="Choose your next step">
+                        <a class="completion-action" href="#reset" id="start-another-reset"><strong>Keep going</strong><span>Start another reset</span></a>
+                        <a class="completion-action" href="#reality-box" id="open-reality-box"><strong>Check reality</strong><span>Open Reality Box</span></a>
+                        <div class="completion-action paid-next-step">
+                            <strong>Make this easier tomorrow</strong>
+                            <span>Start the 30-Day Reset</span>
+                            <button class="button secondary" type="button" data-paid-kit-cta data-placement="post_reset">Get the 30-Day Reset System — $9.99</button>
+                        </div>
+                    </div>
+                    <div class="share-reset-panel" id="share-reset-panel">
+                        <div class="reset-card-preview" id="reset-card-preview" aria-label="Privacy-safe reset card preview">
+                            <span>I almost texted them.</span><strong>I didn't.</strong><small>10-minute reset completed.</small><b>The Echo Box</b>
+                        </div>
+                        <canvas id="reset-card-canvas" width="1080" height="1350" hidden aria-hidden="true"></canvas>
+                        <div>
+                            <p class="reset-eyebrow">Optional, share-safe card</p>
+                            <h4>Keep the message private. Share only the pause.</h4>
+                            <p>This card never includes your message, their name, or anything from your Reality Box.</p>
+                            <div class="share-actions">
+                                <button class="button primary" id="generate-reset-card" type="button">Generate reset card</button>
+                                <button class="button secondary" id="download-reset-card" type="button" disabled>Download card</button>
+                                <button class="button secondary" id="share-reset-card" type="button" disabled>Share</button>
+                                <button class="button subtle" id="copy-reset-link" type="button">Copy link</button>
+                            </div>
+                            <p class="share-status" id="share-status" role="status" aria-live="polite"></p>
+                        </div>
+                    </div>
+                    <p class="privacy-note">Sharing is optional and always requires your action. One-time purchase. No subscription.</p>
                 </div>
             </div>
             <div class="trigger-panel">
@@ -266,6 +292,15 @@
                 </label>
                 <div class="guidance-box" id="necessary-guidance">If the reason is missing them or wanting closure, keep using the reset instead of reopening the conversation.</div>
             </div>
+        </section>
+
+        <section class="person-two-section" aria-labelledby="send-reset-title">
+            <div>
+                <p class="reset-eyebrow">For someone you care about</p>
+                <h2 id="send-reset-title">Know someone who's about to text their ex?</h2>
+                <p>Sometimes the best thing you can send is something that stops them sending. The reset is private, free, and requires no account.</p>
+            </div>
+            <button class="button primary" type="button" data-share-reset="friend">Send them the reset</button>
         </section>
 
         <section class="pricing-reset" id="pricing">

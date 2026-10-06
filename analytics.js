@@ -1,8 +1,8 @@
 (function () {
     const STORAGE_KEY = 'echoBoxAnalyticsEvents.v1';
     const SESSION_KEY = 'echoBoxAnalyticsSession.v1';
-    const ATTRIBUTION_KEY = 'echoBoxAttribution.v1';
-    const PRODUCT_VERSION = 'relaunch-phase1-2026-08-31';
+    const ATTRIBUTION_KEY = 'echoBoxAttribution.v2';
+    const PRODUCT_VERSION = 'distribution-native-v1-2026-10-06';
     const ANALYTICS_CONFIG = Object.assign({ enabled: false, provider: '', id: '', debug: false }, window.ANALYTICS_CONFIG || {});
     const ALLOWED_EVENTS = new Set([
         'landing_view',
@@ -10,14 +10,26 @@
         'unsent_message_started',
         'unsent_message_saved_local',
         'reset_start',
+        'reset_started',
         'trigger_selected',
         'reset_complete',
+        'reset_completed',
         'no_contact_counter_created',
         'reality_box_created',
+        'reality_box_opened',
         'reality_box_reopened',
         'kit_view',
         'paid_kit_cta_viewed',
         'checkout_start',
+        'paid_cta_clicked',
+        'checkout_started',
+        'reset_card_generated',
+        'reset_card_downloaded',
+        'share_clicked',
+        'share_link_copied',
+        'referral_visit',
+        'gift_page_viewed',
+        'no_contact_started',
         'gumroad_checkout_opened',
         'gumroad_checkout_failed',
         'gumroad_checkout_fallback_used',
@@ -39,7 +51,9 @@
         'cta_location',
         'utm_source',
         'utm_medium',
-        'utm_campaign'
+        'utm_campaign',
+        'share_method',
+        'referral_source'
     ]);
 
     function getSessionId() {
@@ -69,7 +83,7 @@
 
     function readStoredAttribution() {
         try {
-            return JSON.parse(sessionStorage.getItem(ATTRIBUTION_KEY) || '{}');
+            return JSON.parse(localStorage.getItem(ATTRIBUTION_KEY) || '{}');
         } catch (error) {
             return {};
         }
@@ -77,7 +91,7 @@
 
     function storeAttribution(attribution) {
         try {
-            sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
+            localStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
         } catch (error) {
             // Attribution remains available for the current page when session storage is unavailable.
         }
@@ -86,16 +100,29 @@
     function readUtm() {
         const params = new URLSearchParams(window.location.search);
         const stored = readStoredAttribution();
-        const attribution = {
-            utm_source: params.get('utm_source') || stored.utm_source || '',
-            utm_medium: params.get('utm_medium') || stored.utm_medium || '',
-            utm_campaign: params.get('utm_campaign') || stored.utm_campaign || ''
+        const incoming = {
+            utm_source: params.get('utm_source') || '',
+            utm_medium: params.get('utm_medium') || '',
+            utm_campaign: params.get('utm_campaign') || '',
+            referral_source: ['reset-card', 'friend-share'].includes(params.get('ref')) ? params.get('ref') : ''
         };
-        if (attribution.utm_source || attribution.utm_medium || attribution.utm_campaign) {
-            storeAttribution(attribution);
+        const hasIncoming = incoming.utm_source || incoming.utm_medium || incoming.utm_campaign || incoming.referral_source;
+        const first = stored.first || (hasIncoming ? incoming : {});
+        const last = hasIncoming ? incoming : (stored.last || first);
+        if (hasIncoming || Object.keys(stored).length) {
+            storeAttribution({ first, last });
         }
         return {
-            ...attribution,
+            utm_source: last.utm_source || '',
+            utm_medium: last.utm_medium || '',
+            utm_campaign: last.utm_campaign || '',
+            referral_source: last.referral_source || '',
+            firstSource: first.utm_source || '',
+            firstMedium: first.utm_medium || '',
+            firstCampaign: first.utm_campaign || '',
+            lastSource: last.utm_source || '',
+            lastMedium: last.utm_medium || '',
+            lastCampaign: last.utm_campaign || '',
             page_slug: window.location.pathname
         };
     }
@@ -111,7 +138,8 @@
             device_category: window.matchMedia('(max-width: 640px)').matches ? 'mobile' : 'desktop',
             utm_source: utm.utm_source,
             utm_medium: utm.utm_medium,
-            utm_campaign: utm.utm_campaign,
+                utm_campaign: utm.utm_campaign,
+                referral_source: utm.referral_source,
             product_version: PRODUCT_VERSION,
             properties: sanitizeProperties({
                 ...properties,
@@ -138,8 +166,16 @@
                 'echo_start',
                 'reset_start',
                 'reset_complete',
+                'reset_started',
+                'reset_completed',
+                'reset_card_generated',
+                'share_clicked',
+                'share_link_copied',
+                'referral_visit',
                 'kit_view',
-                'checkout_start'
+                'checkout_start',
+                'paid_cta_clicked',
+                'checkout_started'
             ]);
             if (!PLAUSIBLE_FUNNEL_EVENTS.has(event.eventName)) return;
             window.plausible(event.eventName, {
@@ -148,7 +184,9 @@
                     cta_location: event.properties.cta_location || '',
                     utm_source: event.properties.utm_source,
                     utm_medium: event.properties.utm_medium,
-                    utm_campaign: event.properties.utm_campaign
+                    utm_campaign: event.properties.utm_campaign,
+                    referral_source: event.properties.referral_source || '',
+                    share_method: event.properties.share_method || ''
                 }
             });
         }
