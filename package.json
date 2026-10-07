@@ -5,6 +5,7 @@
     "indexnow": "node scripts/indexnow-submit.mjs",
     "qa:crawlers": "node scripts/qa_crawler_freshness.mjs",
     "qa:links": "node scripts/qa_internal_links.mjs",
-    "qa:distribution": "node scripts/qa_distribution_native.js"
+    "qa:distribution": "node scripts/qa_distribution_native.js",
+    "qa:wave1": "node scripts/qa_wave1.js"
   }
 }

@@ -27,7 +27,8 @@ function initStandalonePaidKitCtas() {
                 trackGlobalEvent('gumroad_checkout_failed', { placement });
                 return;
             }
-            trackGlobalEvent('checkout_start', { cta_location: placement });
+            trackGlobalEvent('paid_cta_clicked', { cta_location: placement });
+            trackGlobalEvent('checkout_started', { cta_location: placement });
             if (button.tagName.toLowerCase() !== 'a') {
                 const checkoutUrl = buildPaidKitCheckoutUrl(placement);
                 const opened = window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
@@ -776,15 +777,11 @@ function initBreakupReset() {
 
     function renderCounter() {
         if (!state.lastContactAt) return;
-        const elapsed = Math.max(0, Date.now() - state.lastContactAt);
-        state.longestNoContactMs = Math.max(state.longestNoContactMs || 0, elapsed);
+        const counter = window.EchoBoxWave1.calculateNoContactDuration(state.lastContactAt, Date.now());
+        if (!counter.valid) return;
+        state.longestNoContactMs = Math.max(state.longestNoContactMs || 0, counter.elapsed);
         saveState();
-        const days = Math.floor(elapsed / 86400000);
-        const hours = Math.floor((elapsed % 86400000) / 3600000);
-        const minutes = Math.floor((elapsed % 3600000) / 60000);
-        const milestones = [1, 3, 7, 14, 30];
-        const next = milestones.find((day) => day > days) || 30;
-        counterResult.innerHTML = `<strong>${days} days, ${hours} hours, ${minutes} minutes protected.</strong><span>Next milestone: ${next} days. Longest local record: ${formatDuration(state.longestNoContactMs)}.</span>`;
+        counterResult.innerHTML = `<strong>${counter.days} days, ${counter.hours} hours, ${counter.minutes} minutes protected.</strong><span>Next milestone: ${counter.nextMilestone} days. Longest local record: ${window.EchoBoxWave1.formatDuration(state.longestNoContactMs)}.</span>`;
     }
 
     function getCurrentMessage() {

@@ -9,7 +9,6 @@
         'echo_start',
         'unsent_message_started',
         'unsent_message_saved_local',
-        'reset_start',
         'reset_started',
         'trigger_selected',
         'reset_complete',
@@ -20,7 +19,6 @@
         'reality_box_reopened',
         'kit_view',
         'paid_kit_cta_viewed',
-        'checkout_start',
         'paid_cta_clicked',
         'checkout_started',
         'reset_card_generated',
@@ -42,6 +40,10 @@
         'local_data_cleared',
         'seo_tool_started',
         'seo_tool_completed',
+        'tool_view',
+        'tool_start',
+        'tool_complete',
+        'share_action',
         'email_opt_in_viewed',
         'email_opt_in_completed',
         'left_during_reset'
@@ -53,7 +55,16 @@
         'utm_medium',
         'utm_campaign',
         'share_method',
-        'referral_source'
+        'referral_source',
+        'tool_id',
+        'result_type',
+        'entry_source',
+        'safety_mode'
+    ]);
+    const ALLOWED_TOOL_IDS = new Set(['no_contact_day_counter', 'mixed_signals_checker']);
+    const ALLOWED_RESULT_TYPES = new Set([
+        'KEEP_CURRENT_START', 'RESTART_COUNTER', 'NECESSARY_CONTACT_REVIEW', 'BOUNDARY_REVIEW',
+        'BRIEF_REPLY', 'WAIT_FOR_CONSISTENCY', 'SET_BOUNDARY', 'DO_NOT_ENGAGE'
     ]);
 
     function getSessionId() {
@@ -76,7 +87,11 @@
     function sanitizeProperties(properties) {
         const clean = {};
         Object.entries(properties || {}).forEach(([key, value]) => {
-            if (ALLOWED_PROPERTIES.has(key)) clean[key] = value;
+            if (!ALLOWED_PROPERTIES.has(key)) return;
+            if (key === 'tool_id' && !ALLOWED_TOOL_IDS.has(value)) return;
+            if (key === 'result_type' && !ALLOWED_RESULT_TYPES.has(value)) return;
+            if (key === 'safety_mode' && typeof value !== 'boolean') return;
+            clean[key] = value;
         });
         return clean;
     }
@@ -164,7 +179,6 @@
             const PLAUSIBLE_FUNNEL_EVENTS = new Set([
                 'landing_view',
                 'echo_start',
-                'reset_start',
                 'reset_complete',
                 'reset_started',
                 'reset_completed',
@@ -173,9 +187,12 @@
                 'share_link_copied',
                 'referral_visit',
                 'kit_view',
-                'checkout_start',
                 'paid_cta_clicked',
-                'checkout_started'
+                'checkout_started',
+                'tool_view',
+                'tool_start',
+                'tool_complete',
+                'share_action'
             ]);
             if (!PLAUSIBLE_FUNNEL_EVENTS.has(event.eventName)) return;
             window.plausible(event.eventName, {
@@ -186,7 +203,10 @@
                     utm_medium: event.properties.utm_medium,
                     utm_campaign: event.properties.utm_campaign,
                     referral_source: event.properties.referral_source || '',
-                    share_method: event.properties.share_method || ''
+                    share_method: event.properties.share_method || '',
+                    tool_id: event.properties.tool_id || '',
+                    result_type: event.properties.result_type || '',
+                    safety_mode: event.properties.safety_mode === true
                 }
             });
         }

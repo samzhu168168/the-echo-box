@@ -396,3 +396,35 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
     .guide-header h1 { overflow-wrap: anywhere; }
     .guide-body section, .guide-direct-answer { box-shadow: none; }
 }
+
+/* Wave 1 task-first tools */
+.tool-page { overflow-x: hidden; }
+.tool-shell { width: min(820px, calc(100% - 32px)); margin: 0 auto; padding-bottom: 32px; }
+.tool-hero { padding: clamp(34px, 7vw, 68px) 0 20px; }
+.tool-hero h1 { max-width: 780px; font-size: clamp(2.2rem, 6vw, 4.5rem); }
+.tool-lede { max-width: 720px; margin: 18px 0; color: #344149; font-size: 1.12rem; }
+.tool-direct-answer, .tool-card, .tool-result { padding: clamp(20px, 4vw, 30px); border: 1px solid rgba(23,32,38,.15); border-radius: 8px; background: rgba(255,253,248,.95); box-shadow: var(--shadow); }
+.tool-direct-answer { border-left: 7px solid var(--reset-accent); }
+.tool-card { margin: 20px 0; }
+.tool-card h2, .tool-result h2 { margin-bottom: 14px; }
+.tool-result { margin-top: 20px; background: #f6f1e7; }
+.choice-stack { display: grid; gap: 10px; min-width: 0; margin: 20px 0; padding: 18px; border: 1px solid var(--line); border-radius: 8px; }
+.choice-stack legend { padding: 0 6px; font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; }
+.choice-stack label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px; border-radius: 6px; background: white; overflow-wrap: anywhere; }
+.choice-stack input { margin-top: .25rem; }
+.tool-error { min-height: 1.5em; color: #9b2e25; font-weight: 800; }
+.reality-prompt { margin: 18px 0; padding: 16px; border-left: 6px solid var(--reset-gold); background: #fff8e8; font-weight: 800; }
+.tool-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.result-grid { display: grid; gap: 12px; }
+.result-grid div { padding: 14px; border-left: 5px solid var(--teal); background: white; }
+.result-grid dt { margin-bottom: 6px; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; font-size: .78rem; }
+.result-grid dd { margin: 0; }
+.tool-privacy { max-width: 760px; margin-inline: auto; }
+@media (max-width: 640px) {
+    .tool-shell { width: calc(100% - 20px); min-width: 0; }
+    .tool-shell > *, .tool-card > *, .tool-result > *, .choice-stack > * { min-width: 0; max-width: 100%; }
+    .tool-hero { padding-top: 26px; }
+    .tool-hero h1 { font-size: clamp(2rem, 11vw, 2.7rem); overflow-wrap: anywhere; }
+    .tool-direct-answer, .tool-card, .tool-result { padding: 18px; box-shadow: none; }
+    .tool-actions { flex-direction: column; }
+}
