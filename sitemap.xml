@@ -109,6 +109,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.my-echo-box.com/tools/no-contact-day-counter.html</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.my-echo-box.com/tools/mixed-signals-from-ex-response-checker.html</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.my-echo-box.com/about.html</loc>
     <lastmod>2026-07-10</lastmod>
     <changefreq>monthly</changefreq>
