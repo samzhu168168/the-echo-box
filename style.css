@@ -407,6 +407,7 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 .tool-direct-answer { border-left: 7px solid var(--reset-accent); }
 .tool-card { margin: 20px 0; }
 .tool-card h2, .tool-result h2 { margin-bottom: 14px; }
+.tool-inline-privacy { margin: -4px 0 14px; color: var(--reset-muted); font-size: .92rem; }
 .tool-result { margin-top: 20px; background: #f6f1e7; }
 .choice-stack { display: grid; gap: 10px; min-width: 0; margin: 20px 0; padding: 18px; border: 1px solid var(--line); border-radius: 8px; }
 .choice-stack legend { padding: 0 6px; font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; }
@@ -427,4 +428,17 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
     .tool-hero h1 { font-size: clamp(2rem, 11vw, 2.7rem); overflow-wrap: anywhere; }
     .tool-direct-answer, .tool-card, .tool-result { padding: 18px; box-shadow: none; }
     .tool-actions { flex-direction: column; }
+    .counter-tool-page .reset-topbar { gap: 7px; padding-block: 8px; }
+    .counter-tool-page .reset-brand-mark { width: 32px; height: 32px; }
+    .counter-tool-page .tool-hero { padding: 14px 0 8px; }
+    .counter-tool-page .guide-breadcrumbs { margin-bottom: 8px; }
+    .counter-tool-page .reset-eyebrow { margin-bottom: 6px; }
+    .counter-tool-page .tool-hero h1 { font-size: clamp(2rem, 10vw, 2.45rem); }
+    .counter-tool-page .tool-lede { margin: 8px 0; font-size: 1rem; }
+    .counter-tool-page .tool-direct-answer { padding: 12px 14px; }
+    .counter-tool-page .tool-card { margin: 10px 0; padding: 14px 16px; }
+    .counter-tool-page .tool-card h2 { margin-bottom: 8px; }
+    .counter-tool-page .tool-inline-privacy { margin-bottom: 10px; }
+    .counter-tool-page .field-block { gap: 6px; margin-bottom: 10px; }
+    .counter-tool-page .tool-error { min-height: 1em; margin-bottom: 6px; }
 }
