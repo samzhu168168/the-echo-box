@@ -4,6 +4,11 @@
     const ATTRIBUTION_KEY = 'echoBoxAttribution.v2';
     const PRODUCT_VERSION = 'distribution-native-v1-2026-10-06';
     const ANALYTICS_CONFIG = Object.assign({ enabled: false, provider: '', id: '', debug: false }, window.ANALYTICS_CONFIG || {});
+    if (ANALYTICS_CONFIG.enabled && ANALYTICS_CONFIG.provider === 'plausible' && typeof window.plausible !== 'function') {
+        window.plausible = function () {
+            (window.plausible.q = window.plausible.q || []).push(arguments);
+        };
+    }
     const ALLOWED_EVENTS = new Set([
         'landing_view',
         'echo_start',

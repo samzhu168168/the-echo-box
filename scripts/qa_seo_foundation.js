@@ -66,7 +66,7 @@ if (failures.length === 0) {
     const analytics = read('analytics.js');
 
     if (!home.includes('30-day-no-contact-reset-kit.html')) failures.push('home missing product link');
-    if (!product.includes('$9.99')) failures.push('product missing price');
+    if (!product.includes('$14.90')) failures.push('product missing price');
     if (/(monthly|annual|recurring|subscribe now|subscription fee)/i.test(product)) {
         failures.push('product suggests recurring subscription');
     }
@@ -88,7 +88,7 @@ if (failures.length === 0) {
     if (homeJson.length === 0) failures.push('home jsonld missing');
     if (!productJson.some((entry) => entry['@type'] === 'Product'
         && entry.offers
-        && entry.offers.price === '9.99'
+        && entry.offers.price === '14.90'
         && entry.offers.priceCurrency === 'USD')) {
         failures.push('product jsonld price missing');
     }

@@ -97,7 +97,7 @@ const server = http.createServer((req, res) => {
     if (await home.locator('#download-reset-card').isDisabled()) throw new Error('reset card regression');
     await home.selectOption('#necessary-reason', 'work');
     if (!(await home.locator('#necessary-guidance').innerText()).includes('task')) throw new Error('necessary contact regression');
-    if ((await home.locator('#paid-kit-price').innerText()).trim() !== '$9.99') throw new Error('price regression');
+    if ((await home.locator('#paid-kit-price').innerText()).trim() !== '$14.90') throw new Error('price regression');
     const homeOverflow = await home.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     if (homeOverflow) throw new Error('homepage mobile overflow');
     const analyticsDump = await home.evaluate(() => localStorage.getItem('echoBoxAnalyticsEvents.v1') || '');

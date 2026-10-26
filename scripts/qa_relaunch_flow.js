@@ -54,10 +54,12 @@ async function main() {
   try {
     await waitForDebugger();
     const client = await createClient();
+    await client.send('Network.enable');
+    await client.send('Network.setBlockedURLs', { urls: ['https://plausible.io/*'] });
     await client.send('Emulation.setDeviceMetricsOverride', { width: viewportWidth, height: viewportHeight, deviceScaleFactor: 1, mobile: viewportWidth <= 640 });
     await client.send('Page.navigate', { url: baseUrl });
     for (let attempt = 0; attempt < 40; attempt += 1) {
-      const ready = await client.send('Runtime.evaluate', { expression: 'document.readyState === "complete" && window.echoBoxBreakupResetReady === true', returnByValue: true });
+      const ready = await client.send('Runtime.evaluate', { expression: 'window.echoBoxBreakupResetReady === true', returnByValue: true });
       if (ready.result.value) break;
       await delay(250);
     }
@@ -73,7 +75,7 @@ async function main() {
       guideCheckoutUrl = guideCheckout.result.value;
       await client.send('Page.navigate', { url: `${entryUrl.origin}/#reset` });
       for (let attempt = 0; attempt < 40; attempt += 1) {
-        const ready = await client.send('Runtime.evaluate', { expression: 'document.readyState === "complete" && window.echoBoxBreakupResetReady === true', returnByValue: true });
+        const ready = await client.send('Runtime.evaluate', { expression: 'window.echoBoxBreakupResetReady === true', returnByValue: true });
         if (ready.result.value) break;
         await delay(250);
       }

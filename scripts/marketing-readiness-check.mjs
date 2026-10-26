@@ -119,7 +119,7 @@ async function main() {
 
   const { body: commerce } = await get(`${ORIGIN}/commerce-config.js`, 'commerce-config.js');
   check(commerce.includes(GUMROAD_URL), 'commerce-config.js: Gumroad URL mismatch');
-  check(commerce.includes("price: '$9.99'"), 'commerce-config.js: price mismatch');
+  check(commerce.includes("price: '$14.90'"), 'commerce-config.js: price mismatch');
 
   for (const source of UTM_SOURCES) {
     const url = `${ORIGIN}/?utm_source=${source}&utm_medium=organic&utm_campaign=relaunch14d`;

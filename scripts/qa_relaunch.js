@@ -43,8 +43,8 @@ expect(count(home, /<h1[\s>]/gi) === 1, 'homepage: expected one H1');
 expect(home.includes('About to text your ex?'), 'homepage: new hero H1 missing');
 expect(home.includes('Start the 10-Minute Reset'), 'homepage: primary CTA missing');
 expect(home.includes('What usually happens next?'), 'homepage: scenario section missing');
-expect(home.includes('One moment or the next 30 days?'), 'homepage: free/paid distinction missing');
-expect(home.includes('Build My 30-Day Reset — $9.99'), 'homepage: system CTA/price missing');
+expect(home.includes('One hard moment needs a pause. The next 30 days need a plan.'), 'homepage: free/paid distinction missing');
+expect(home.includes('Get the 30-Day Reset — $14.90'), 'homepage: system CTA/price missing');
 expect(home.includes('<meta name="robots"') === false, 'homepage: unexpected robots override');
 expect(!/<meta[^>]+noindex/i.test(home), 'homepage: noindex present');
 
@@ -67,7 +67,7 @@ for (const slug of guideSlugs) {
   expect(/(?:Last reviewed|Published and reviewed):/.test(html), `${file}: review date missing`);
   expect(html.includes('Use the free 10-minute reset'), `${file}: free CTA missing`);
   expect(html.includes('Need more than one answer?'), `${file}: paid transition missing`);
-  expect(html.includes('Get the 30-Day Reset System — $9.99'), `${file}: system CTA missing`);
+  expect(html.includes('Get the 30-Day Reset System — $14.90'), `${file}: system CTA missing`);
   expect(html.includes('../editorial-policy.html') && html.includes('../sources.html') && html.includes('../safety.html'), `${file}: trust links missing`);
   expect(count(html, /href="[^"]+\.html"/g) >= 8, `${file}: insufficient internal links`);
   const schemas = parseJsonLd(html, file).flatMap((entry) => entry['@graph'] || [entry]);
@@ -85,7 +85,7 @@ expect(robots.includes('Allow: /'), 'robots: root not allowed');
 expect(!/Disallow:\s*\/guides/i.test(robots), 'robots: guides blocked');
 
 const analytics = read('analytics.js');
-for (const event of ['landing_view', 'echo_start', 'reset_start', 'reset_complete', 'kit_view', 'checkout_start']) {
+for (const event of ['landing_view', 'echo_start', 'reset_started', 'reset_completed', 'kit_view', 'checkout_started']) {
   expect(analytics.includes(`'${event}'`), `analytics: missing ${event}`);
 }
 for (const allowed of ['page_slug', 'cta_location', 'utm_source', 'utm_medium', 'utm_campaign']) {
@@ -94,12 +94,12 @@ for (const allowed of ['page_slug', 'cta_location', 'utm_source', 'utm_medium', 
 for (const forbidden of ['message text', 'relationship text', 'unsentMessage']) {
   expect(!analytics.includes(forbidden), `analytics: sensitive field reference ${forbidden}`);
 }
-expect(analytics.includes('echoBoxAttribution.v1'), 'analytics: session attribution storage missing');
-expect(analytics.includes('sessionStorage'), 'analytics: UTM persistence missing');
+expect(analytics.includes('echoBoxAttribution.v2'), 'analytics: attribution storage missing');
+expect(analytics.includes('localStorage'), 'analytics: UTM persistence missing');
 expect(analytics.includes('getAttribution'), 'analytics: checkout attribution interface missing');
 
 const commerce = read('commerce-config.js');
-expect(commerce.includes("price: '$9.99'"), 'commerce: price changed');
+expect(commerce.includes("price: '$14.90'"), 'commerce: price changed');
 expect(commerce.includes("productName: 'The Echo Box — 30-Day Breakup Reset System'"), 'commerce: product name mismatch');
 expect(commerce.includes("checkoutUrl: 'https://samzhu168.gumroad.com/l/echo-box-30-day-no-contact-reset-kit'"), 'commerce: Gumroad URL changed');
 const product = read('30-day-no-contact-reset-kit.html');
@@ -107,7 +107,7 @@ expect(product.includes('<title>30-Day No Contact &amp; Breakup Reset System | T
 expect(product.includes('A next step for every time the urge comes back.'), 'product: hero mismatch');
 expect(product.includes('The free reset handles one spike.'), 'product: differentiation missing');
 expect(product.includes('What’s inside the system'), 'product: modules missing');
-expect(product.includes('Get the 30-Day Reset System — $9.99'), 'product: CTA/price missing');
+expect(product.includes('Get the 30-Day Reset — $14.90'), 'product: CTA/price missing');
 const app = read('app.js');
 expect(app.includes("button.tagName.toLowerCase() !== 'a'"), 'commerce: standalone button checkout handler missing');
 expect(app.includes('window.open(checkoutUrl'), 'commerce: Gumroad checkout open missing');

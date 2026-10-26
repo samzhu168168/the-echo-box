@@ -81,12 +81,13 @@ async function main() {
         await waitForDebugger();
         const client = await createClient();
         await client.send('Network.enable');
+        await client.send('Network.setBlockedURLs', { urls: ['https://plausible.io/*'] });
         await client.send('Page.enable');
         await client.send('Page.navigate', { url: baseUrl });
         let isReady = false;
         for (let attempt = 0; attempt < 40; attempt += 1) {
             const ready = await client.send('Runtime.evaluate', {
-                expression: 'document.readyState === "complete" && window.echoBoxBreakupResetReady === true',
+                expression: 'window.echoBoxBreakupResetReady === true',
                 returnByValue: true
             });
             if (ready.result.value) {

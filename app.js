@@ -1,7 +1,7 @@
 const PAID_KIT_CONFIG = window.COMMERCE_CONFIG?.paidKit || {
     enabled: false,
     provider: 'gumroad',
-    price: '$9.99',
+    price: '$14.90',
     productName: 'The Echo Box — 30-Day Breakup Reset System',
     checkoutUrl: '',
     productVersion: '2026-07-v1'
@@ -58,6 +58,33 @@ function trackGlobalEvent(name, details = {}) {
     if (window.echoAnalytics && typeof window.echoAnalytics.trackEvent === 'function') {
         window.echoAnalytics.trackEvent(name, details);
     }
+}
+
+function initEchoStartTracking() {
+    if (window.__echoStartTrackingInitialized) return;
+    window.__echoStartTrackingInitialized = true;
+    document.addEventListener('click', (event) => {
+        const entryLink = event.target.closest('a[href]');
+        if (!entryLink) return;
+        let destination;
+        try {
+            destination = new URL(entryLink.href, window.location.href);
+        } catch (error) {
+            return;
+        }
+        const entersFreeReset = destination.origin === window.location.origin
+            && destination.pathname === '/'
+            && destination.hash === '#reset';
+        if (!entersFreeReset) return;
+        let ctaLocation = 'free_reset_entry';
+        if (entryLink.closest('.reset-nav')) ctaLocation = 'navigation';
+        else if (entryLink.closest('.guide-cta')) ctaLocation = 'guide_cta';
+        else if (entryLink.closest('.tool-actions')) ctaLocation = 'tool_result';
+        else if (entryLink.closest('.product-hero')) ctaLocation = 'product_page';
+        else if (entryLink.id === 'start-another-reset') ctaLocation = 'reset_again';
+        else if (entryLink.dataset.track === 'free_reset_cta') ctaLocation = 'homepage_offer';
+        trackGlobalEvent('echo_start', { cta_location: ctaLocation });
+    });
 }
 
 function initEmergencyBinder() {
@@ -847,6 +874,7 @@ function detectSafetyLanguage(text) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initEchoStartTracking();
     initEmergencyBinder();
     initStandalonePaidKitCtas();
     initBreakupReset();
